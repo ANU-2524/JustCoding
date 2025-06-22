@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "../Style/LoginPage.css";
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -67,11 +68,13 @@ const LoginPage = () => {
         </p>
       </form>
 
-      <div className="google-signin-container">
-        <button className="google-button" onClick={handleGoogleSignIn}>
-          Sign in with Google
-        </button>
-      </div>
+     <div className="google-signin-container">
+  <button className="google-button" onClick={handleGoogleSignIn}>
+    <FcGoogle size={20} style={{ marginRight: "8px" }} />
+    Sign in with Google
+  </button>
+</div>
+
     </div>
   );
 };

@@ -83,7 +83,6 @@ const explainQuestion = async () => {
 const debugCode = async () => {
   setDebugLoading(true);
 
-  // 🧹 Clean old debug data
   localStorage.removeItem("debugHelp");
 
   try {
@@ -95,7 +94,6 @@ const debugCode = async () => {
     const data = await res.json();
     setDebugResult(data.debugHelp);
 
-    // ✅ Save to localStorage
     localStorage.setItem("debugHelp", data.debugHelp);
   } catch (err) {
     setDebugResult("Error getting debug help.");
@@ -104,13 +102,13 @@ const debugCode = async () => {
   }
 };
 
-
-
   useEffect(() => {
     localStorage.setItem(`code-${language}`, code);
     localStorage.setItem("lang", language);
     localStorage.setItem("theme", theme);
-    document.documentElement.classList.toggle("dark", theme === "vs-dark");
+    document.documentElement.classList.remove("dark", "light");
+document.documentElement.classList.add(theme === "vs-dark" ? "dark" : "light");
+
   }, [code, language, theme]);
 
   const runCode = async () => {
@@ -138,7 +136,6 @@ const reset = () => {
   setQuestionText("");
   setDebugResult("");
 
-  // ✅ Clear localStorage items too
   localStorage.removeItem("question");
   localStorage.removeItem("explanation");
   localStorage.removeItem("debugHelp");
@@ -157,7 +154,6 @@ const downloadPDF = () => {
 
   let y = 20;
 
-  // 1. Question (if available)
   const question = localStorage.getItem("question");
   if (question) {
     doc.setFontSize(12);
@@ -171,7 +167,6 @@ const downloadPDF = () => {
     y += 5;
   }
 
-  // 2. Explanation (if available)
   const explanation = localStorage.getItem("explanation");
   if (explanation) {
     doc.setFontSize(12);
@@ -185,7 +180,6 @@ const downloadPDF = () => {
     y += 5;
   }
 
-  // 3. Code
   doc.setFontSize(12);
   doc.text("🧠 Code:", 10, y);
   y += 8;
@@ -196,7 +190,6 @@ const downloadPDF = () => {
     y += 7;
   });
 
-  // 4. Input (if any)
   if (userInput.trim()) {
     doc.addPage();
     y = 10;
@@ -206,7 +199,6 @@ const downloadPDF = () => {
     inputLines.forEach(line => doc.text(line, 10, y += 7));
   }
 
-  // 5. Output (if any)
   if (output.trim()) {
     doc.addPage();
     y = 10;
@@ -216,7 +208,6 @@ const downloadPDF = () => {
     outputLines.forEach(line => doc.text(line, 10, y += 7));
   }
 
-  // 6. Debug Help (if available)
   const debugHelp = localStorage.getItem("debugHelp");
   if (debugHelp) {
     doc.addPage();
@@ -229,7 +220,6 @@ const downloadPDF = () => {
 
   doc.save(`${languages[language].name}-JustCode-Session.pdf`);
 };
-
 
   const handleLogout = async () => {
     try {
@@ -245,7 +235,7 @@ const downloadPDF = () => {
       {loading && <Loader />}
       <div className="inner-container">
         <div className="header">
-          <h1 className="logo">JustCode 🚀</h1>
+          <h1 className="logo">JustCode ...💪</h1>
           <div className="flex gap-2 items-center">
             <button onClick={handleThemeToggle} className="theme-toggle">
               {theme === "vs-dark" ? <FaSun /> : <FaMoon />}
@@ -255,13 +245,12 @@ const downloadPDF = () => {
             )}
           </div>
         </div>
-
-
+        
         <div className="question-section">
   <textarea
     className="input-box"
     rows={3}
-    placeholder="Paste your question (optional)"
+    placeholder="Paste your question HERE !!"
     value={questionText}
     onChange={(e) => setQuestionText(e.target.value)}
   />
@@ -316,7 +305,7 @@ const downloadPDF = () => {
         <textarea
           className="input-box"
           rows={3}
-          placeholder="Enter input values (for input()) here"
+          placeholder="Enter input values !!"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
         ></textarea>

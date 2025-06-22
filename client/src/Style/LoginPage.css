@@ -1,10 +1,103 @@
+/* LoginPage.css – Growth Mindset x Confident Vibes */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
+
 .login-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to bottom right, #4e54c8, #8f94fb);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+  font-family: 'Manrope', sans-serif;
+}
+
+.login-form {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+  width: 380px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-form h2 {
+  margin-bottom: 1.8rem;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 15px;
+  transition: background 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.login-form button {
+  width: 100%;
+  background-color: #00ffe0;
+  color: #000;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-form button:hover {
+  background-color: #00ccb5;
+  transform: translateY(-2px);
+}
+
+.login-form p {
+  margin-top: 1.5rem;
+  font-size: 14px;
+  color: #ddd;
+}
+
+.login-form span {
+  color: #00ffe0;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #000;
+  border: none;
+  padding: 0.9rem 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+  margin-top: 1rem;
+}
+
+.google-button:hover {
+  background: #f1f1f1;
+  transform: scale(1.05);
 }
 
 .logout-btn {
@@ -20,76 +113,4 @@
 
 .logout-btn:hover {
   background-color: #d32f2f;
-}
-
-
-.google-button {
-  width: 100%;
-  background-color: #db4437;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 10px;
-}
-
-.google-button:hover {
-  background-color: #c1351d;
-}
-
-
-.login-form {
-  background-color: #ffffff;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  width: 360px;
-  text-align: center;
-}
-
-.login-form h2 {
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-.login-form input {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.login-form button {
-  width: 100%;
-  background-color: #4e54c8;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.login-form button:hover {
-  background-color: #3b40a4;
-}
-
-.login-form p {
-  margin-top: 1rem;
-  font-size: 14px;
-  color: #555;
-}
-
-.login-form span {
-  color: #4e54c8;
-  cursor: pointer;
-  font-weight: 600;
 }
