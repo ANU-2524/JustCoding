@@ -183,3 +183,11 @@ One person shares a coding room with another
 Live collab coding
 
 Timer, question panel
+
+Add-on Feature	Est. Time	Complexity	Worth it?
+Real-time collaboration	2-3 days	⭐⭐⭐⭐	✅✅✅✅
+Voice to Code	1-2 days	⭐⭐⭐	✅✅✅
+AI Debugging Assistant	1-2 days	⭐⭐⭐	✅✅✅✅
+Version history/autosave	1 day	⭐⭐	✅✅
+Explore Page w/ Forking	1-2 days	⭐⭐⭐	✅✅✅
+Interview Mode	2 days	⭐⭐⭐⭐	✅✅✅✅

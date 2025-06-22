@@ -1,11 +1,12 @@
-// src/components/MainEditor.jsx
+// ✅ src/components/MainEditor.jsx
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
 import jsPDF from "jspdf";
+import { useAuth } from "./AuthContext";
 
 const languages = {
   python:     { name: 'Python',     starter: `print("Hello World")` },
@@ -30,6 +31,7 @@ const MainEditor = () => {
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "vs-dark");
+  const { logout, currentUser } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -74,52 +76,53 @@ const MainEditor = () => {
     setOutput("");
   };
 
-//   const shareCode = () => {
-//     const id = uuidv4();
-//     localStorage.setItem(`shared-${id}`, JSON.stringify({ language, code, userInput }));
-//     window.prompt("🔗 Share this link:", `${window.location.origin}?share=${id}`);
-//   };
-
   const handleThemeToggle = () => {
     setTheme((prev) => (prev === "vs-dark" ? "light" : "vs-dark"));
   };
 
   const downloadPDF = () => {
-  const doc = new jsPDF();
-  const title = `JustCode - ${languages[language].name} Code`;
-  const formattedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  
-  doc.setFontSize(14);
-  doc.text(title, 10, 10);
+    const doc = new jsPDF();
+    const title = `JustCode - ${languages[language].name} Code`;
 
-  let y = 20;
-  const lines = doc.splitTextToSize(code, 180);
-  lines.forEach((line, idx) => {
-    if (y > 280) { // avoid going off page
+    doc.setFontSize(14);
+    doc.text(title, 10, 10);
+
+    let y = 20;
+    const lines = doc.splitTextToSize(code, 180);
+    lines.forEach((line) => {
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+      doc.text(line, 10, y);
+      y += 7;
+    });
+
+    if (userInput.trim()) {
       doc.addPage();
-      y = 10;
+      doc.text("Input Given:", 10, 10);
+      const inputLines = doc.splitTextToSize(userInput, 180);
+      inputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
     }
-    doc.text(line, 10, y);
-    y += 7;
-  });
 
-  if (userInput.trim()) {
-    doc.addPage();
-    doc.text("Input Given:", 10, 10);
-    const inputLines = doc.splitTextToSize(userInput, 180);
-    inputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
-  }
+    if (output.trim()) {
+      doc.addPage();
+      doc.text("Output:", 10, 10);
+      const outputLines = doc.splitTextToSize(output, 180);
+      outputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
+    }
 
-  if (output.trim()) {
-    doc.addPage();
-    doc.text("Output:", 10, 10);
-    const outputLines = doc.splitTextToSize(output, 180);
-    outputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
-  }
+    doc.save(`${languages[language].name}-Code.pdf`);
+  };
 
-  doc.save(`${languages[language].name}-Code.pdf`);
-};
-
+  const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.href = "/";
+    } catch (err) {
+      alert("Logout failed!");
+    }
+  };
 
   return (
     <div className={`app-container ${theme === "vs-dark" ? "dark-theme" : "light-theme"}`}>
@@ -127,9 +130,14 @@ const MainEditor = () => {
       <div className="inner-container">
         <div className="header">
           <h1 className="logo">JustCode 🚀</h1>
-          <button onClick={handleThemeToggle} className="theme-toggle">
-            {theme === "vs-dark" ? <FaSun /> : <FaMoon />}
-          </button>
+          <div className="flex gap-2 items-center">
+            <button onClick={handleThemeToggle} className="theme-toggle">
+              {theme === "vs-dark" ? <FaSun /> : <FaMoon />}
+            </button>
+            {currentUser && (
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
+            )}
+          </div>
         </div>
 
         <div className="toolbar">
@@ -153,7 +161,7 @@ const MainEditor = () => {
           <button onClick={reset} className="btn reset" disabled={loading}>Reset</button>
           <button onClick={downloadPDF} className="btn pdf" disabled={loading}>
             Export as PDF
-            </button>
+          </button>
         </div>
 
         <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />

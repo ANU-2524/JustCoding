@@ -1,35 +1,82 @@
-/* components/Loader.css */
-.loader-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 15, 15, 0.6);
+.login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  min-height: 100vh;
+  background: linear-gradient(to right, #2b1055, #7597de);
+  font-family: Arial, sans-serif;
+  padding: 1rem;
 }
 
-.spinner {
-  border: 6px solid rgba(255, 255, 255, 0.2);
-  border-top: 6px solid #00ff9d;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 0.9s linear infinite;
+.login-form {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
 }
 
-.loader-text {
-  margin-top: 1rem;
+.login-form h2 {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.login-form button {
+  width: 100%;
+  background-color: #ff4b2b;
   color: white;
-  font-size: 1.2rem;
-  font-weight: 500;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.login-form button:hover {
+  background-color: #ff3b1f;
+}
+
+.toggle-mode {
+  text-align: center;
+  margin-top: 1rem;
+  color: #eee;
+}
+
+.toggle-mode span {
+  color: #ffd700;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.google-signin-container {
+  margin-top: 1rem;
+}
+
+.google-button {
+  background-color: white;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.google-button:hover {
+  background-color: #f1f1f1;
 }
