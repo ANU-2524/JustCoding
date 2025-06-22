@@ -1,4 +1,3 @@
-// ✅ src/components/MainEditor.jsx
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
 import { FaSun, FaMoon } from 'react-icons/fa';
@@ -80,7 +79,6 @@ const explainQuestion = async () => {
     setIsExplaining(false);
   }
 };
-
 
 const debugCode = async () => {
   setDebugLoading(true);
@@ -288,7 +286,6 @@ const downloadPDF = () => {
     <pre>{debugResult}</pre>
   </div>
 )}
-
 
         <div className="toolbar">
           <select
