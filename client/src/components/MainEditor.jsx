@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
 import { FaSun, FaMoon } from 'react-icons/fa';
-// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
 import jsPDF from "jspdf";
@@ -23,6 +23,14 @@ const languages = {
 };
 
 const MainEditor = () => {
+
+    const [debugResult, setDebugResult] = useState("");
+    const [debugLoading, setDebugLoading] = useState(false);
+
+    const [questionText, setQuestionText] = useState("");
+    const [explanation, setExplanation] = useState("");
+    const [isExplaining, setIsExplaining] = useState(false);
+  
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "python");
   const [code, setCode] = useState(() =>
@@ -45,6 +53,60 @@ const MainEditor = () => {
       }
     }
   }, []);
+
+const explainQuestion = async () => {
+  if (!questionText.trim()) return alert("Please paste a question first.");
+  setIsExplaining(true);
+
+  // 🧹 Clean old data
+  localStorage.removeItem("question");
+  localStorage.removeItem("explanation");
+
+  try {
+    const res = await fetch("http://localhost:4334/api/gpt/explain", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: questionText }),
+    });
+    const data = await res.json();
+    setExplanation(data.explanation);
+
+    // ✅ Save to localStorage
+    localStorage.setItem("question", questionText);
+    localStorage.setItem("explanation", data.explanation);
+  } catch (err) {
+    setExplanation("Error explaining the question.");
+  } finally {
+    setIsExplaining(false);
+  }
+};
+
+
+const debugCode = async () => {
+  setDebugLoading(true);
+
+  // 🧹 Clean old debug data
+  localStorage.removeItem("debugHelp");
+
+  try {
+    const res = await fetch("http://localhost:4334/api/gpt/debug", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, errorMessage: output }),
+    });
+    const data = await res.json();
+    setDebugResult(data.debugHelp);
+
+    // ✅ Save to localStorage
+    localStorage.setItem("debugHelp", data.debugHelp);
+  } catch (err) {
+    setDebugResult("Error getting debug help.");
+  } finally {
+    setDebugLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     localStorage.setItem(`code-${language}`, code);
@@ -70,50 +132,106 @@ const MainEditor = () => {
     }
   };
 
-  const reset = () => {
-    setCode(languages[language].starter);
-    setUserInput("");
-    setOutput("");
-  };
+const reset = () => {
+  setCode(languages[language].starter);
+  setUserInput("");
+  setOutput("");
+  setExplanation("");
+  setQuestionText("");
+  setDebugResult("");
+
+  // ✅ Clear localStorage items too
+  localStorage.removeItem("question");
+  localStorage.removeItem("explanation");
+  localStorage.removeItem("debugHelp");
+};
 
   const handleThemeToggle = () => {
     setTheme((prev) => (prev === "vs-dark" ? "light" : "vs-dark"));
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    const title = `JustCode - ${languages[language].name} Code`;
+const downloadPDF = () => {
+  const doc = new jsPDF();
+  const title = `JustCode - ${languages[language].name} Code`;
 
-    doc.setFontSize(14);
-    doc.text(title, 10, 10);
+  doc.setFontSize(16);
+  doc.text(title, 10, 10);
 
-    let y = 20;
-    const lines = doc.splitTextToSize(code, 180);
-    lines.forEach((line) => {
-      if (y > 280) {
-        doc.addPage();
-        y = 10;
-      }
+  let y = 20;
+
+  // 1. Question (if available)
+  const question = localStorage.getItem("question");
+  if (question) {
+    doc.setFontSize(12);
+    doc.text("📌 Question:", 10, y);
+    y += 8;
+    const qLines = doc.splitTextToSize(question, 180);
+    qLines.forEach(line => {
       doc.text(line, 10, y);
       y += 7;
     });
+    y += 5;
+  }
 
-    if (userInput.trim()) {
-      doc.addPage();
-      doc.text("Input Given:", 10, 10);
-      const inputLines = doc.splitTextToSize(userInput, 180);
-      inputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
-    }
+  // 2. Explanation (if available)
+  const explanation = localStorage.getItem("explanation");
+  if (explanation) {
+    doc.setFontSize(12);
+    doc.text("💡 Explanation:", 10, y);
+    y += 8;
+    const eLines = doc.splitTextToSize(explanation, 180);
+    eLines.forEach(line => {
+      doc.text(line, 10, y);
+      y += 7;
+    });
+    y += 5;
+  }
 
-    if (output.trim()) {
-      doc.addPage();
-      doc.text("Output:", 10, 10);
-      const outputLines = doc.splitTextToSize(output, 180);
-      outputLines.forEach((line, idx) => doc.text(line, 10, 20 + idx * 7));
-    }
+  // 3. Code
+  doc.setFontSize(12);
+  doc.text("🧠 Code:", 10, y);
+  y += 8;
+  const codeLines = doc.splitTextToSize(code, 180);
+  codeLines.forEach(line => {
+    if (y > 280) { doc.addPage(); y = 10; }
+    doc.text(line, 10, y);
+    y += 7;
+  });
 
-    doc.save(`${languages[language].name}-Code.pdf`);
-  };
+  // 4. Input (if any)
+  if (userInput.trim()) {
+    doc.addPage();
+    y = 10;
+    doc.text("📥 Input:", 10, y);
+    y += 8;
+    const inputLines = doc.splitTextToSize(userInput, 180);
+    inputLines.forEach(line => doc.text(line, 10, y += 7));
+  }
+
+  // 5. Output (if any)
+  if (output.trim()) {
+    doc.addPage();
+    y = 10;
+    doc.text("📤 Output:", 10, y);
+    y += 8;
+    const outputLines = doc.splitTextToSize(output, 180);
+    outputLines.forEach(line => doc.text(line, 10, y += 7));
+  }
+
+  // 6. Debug Help (if available)
+  const debugHelp = localStorage.getItem("debugHelp");
+  if (debugHelp) {
+    doc.addPage();
+    y = 10;
+    doc.text("🛠️ Debug Help:", 10, y);
+    y += 8;
+    const dLines = doc.splitTextToSize(debugHelp, 180);
+    dLines.forEach(line => doc.text(line, 10, y += 7));
+  }
+
+  doc.save(`${languages[language].name}-JustCode-Session.pdf`);
+};
+
 
   const handleLogout = async () => {
     try {
@@ -139,6 +257,38 @@ const MainEditor = () => {
             )}
           </div>
         </div>
+
+
+        <div className="question-section">
+  <textarea
+    className="input-box"
+    rows={3}
+    placeholder="Paste your question (optional)"
+    value={questionText}
+    onChange={(e) => setQuestionText(e.target.value)}
+  />
+  <button className="btn explain" onClick={explainQuestion}>
+    {isExplaining ? "Explaining..." : "Explain This Question"}
+  </button>
+  {explanation && (
+    <div className="explanation-box">
+      <h3>🧠 Explanation:</h3>
+      <p>{explanation}</p>
+    </div>
+  )}
+</div>
+
+<button className="btn debug" onClick={debugCode}>
+  {debugLoading ? "Debugging..." : "Debug My Code"}
+</button>
+
+{debugResult && (
+  <div className="debug-result">
+    <h3>🛠️ Debug Suggestion:</h3>
+    <pre>{debugResult}</pre>
+  </div>
+)}
+
 
         <div className="toolbar">
           <select

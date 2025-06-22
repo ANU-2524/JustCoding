@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const gptRoute = require("./routes/gptRoute.js") ;
+
 const app = express();
 
 app.use(cors());
@@ -20,6 +22,7 @@ const languageMap = {
   rust:       { ext: 'rs',    version: '1.68.2' },
 };
 
+app.use("/api/gpt", gptRoute);
 app.post('/compile', async (req, res) => {
   const { language, code, stdin } = req.body;
 

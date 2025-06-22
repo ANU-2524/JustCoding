@@ -7,6 +7,23 @@ body, html {
   font-family: "Segoe UI", sans-serif;
 }
 
+.explanation-box,
+.debug-result {
+  background: #f2f2f2;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+}
+
+.btn.explain, .btn.debug {
+  background: #3498db;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+
 .app-container {
   min-height: 100vh;
   transition: background-color 0.3s ease;
