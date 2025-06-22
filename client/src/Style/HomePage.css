@@ -1,0 +1,149 @@
+/* src/pages/HomePage.css */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #e233ff, #ff6b00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.emoji {
+  font-size: 0.7em;
+  margin-left: 8px;
+  vertical-align: middle;
+  opacity: 0.9;
+}
+
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1b1b2f);
+  background-size: 400% 400%;
+  animation: bgShift 12s ease infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.gradient-text {
+  font-family: 'Fira Code', monospace;
+}
+
+.btn.start:hover {
+  background-color: #a4508b;
+  box-shadow: 0 0 15px #ff6b6b;
+}
+
+.glass-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(138, 43, 226, 0.4);
+  transition: all 0.4s ease;
+}
+.glass-box:hover {
+  transform: scale(1.015);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 0, 255, 0.5);
+}
+
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #dddddd;
+  margin-bottom: 30px;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn.start {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  color: white;
+  border: none;
+}
+
+.btn.start:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 15px #8e2de2;
+}
+
+.btn.github {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #ffffff30;
+  color: white;
+}
+
+.btn.github:hover {
+  background: #ffffff10;
+  box-shadow: 0 0 12px #fff;
+}
+
+.tagline {
+  margin-top: 50px;
+  font-size: 0.9rem;
+  color: #bbb;
+  font-style: italic;
+  animation: slideUp 1.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

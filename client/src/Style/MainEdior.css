@@ -1,0 +1,107 @@
+/* @import "tailwindcss"; */
+/* App.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.app-container {
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+.light-theme {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.dark-theme {
+  background-color: #0d0d0d;
+  color: #ffffff;
+}
+
+.inner-container {
+  max-width: 960px;
+  margin: auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #ff3b3f;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.select-lang {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn.run {
+  background-color: #2563eb;
+}
+
+.btn.reset {
+  background-color: #6b7280;
+}
+
+.btn.share {
+  background-color: #16a34a;
+}
+
+.input-box {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.output-box {
+  background-color: #1f2937;
+  color: #22c55e;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  white-space: pre-wrap;
+}
+
+.btn.pdf {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  margin-left: 10px;
+}
