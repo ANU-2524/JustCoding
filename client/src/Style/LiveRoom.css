@@ -1,0 +1,290 @@
+/* src/Style/LiveRoom.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.live-room-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f6f8fa;
+}
+
+/* Fix the horizontal overflow and add proper structure */
+body, html {
+  overflow-x: hidden;
+}
+
+.live-room-container {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.editor-panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.CodeMirror {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.chat-panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.chat-messages {
+  overflow-y: auto;
+  max-height: 300px;
+  margin-bottom: 10px;
+  padding-right: 8px;
+}
+
+/* Optional: Scroll for ai-sections if needed */
+.ai-sections {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 1000px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-panel {
+    margin-top: 20px;
+  }
+}
+
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #24292e;
+  color: white;
+  padding: 10px 20px;
+}
+
+.room-title span {
+  color: #58a6ff;
+}
+
+.leave-btn {
+  background: #e63946;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  padding: 15px;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.editor-panel {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.toolbar select,
+.toolbar button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.CodeMirror {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.ai-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.ai-box {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.ai-box h4 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.ai-box textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.ai-box button {
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ai-response {
+  background: #f1f5f9;
+  margin-top: 8px;
+  padding: 8px;
+  border-left: 4px solid #3b82f6;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+.chat-panel {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.chat-heading {
+  margin-bottom: 10px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+  padding: 8px;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.chat-messages div {
+  margin-bottom: 6px;
+}
+
+.typing-notification {
+  font-style: italic;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.chat-panel input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.chat-panel button {
+  align-self: flex-end;
+  padding: 6px 12px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-btn.leave {
+  background: #ef4444;
+  color: white;
+}
+
+.modal-btn.cancel {
+  background: #10b981;
+  color: white;
+}

@@ -1,31 +1,74 @@
+// ✅ BACKEND: server.js (or index.js)
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const gptRoute = require("./routes/gptRoute.js") ;
+const http = require("http");
+const { Server } = require("socket.io");
+const gptRoute = require("./routes/gptRoute.js");
 
 const app = express();
+const server = http.createServer(app);
 
-app.use(cors());
+const userMap = {}; // ✅ Store { socketId: { username, roomId } }
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json());
 
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("User connected", socket.id);
+
+  socket.on("join-room", ({ roomId, username }) => {
+    socket.join(roomId);
+    console.log(`${username} joined room ${roomId}`);
+    userMap[socket.id] = { username, roomId };
+    socket.to(roomId).emit("user-joined", `${username} joined the room`);
+  });
+
+  socket.on("code-change", ({ roomId, code }) => {
+    socket.to(roomId).emit("code-update", code);
+  });
+
+  socket.on("send-chat", ({ roomId, username, message }) => {
+    socket.to(roomId).emit("receive-chat", { username, message });
+  });
+
+  socket.on("typing", ({ roomId, username }) => {
+    socket.to(roomId).emit("show-typing", `${username} is typing...`);
+  });
+
+  socket.on("disconnect", () => {
+    const user = userMap[socket.id];
+    if (user) {
+      const { username, roomId } = user;
+      socket.to(roomId).emit("user-left", `${username} left the room`);
+      delete userMap[socket.id];
+    }
+    console.log("User disconnected", socket.id);
+  });
+});
+
+// Optional GPT and Compiler routes
 const languageMap = {
-  python:     { ext: 'py',    version: '3.10.0' },
-  cpp:        { ext: 'cpp',   version: '10.2.0' },
-  java:       { ext: 'java',  version: '15.0.2' },
-  javascript: { ext: 'js',    version: '18.15.0' },
-  typescript: { ext: 'ts',    version: '5.0.3' },
-  c:          { ext: 'c',     version: '10.2.0' },
-  go:         { ext: 'go',    version: '1.16.2' },
-  ruby:       { ext: 'rb',    version: '3.0.1' },
-  php:        { ext: 'php',   version: '8.2.3' },
-  swift:      { ext: 'swift', version: '5.3.3' },
-  rust:       { ext: 'rs',    version: '1.68.2' },
+  javascript: { ext: 'js', version: '18.15.0' },
+  python:     { ext: 'py', version: '3.10.0' },
+  java:       { ext: 'java', version: '15.0.2' },
+  cpp:        { ext: 'cpp', version: '10.2.0' },
 };
 
 app.use("/api/gpt", gptRoute);
+
 app.post('/compile', async (req, res) => {
   const { language, code, stdin } = req.body;
-
   const langInfo = languageMap[language];
   if (!langInfo) return res.status(400).json({ error: 'Unsupported language' });
 
@@ -33,35 +76,17 @@ app.post('/compile', async (req, res) => {
     const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
       language,
       version: langInfo.version,
-      stdin,  
-      files: [
-        {
-          name: `main.${langInfo.ext}`,
-          content: code,
-        },
-      ],
+      stdin,
+      files: [{ name: `main.${langInfo.ext}`, content: code }],
     });
 
-    const result = response.data;
-
-    res.json({
-      output: result.run.stdout || result.run.stderr || "No output",
-    });
+    res.json({ output: response.data.run.stdout || response.data.run.stderr || "No output" });
   } catch (error) {
-    console.error("Piston Error:", error.response?.data || error.message);
-    res.status(500).json({
-      error: 'Execution failed',
-      details: error.response?.data || error.message,
-    });
+    console.error("Compile Error:", error);
+    res.status(500).json({ error: 'Execution failed', details: error.message });
   }
 });
 
+app.get('/', (req, res) => res.send('🔥 JustCode backend running'));
 
-app.get('/', (req, res) => {
-  res.send('🔥 JustCode backend running with Piston');
-});
-
-const PORT = 4334;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+server.listen(4334, () => console.log("✅ Server running on http://localhost:4334"));

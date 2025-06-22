@@ -1,6 +1,6 @@
-/* MainEditor.css – Confident Grey-Orange Alignment with Elegance */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
 
+/* Root Theme Variables */
 :root {
   --bg-dark: #1e1e1e;
   --bg-light: #f7f7f7;
@@ -13,63 +13,54 @@
   --border-glow: rgba(255, 111, 60, 0.3);
 }
 
-:root.dark {
+/* Scoped Theme Switches */
+:root.dark .main-editor {
   background-color: var(--bg-dark);
   color: var(--text-dark);
 }
-
-:root.light {
+:root.light .main-editor {
   background-color: var(--bg-light);
   color: var(--text-light);
 }
 
-:root.dark .app-container {
-  background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
-}
-
-:root.light .app-container {
-  background: linear-gradient(135deg, #ffffff, #f0f0f0);
-}
-
-:root.light .inner-container {
+:root.light .main-editor .editor-wrapper {
   background: var(--glass-light);
   color: var(--text-light);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-:root.light .select-lang {
+:root.light .main-editor .select-lang {
   background: #e0e0e0;
   color: var(--text-light);
 }
-
-:root.light .input-box,
-:root.light .output-box {
+:root.light .main-editor .input-box,
+:root.light .main-editor .output-box {
+  margin: 2px;
   background: rgba(0, 0, 0, 0.04);
   color: #222;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
-
-:root.light .btn {
+:root.light .main-editor .btn {
   background-color: var(--accent-light);
-  color: #1e1e1e;
+  color: var(--text-light);
 }
 
+/* ---------------- Core Layout ---------------- */
 
-
-.app-container {
+.main-editor {
+  font-family: 'Space Grotesk', sans-serif;
+  background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
-  font-family: 'Space Grotesk', sans-serif;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
-.inner-container {
+.main-editor .editor-wrapper {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1100px;
   background: var(--glass);
   padding: 2rem;
   border-radius: 16px;
@@ -79,9 +70,12 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  color: var(--text-dark);
 }
 
-.header {
+/* ---------------- Header ---------------- */
+
+.main-editor .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -89,13 +83,13 @@
   padding-bottom: 1rem;
 }
 
-.logo {
+.main-editor .logo {
   font-size: 2.2rem;
   font-weight: 700;
   color: var(--accent);
 }
 
-.theme-toggle {
+.main-editor .theme-toggle {
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -103,9 +97,8 @@
   cursor: pointer;
 }
 
-.logout-btn {
-  background-color:#d95605
-;
+.main-editor .logout-btn {
+  background-color: #e5600d;
   color: white;
   border: none;
   padding: 8px 18px;
@@ -115,29 +108,30 @@
   margin-left: 12px;
   transition: background 0.3s ease;
 }
-
-.logout-btn:hover {
+.main-editor .logout-btn:hover {
   background-color: #898686;
 }
 
-.toolbar {
+/* ---------------- Toolbar ---------------- */
+
+.main-editor .toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
 }
 
-.select-lang {
+.main-editor .select-lang {
   padding: 0.6rem 1.2rem;
   border-radius: 10px;
   border: none;
-  background: #2f2f2f;
-  color: var(--text);
+  background: #121111;
+  color: var(--text-dark);
   font-weight: 500;
   min-width: 180px;
 }
 
-.btn {
+.main-editor .btn {
   background-color: var(--accent);
   border: none;
   color: #1e1e1e;
@@ -150,55 +144,58 @@
   min-width: 140px;
   text-align: center;
 }
-
-.btn:hover {
+.main-editor .btn:hover {
   background-color: var(--accent-light);
   transform: translateY(-2px);
 }
 
-.input-box,
-.output-box {
+/* ---------------- Code & Output ---------------- */
+
+.main-editor .input-box,
+.main-editor .output-box {
   width: 100%;
   padding: 1.2rem;
   background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
+  color: var(--text-dark);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   font-family: monospace;
   font-size: 0.95rem;
 }
 
-textarea.input-box {
+.main-editor textarea.input-box {
   background-color: rgba(129, 130, 129, 0.4);
   resize: vertical;
   min-height: 100px;
 }
-  
-pre.output-box {
+
+.main-editor pre.output-box {
   white-space: pre-wrap;
   word-break: break-word;
   background-color: rgba(30, 30, 30, 0.4);
   margin-top: 1rem;
 }
 
-.question-section {
+/* ---------------- Debug / Explanation ---------------- */
+
+.main-editor .question-section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-top: 1rem;
 }
 
-.explanation-box,
-.debug-result {
+.main-editor .explanation-box,
+.main-editor .debug-result {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem;
   border-radius: 12px;
-  color: var(--text);
+  color: var(--text-dark);
 }
 
-.explanation-box h3,
-.debug-result h3 {
+.main-editor .explanation-box h3,
+.main-editor .debug-result h3 {
   color: var(--accent);
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
@@ -207,13 +204,15 @@ pre.output-box {
   padding-bottom: 4px;
 }
 
+/* ---------------- Responsive ---------------- */
+
 @media (max-width: 768px) {
-  .toolbar {
+  .main-editor .toolbar {
     flex-direction: column;
     align-items: stretch;
   }
-  .select-lang,
-  .btn {
+  .main-editor .select-lang,
+  .main-editor .btn {
     width: 100%;
   }
 }

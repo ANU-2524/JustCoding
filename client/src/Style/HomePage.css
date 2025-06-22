@@ -4,6 +4,39 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.btn {
+  background-color: var(--accent);
+  border: none;
+  color: #1e1e1e;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 111, 60, 0.4);
+  min-width: 140px;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn:hover {
+  background-color: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+/* Optional: Specific style for .btn.live */
+.btn.live {
+  background-color: #f34e1e;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(243, 78, 30, 0.6);
+}
+
+.btn.live:hover {
+  background-color: #ff7039;
+}
+
+
 .gradient-text {
   background: linear-gradient(to right, #e233ff, #ff6b00);
   -webkit-background-clip: text;
@@ -112,6 +145,8 @@ body {
   border: 2px solid #ffffff30;
   color: white;
 }
+
+
 
 .btn.github:hover {
   background: #ffffff10;

@@ -231,6 +231,8 @@ const downloadPDF = () => {
   };
 
   return (
+    <div className="main-editor">
+    <div className="editor-wrapper">
     <div className={`app-container ${theme === "vs-dark" ? "dark-theme" : "light-theme"}`}>
       {loading && <Loader />}
       <div className="inner-container">
@@ -257,6 +259,7 @@ const downloadPDF = () => {
   <button className="btn explain" onClick={explainQuestion}>
     {isExplaining ? "Explaining..." : "Explain This Question"}
   </button>
+
   {explanation && (
     <div className="explanation-box">
       <h3>🧠 Explanation:</h3>
@@ -265,9 +268,10 @@ const downloadPDF = () => {
   )}
 </div>
 
-<button className="btn debug" onClick={debugCode}>
+<button className="btn debug" style={{ marginTop: "8px" }} onClick={debugCode}>
   {debugLoading ? "Debugging..." : "Debug My Code"}
 </button>
+
 
 {debugResult && (
   <div className="debug-result">
@@ -311,6 +315,9 @@ const downloadPDF = () => {
         ></textarea>
 
         <pre className="output-box">{output}</pre>
+      </div>
+    </div>
+
       </div>
     </div>
   );

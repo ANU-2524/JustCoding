@@ -1,11 +1,13 @@
+// src/components/LoginPage.jsx
 import React, { useState } from "react";
 import { auth, provider } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  browserPopupRedirectResolver
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // ✅ Added useLocation
 import "../Style/LoginPage.css";
 import { FcGoogle } from "react-icons/fc";
 
@@ -14,15 +16,18 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ used to detect original page
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      navigate("/editor");
-    } catch (err) {
-      alert(err.message);
-    }
-  };
+  const from = location.state?.from?.pathname || "/editor"; // 👈 default to /editor if no previous page
+
+const handleGoogleSignIn = async () => {
+  try {
+    await signInWithPopup(auth, provider); // ✅ set resolver
+    navigate(from); // take back to /editor or intended route
+  } catch (err) {
+    alert(err.message);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +37,7 @@ const LoginPage = () => {
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
-      navigate("/editor");
+      navigate(from); // ✅ Go back to previous route
     } catch (error) {
       alert(error.message);
     }
@@ -68,13 +73,12 @@ const LoginPage = () => {
         </p>
       </form>
 
-     <div className="google-signin-container">
-  <button className="google-button" onClick={handleGoogleSignIn}>
-    <FcGoogle size={20} style={{ marginRight: "8px" }} />
-    Sign in with Google
-  </button>
-</div>
-
+      <div className="google-signin-container">
+        <button className="google-button" onClick={handleGoogleSignIn}>
+          <FcGoogle size={20} style={{ marginRight: "8px" }} />
+          Sign in with Google
+        </button>
+      </div>
     </div>
   );
 };
