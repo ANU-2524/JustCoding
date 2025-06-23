@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&display=swap');
+
+:root {
+  --accent: #ff6f3c;
+  --accent-light: #ffa86f;
+  --bg-dark: #1e1e1e;
+  --text-light: #f0f0f0;
+}
+
+.join-room-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+  font-family: 'Space Grotesk', sans-serif;
+  padding: 2rem;
+}
+
+.join-room-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 25px rgba(255, 111, 60, 0.2);
+  text-align: center;
+  color: var(--text-light);
+}
+
+.room-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+.room-subtitle {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #ccc;
+}
+
+.room-input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.room-input::placeholder {
+  color: #bbbbbb;
+}
+
+.room-button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.btnn {
+  flex: 1;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 111, 60, 0.3);
+}
+
+.room-join {
+  background: var(--accent);
+  color: #1e1e1e;
+}
+
+.room-create {
+  background: var(--accent-light);
+  color: #1e1e1e;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}

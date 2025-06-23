@@ -304,17 +304,22 @@ const downloadPDF = () => {
           </button>
         </div>
 
-        <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />
+        <div className="editor-output-wrapper">
+  <div className="code-editor-column">
+    <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />
+  </div>
 
-        <textarea
-          className="input-box"
-          rows={3}
-          placeholder="Enter input values !!"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-        ></textarea>
-
-        <pre className="output-box">{output}</pre>
+  <div className="output-column">
+    <textarea
+      className="input-box"
+      rows={5}
+      placeholder="Enter input values !!"
+      value={userInput}
+      onChange={(e) => setUserInput(e.target.value)}
+    ></textarea>
+    <pre className="output-box">{output}</pre>
+  </div>
+</div>
       </div>
     </div>
 

@@ -16,6 +16,7 @@
     "@uiw/codemirror-theme-eclipse": "^4.23.13",
     "@uiw/react-codemirror": "^4.23.13",
     "firebase": "^11.9.1",
+    "framer-motion": "^12.18.1",
     "jspdf": "^3.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
