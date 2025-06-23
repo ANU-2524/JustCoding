@@ -7,7 +7,7 @@ Ever been stuck in a coding bug spiral or felt too shy to ask for help?
 ---
 
 ## 🔗 Live Demo  
-🌐 [https://just-coding-theta.vercel.app](https://just-coding-theta.vercel.appppp)
+🌐 [JustCode HERE !](https://just-coding-theta.vercel.app)
 
 ---
 
