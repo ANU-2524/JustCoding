@@ -227,6 +227,13 @@
   margin: 7px;
 }
 
+.debug-result{
+   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-x: auto;
+}
+
 .main-editor .explanation-box h3,
 .main-editor .debug-result h3 {
   color: var(--accent);
