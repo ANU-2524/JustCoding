@@ -51,26 +51,26 @@
   color: var(--text-dark);
 }
 :root.light .main-editor {
-  background-color: var(--bg-light);
+  background-color: whitesmoke;
   color: var(--text-light);
 }
 
 :root.light .main-editor .editor-wrapper {
   background: var(--glass-light);
   color: var(--text-light);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(245, 133, 4, 0.867);
+  border: 1px solid rgba(237, 139, 42, 0.981);
 }
 
 :root.light .main-editor .select-lang {
-  background: #e0e0e0;
+  background: #464545;
   color: var(--text-light);
 }
 :root.light .main-editor .input-box,
 :root.light .main-editor .output-box {
   margin: 2px;
-  background: rgba(0, 0, 0, 0.04);
-  color: #222;
+  background: rgb(101, 100, 100);
+  color: #fefcfc;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 :root.light .main-editor .btn {
@@ -82,7 +82,7 @@
 
 .main-editor {
   font-family: 'Space Grotesk', sans-serif;
-  background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+  background: linear-gradient(135deg, #2a2a2a, #403e3e);
   min-height: 100vh;
   padding: 2rem;
   display: flex;
@@ -204,7 +204,7 @@
 .main-editor pre.output-box {
   white-space: pre-wrap;
   word-break: break-word;
-  background-color: rgba(30, 30, 30, 0.4);
+  background-color: rgba(98, 95, 95, 0.4);
   margin-top: 1rem;
 }
 

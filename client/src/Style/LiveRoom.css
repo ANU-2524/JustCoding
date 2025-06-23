@@ -10,7 +10,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f6f8fa;
+  background: #bad4ee4e;
 }
 
 /* Fix the horizontal overflow and add proper structure */
@@ -38,6 +38,7 @@ body, html {
 }
 
 .editor-panel {
+  /* border-left: 2px solid rgb(91, 180, 224) !important;  */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -48,6 +49,14 @@ body, html {
   max-width: 100%;
   overflow-x: auto;
   border-radius: 6px;
+}
+
+.cm-editor .cm-cursor {
+  border-left: 2px solid navy !important;
+}
+
+.cm-content {
+  caret-color: navy !important;
 }
 
 .chat-panel {

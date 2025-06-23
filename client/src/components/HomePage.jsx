@@ -12,7 +12,7 @@ const HomePage = () => {
       <div className="glass-box">
         <h1 className="title">
           <span className="gradient-text">JustCoding...</span>
-          <span className="emoji">💻🔥</span>
+          {/* <span className="emoji">💻🔥</span> */}
         </h1>
 
         <p className="subtitle">Where code meets creativity ✨</p>

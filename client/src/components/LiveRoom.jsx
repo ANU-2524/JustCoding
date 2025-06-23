@@ -120,7 +120,7 @@ const LiveRoom = () => {
   return (
     <div className="live-room-container">
       <div className="top-bar">
-        <h2 className="room-title">👨‍💻 DevZone ID: <span>{roomId}</span></h2>
+        <h2 className="room-title">👩‍💻🧑‍💻 DevZone ID: <span>{roomId}</span></h2>
         <button className="leave-btn" onClick={() => setShowModal(true)}>🚪 Leave Room</button>
       </div>
 
