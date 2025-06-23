@@ -62,7 +62,7 @@ const explainQuestion = async () => {
   localStorage.removeItem("explanation");
 
   try {
-    const res = await fetch("http://localhost:4334/api/gpt/explain", {
+    const res = await fetch("https://justcoding.onrender.com/api/gpt/explain", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: questionText }),
@@ -86,7 +86,7 @@ const debugCode = async () => {
   localStorage.removeItem("debugHelp");
 
   try {
-    const res = await fetch("http://localhost:4334/api/gpt/debug", {
+    const res = await fetch("https://justcoding.onrender.com/api/gpt/debug", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, errorMessage: output }),
@@ -114,7 +114,7 @@ document.documentElement.classList.add(theme === "vs-dark" ? "dark" : "light");
   const runCode = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4334/compile", {
+      const res = await fetch("https://justcoding.onrender.com/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language, code, stdin: userInput }),

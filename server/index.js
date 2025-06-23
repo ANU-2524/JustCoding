@@ -89,4 +89,4 @@ app.post('/compile', async (req, res) => {
 
 app.get('/', (req, res) => res.send('🔥 JustCode backend running'));
 
-server.listen(4334, () => console.log("✅ Server running on http://localhost:4334"));
+server.listen(4334, () => console.log("✅ Server running on https://justcoding.onrender.com"));

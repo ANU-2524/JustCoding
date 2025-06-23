@@ -46,7 +46,7 @@ const LiveRoom = () => {
   const [debugLoading, setDebugLoading] = useState(false);
 
   useEffect(() => {
-    socket.current = io("http://localhost:4334");
+    socket.current = io("https://justcoding.onrender.com");
     socket.current.emit("join-room", { roomId, username });
 
     socket.current.on("code-update", setCode);
@@ -90,7 +90,7 @@ const LiveRoom = () => {
 
   const runCode = async () => {
     try {
-      const res = await fetch("http://localhost:4334/compile", {
+      const res = await fetch("https://justcoding.onrender.com/compile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language, code, stdin: userInput }),
