@@ -6,6 +6,11 @@ Ever been stuck in a coding bug spiral or felt too shy to ask for help?
 
 ---
 
+## 🔗 Live Demo  
+🌐 [https://just-coding-theta.vercel.app](https://just-coding-theta.vercel.appppp)
+
+---
+
 ## 🚀 What is JustCode?
 
 JustCode is a powerful, all-in-one online code editor made for developers, students, and curious minds. It’s more than just a code runner — it’s your debugging buddy, your AI-powered teacher, and your live collaboration hub.
@@ -53,10 +58,10 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 
 ## 🧪 Tech Stack (Because we love this stuff)
 
-- **Frontend**: React.js + Tailwind CSS + Framer Motion
-- **Backend**: Node.js + Express.js
-- **Database**: MongoDB Atlas
-- **AI**: OpenAI GPT APIs (explain + debug)
+- **Frontend**: React.js + Tailwind CSS + Framer Motion + Firebase
+- **Backend**: Node.js + Express.js  
+- **Database**: MongoDB Atlas  
+- **AI**: OpenAI GPT APIs (explain + debug)  
 - **Utilities**: jsPDF, UUID, Socket.io
 
 ---
