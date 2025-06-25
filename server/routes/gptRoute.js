@@ -3,86 +3,69 @@ const dotenv = require("dotenv");
 const router = express.Router();
 dotenv.config();
 
-// Node-fetch for CommonJS
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const HF_TOKEN = process.env.HF_TOKEN;
+const HF_MODEL_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf";
 
+// ✅ EXPLAIN Route
 router.post("/explain", async (req, res) => {
   const { question } = req.body;
-
-  if (!question) {
-    return res.status(400).json({ error: "❌ Missing 'question' in request body." });
-  }
+  if (!question) return res.status(400).json({ error: "Missing question" });
 
   try {
-    const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const result = await fetch(HF_MODEL_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${HF_TOKEN}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [
-          {
-            role: "user",
-            content: `Explain this programming question in very simple terms:\n\n${question}`,
-          },
-        ],
+        inputs: `Explain this programming question simply: ${question}`,
+        parameters: {
+          max_new_tokens: 200,
+          temperature: 0.7,
+        },
       }),
     });
 
     const data = await result.json();
 
-    if (!data || !data.choices || !data.choices[0]?.message?.content) {
-      console.error("❌ Invalid OpenRouter response:", JSON.stringify(data, null, 2));
-      return res.json({ explanation: "💡 No explanation available." });
-    }
-
-    const reply = data.choices[0].message.content.trim();
-    res.json({ explanation: reply });
+    const reply = data?.generated_text || "💡 No explanation available.";
+    res.json({ explanation: reply.trim() });
   } catch (err) {
-    console.error("❌ Error fetching explanation from OpenRouter:", err);
-    res.status(500).json({ error: "Failed to get explanation." });
+    console.error("❌ Hugging Face explain error:", err);
+    res.status(500).json({ error: "Failed to fetch explanation" });
   }
 });
 
+// ✅ DEBUG Route
 router.post("/debug", async (req, res) => {
   const { code, errorMessage } = req.body;
-
-  if (!code) {
-    return res.status(400).json({ error: "❌ Missing 'code' in request body." });
-  }
+  if (!code) return res.status(400).json({ error: "Missing code" });
 
   try {
-    const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const result = await fetch(HF_MODEL_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${HF_TOKEN}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [
-          {
-            role: "user",
-            content: `Please help me debug this code:\n\n${code}\n\nError Message (if any):\n${errorMessage || "No specific error"}\n\nExplain what's wrong and suggest a fix.`,
-          },
-        ],
+        inputs: `Please help debug the following code:\n\n${code}\n\nError message:\n${errorMessage || "None"}\n\nExplain the issue and fix it.`,
+        parameters: {
+          max_new_tokens: 300,
+          temperature: 0.7,
+        },
       }),
     });
 
     const data = await result.json();
 
-    if (!data || !data.choices || !data.choices[0]?.message?.content) {
-      console.error("❌ Invalid OpenRouter debug response:", JSON.stringify(data, null, 2));
-      return res.json({ debugHelp: "🐞 No debugging help available." });
-    }
-
-    const reply = data.choices[0].message.content.trim();
-    res.json({ debugHelp: reply });
+    const reply = data?.generated_text || "🐞 No debug help available.";
+    res.json({ debugHelp: reply.trim() });
   } catch (err) {
-    console.error("❌ Error fetching debug help from OpenRouter:", err);
-    res.status(500).json({ error: "Failed to get debug help." });
+    console.error("❌ Hugging Face debug error:", err);
+    res.status(500).json({ error: "Failed to fetch debug help" });
   }
 });
 
