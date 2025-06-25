@@ -45,6 +45,76 @@ body, html {
   min-width: 0;
 }
 
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
+  padding: 10px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  min-height: 200px;
+  max-height: 200px;
+  background: #fafafa;
+}
+
+.typing-notification {
+  height: 20px;
+  color: #666;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.chat-panel input[type="text"] {
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.chat-panel button {
+  margin-top: 5px;
+}
+
+.ai-sections {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.ai-box {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.ai-box textarea {
+  width: 100%;
+  min-height: 60px;
+  margin-top: 5px;
+  padding: 6px;
+}
+
+.ai-response {
+  margin-top: 10px;
+  background: #eef;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+
 .CodeMirror {
   max-width: 100%;
   overflow-x: auto;

@@ -1,26 +1,26 @@
-// Updated LiveRoom.jsx with cleaner structure, better alignment and classNames
-
+// ✅ Your original imports
 import React, { useEffect, useState, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { eclipse } from '@uiw/codemirror-theme-eclipse';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import OpenAIService from './OpenAIService';
+import { getExplanation, getDebugSuggestion } from './OpenAIService';
 import '../Style/LiveRoom.css';
 
+// ✅ Language starter code
 const languages = {
-  python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
+  python: { name: 'Python', starter: `print("Hello World")` },
+  cpp: { name: 'C++', starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
+  java: { name: 'Java', starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
   javascript: { name: 'JavaScript', starter: `console.log("Hello World");` },
   typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
-  c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
-  ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
-  php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
-  swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
-  rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
+  c: { name: 'C', starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
+  go: { name: 'Go', starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
+  ruby: { name: 'Ruby', starter: `puts "Hello Ruby"` },
+  php: { name: 'PHP', starter: `<?php\necho "Hello PHP";` },
+  swift: { name: 'Swift', starter: `print("Hello Swift")` },
+  rust: { name: 'Rust', starter: `fn main() {\n  println!("Hello Rust");\n}` }
 };
 
 const LiveRoom = () => {
@@ -44,6 +44,8 @@ const LiveRoom = () => {
   const [explanation, setExplanation] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
   const [debugLoading, setDebugLoading] = useState(false);
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     socket.current = io("https://justcoding.onrender.com");
@@ -69,6 +71,10 @@ const LiveRoom = () => {
 
     return () => socket.current.disconnect();
   }, [roomId, username]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleCodeChange = (value) => {
     setCode(value);
@@ -102,20 +108,21 @@ const LiveRoom = () => {
     }
   };
 
-  const explainQuestion = async () => {
-    if (!questionText.trim()) return;
-    setIsExplaining(true);
-    const result = await OpenAIService(`Explain this question: ${questionText}`);
-    setExplanation(result);
-    setIsExplaining(false);
-  };
+const explainQuestion = async () => {
+  if (!questionText.trim()) return;
+  setIsExplaining(true);
+  const result = await getExplanation(questionText);
+  setExplanation(result);
+  setIsExplaining(false);
+};
 
-  const debugCode = async () => {
-    setDebugLoading(true);
-    const result = await OpenAIService(`Debug this code: ${code}\nOutput/Error: ${output}`);
-    setDebugResult(result);
-    setDebugLoading(false);
-  };
+
+const debugCode = async () => {
+  setDebugLoading(true);
+  const result = await getDebugSuggestion(code, output);
+  setDebugResult(result);
+  setDebugLoading(false);
+};
 
   return (
     <div className="live-room-container">
@@ -185,8 +192,9 @@ const LiveRoom = () => {
             {messages.map((msg, i) => (
               <div key={i}><strong>{msg.username}:</strong> {msg.message}</div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
-          {typingNotification && <p className="typing-notification">{typingNotification}</p>}
+          <p className="typing-notification">{typingNotification}</p>
           <input
             type="text"
             value={chatInput}
@@ -197,7 +205,7 @@ const LiveRoom = () => {
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Drop code or jokes... your call 😄"
           />
-          <button onClick={handleSendMessage}>Send  </button>
+          <button onClick={handleSendMessage}>Send</button>
         </div>
       </div>
 

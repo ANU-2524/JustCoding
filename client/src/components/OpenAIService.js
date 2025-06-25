@@ -1,35 +1,32 @@
-const OpenAIService = async (promptText) => {
+const BASE_URL = import.meta.env.VITE_BACKEND_URL + "/api/gpt";
+
+export const getExplanation = async (question) => {
   try {
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-
-    if (!apiKey) {
-      throw new Error("❌ Missing API key: VITE_OPENROUTER_API_KEY not found in environment.");
-    }
-
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const res = await fetch(`${BASE_URL}/explain`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:5173", // Optional but recommended
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [{ role: "user", content: promptText }],
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
     });
-
-    const data = await response.json();
-
-    if (data?.choices?.[0]?.message?.content) {
-      return data.choices[0].message.content.trim();
-    } else {
-      return "🤖 AI Assistant didn’t respond with a valid message.";
-    }
+    const data = await res.json();
+    return data.explanation || "🤖 No explanation available.";
   } catch (err) {
-    console.error("OpenRouter API error:", err);
-    return "⚠️ AI assistant failed to respond.";
+    console.error("❌ Explanation API error:", err);
+    return "⚠️ AI failed to explain.";
   }
 };
 
-export default OpenAIService;
+export const getDebugSuggestion = async (code, errorMessage) => {
+  try {
+    const res = await fetch(`${BASE_URL}/debug`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, errorMessage }),
+    });
+    const data = await res.json();
+    return data.debugHelp || "🐞 No debugging suggestion found.";
+  } catch (err) {
+    console.error("❌ Debug API error:", err);
+    return "⚠️ AI failed to debug.";
+  }
+};
+
