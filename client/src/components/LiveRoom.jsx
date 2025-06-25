@@ -165,7 +165,7 @@ const debugCode = async () => {
                 onChange={(e) => setQuestionText(e.target.value)}
               />
               <button onClick={explainQuestion}>{isExplaining ? "Explaining..." : "Ask AI"}</button>
-              {explanation && <p className="ai-response">💡 {explanation}</p>}
+              {explanation && <p className="ai-response">{explanation}</p>}
             </div>
 
             <div className="ai-box">
