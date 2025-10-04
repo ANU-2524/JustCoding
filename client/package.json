@@ -15,6 +15,7 @@
     "@tailwindcss/cli": "^4.1.10",
     "@uiw/codemirror-theme-eclipse": "^4.23.13",
     "@uiw/react-codemirror": "^4.23.13",
+    "editor": "^1.0.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.18.1",
     "jspdf": "^3.0.1",
