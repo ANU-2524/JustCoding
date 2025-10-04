@@ -1,11 +1,14 @@
 import React from 'react';
 import '../Style/Loader.css';
 
-const Loader = () => {
+const Loader = ({ message }) => {
   return (
     <div className="loader-overlay">
-      <div className="spinner"></div>
-      <p className="loader-text">Running your code...</p>
+      <div className="loader-spinner"></div>
+      <p className="loader-message">{message || "Loading..."}</p>
+      <p className="loader-hint">
+        Please wait...
+      </p>
     </div>
   );
 };

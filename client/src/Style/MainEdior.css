@@ -217,6 +217,47 @@
   font-size: 0.9rem;
 }
 
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-message {
+  margin-top: 1.5rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.loader-hint {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
 .main-editor .btn:hover {
   background-color: var(--accent-orange);
   box-shadow: 0 4px 16px rgba(212, 88, 31, 0.6);
