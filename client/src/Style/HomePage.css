@@ -1,4 +1,9 @@
 /* src/pages/HomePage.css */
+:root {
+  --accent: #ff6b00;
+  --accent-light: #ff8533;
+}
+
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
