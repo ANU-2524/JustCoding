@@ -27,7 +27,7 @@ if (isAdult) {
   rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
 };
 
-const API_BASE = process.env.NODE_ENV === 'production' ? "https://justcoding.onrender.com" : "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 const REQUEST_TIMEOUT = 45000; // 45 seconds
 
 const MainEditor = () => {

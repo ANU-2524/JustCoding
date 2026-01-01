@@ -5,6 +5,7 @@ const axios = require('axios');
 const http = require("http");
 const { Server } = require("socket.io");
 const gptRoute = require("./routes/gptRoute.js");
+const codeQualityRoute = require("./routes/codeQuality.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -73,6 +74,7 @@ const languageMap = {
 };
 
 app.use("/api/gpt", gptRoute);
+app.use("/api/code-quality", codeQualityRoute);
 
 // Simple visualizer endpoint
 app.post('/api/visualizer/visualize', (req, res) => {
@@ -156,9 +158,14 @@ app.post('/compile', async (req, res) => {
 
 app.get('/', (req, res) => res.send('🔥 JustCode backend running'));
 
-// Test endpoint
-app.get('/test', (req, res) => {
-  res.json({ message: 'Server is working!', port: process.env.PORT || 5000 });
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-server.listen(process.env.PORT || 5000, () => console.log(`✅ Server running on port ${process.env.PORT || 5000}`));
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server is working!', port: process.env.PORT || 3001 });
+});
+
+server.listen(process.env.PORT || 3001, () => console.log(`✅ Server running on port ${process.env.PORT || 3001}`));

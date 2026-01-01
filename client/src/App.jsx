@@ -19,11 +19,7 @@ function App() {
           {/* Main personal editor */}
           <Route
             path="/editor"
-            element={
-              <ProtectedRoute>
-                <MainEditor />
-              </ProtectedRoute>
-            }
+            element={<MainEditor />}
           />
 
           {/* Collaborative editor */}
