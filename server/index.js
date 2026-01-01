@@ -74,6 +74,66 @@ const languageMap = {
 
 app.use("/api/gpt", gptRoute);
 
+// Simple visualizer endpoint
+app.post('/api/visualizer/visualize', (req, res) => {
+  const { code, language } = req.body;
+  
+  if (language !== 'javascript') {
+    return res.status(400).json({ error: 'Only JavaScript supported' });
+  }
+  
+  const lines = code.split('\n').filter(line => line.trim());
+  const execution = [];
+  const variables = {};
+  
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('//')) {
+      // Variable declarations
+      const varMatch = trimmed.match(/(let|const|var)\s+(\w+)\s*=\s*(.+)/);
+      if (varMatch) {
+        let value = varMatch[3].replace(/;$/, '').trim();
+        // Remove quotes for strings
+        if (value.startsWith('"') && value.endsWith('"')) {
+          value = value.slice(1, -1);
+        }
+        variables[varMatch[2]] = { value, type: typeof value === 'string' && isNaN(value) ? 'string' : 'number' };
+      }
+      
+      // Handle expressions like age >= 18
+      const exprMatch = trimmed.match(/(\w+)\s*=\s*(.+)/);
+      if (exprMatch && !varMatch) {
+        let value = exprMatch[2].replace(/;$/, '').trim();
+        if (value.includes('>=') || value.includes('<=') || value.includes('==')) {
+          variables[exprMatch[1]] = { value: 'true/false', type: 'boolean' };
+        }
+      }
+      
+      execution.push({
+        stepId: index,
+        lineNumber: index + 1,
+        code: trimmed,
+        type: getStatementType(trimmed),
+        variables: JSON.parse(JSON.stringify(variables))
+      });
+    }
+  });
+  
+  function getStatementType(line) {
+    if (line.includes('let') || line.includes('const') || line.includes('var')) return 'declaration';
+    if (line.includes('if') || line.includes('else')) return 'conditional';
+    if (line.includes('console.log')) return 'output';
+    if (line.includes('=') && !line.includes('==')) return 'assignment';
+    return 'expression';
+  }
+  
+  res.json({
+    success: true,
+    totalSteps: execution.length,
+    execution
+  });
+});
+
 app.post('/compile', async (req, res) => {
   const { language, code, stdin } = req.body;
   const langInfo = languageMap[language];
@@ -96,4 +156,9 @@ app.post('/compile', async (req, res) => {
 
 app.get('/', (req, res) => res.send('🔥 JustCode backend running'));
 
-server.listen(4334, () => console.log("✅ Server running on https://justcoding.onrender.com"));
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server is working!', port: process.env.PORT || 5000 });
+});
+
+server.listen(process.env.PORT || 5000, () => console.log(`✅ Server running on port ${process.env.PORT || 5000}`));

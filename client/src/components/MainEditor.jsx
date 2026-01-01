@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye } from 'react-icons/fa';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
 import jsPDF from "jspdf";
@@ -10,7 +10,14 @@ const languages = {
   python:     { name: 'Python',     starter: `print("Hello World")` },
   cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
   java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
-  javascript: { name: 'JavaScript', starter: `console.log("Hello World");` },
+  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
+let age = 25;
+let name = "Alice";
+let isAdult = age >= 18;
+console.log(name + " is " + age + " years old");
+if (isAdult) {
+  console.log("Can vote!");
+}` },
   typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
   c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
   go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
@@ -20,7 +27,7 @@ const languages = {
   rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
 };
 
-const API_BASE = "https://justcoding.onrender.com";
+const API_BASE = process.env.NODE_ENV === 'production' ? "https://justcoding.onrender.com" : "http://localhost:5000";
 const REQUEST_TIMEOUT = 45000; // 45 seconds
 
 const MainEditor = () => {
@@ -32,13 +39,26 @@ const MainEditor = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "python");
-  const [code, setCode] = useState(() =>
-    localStorage.getItem(`code-${localStorage.getItem("lang")}`) || languages.python.starter
-  );
+  const [code, setCode] = useState(() => {
+    const savedLang = localStorage.getItem("lang") || "python";
+    const savedCode = localStorage.getItem(`code-${savedLang}`);
+    if (savedCode) return savedCode;
+    return savedLang === "javascript" ? 
+      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` : 
+      languages[savedLang]?.starter || languages.python.starter;
+  });
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "vs-dark");
   const { logout, currentUser } = useAuth();
+
+  // Visualizer states
+  const [showVisualizer, setShowVisualizer] = useState(false);
+  const [execution, setExecution] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1000);
+  const [visualizerLoading, setVisualizerLoading] = useState(false);
 
   // Keep server alive - ping every 8 minutes
   useEffect(() => {
@@ -217,15 +237,19 @@ const MainEditor = () => {
   };
 
   const reset = () => {
-    setCode(languages[language].starter);
+    const newCode = languages[language].starter;
+    setCode(newCode);
     setUserInput("");
     setOutput("");
     setExplanation("");
     setQuestionText("");
     setDebugResult("");
+    setShowVisualizer(false);
+    setExecution([]);
     localStorage.removeItem("question");
     localStorage.removeItem("explanation");
     localStorage.removeItem("debugHelp");
+    localStorage.setItem(`code-${language}`, newCode);
   };
 
   const handleThemeToggle = () => {
@@ -333,6 +357,77 @@ const MainEditor = () => {
     }
   };
 
+  // Visualizer functions
+  const visualizeCode = async () => {
+    if (language !== 'javascript') {
+      alert('Code visualization is currently only available for JavaScript');
+      return;
+    }
+    
+    setVisualizerLoading(true);
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setExecution(data.execution);
+        setCurrentStep(0);
+        setShowVisualizer(true);
+      } else {
+        alert('Visualization failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Visualization failed:', error);
+      alert('Failed to connect to server. Please check your connection.');
+    }
+    setVisualizerLoading(false);
+  };
+
+  const nextStep = () => {
+    if (currentStep < execution.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const resetVisualizer = () => {
+    setCurrentStep(0);
+    setIsPlaying(false);
+  };
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  useEffect(() => {
+    let interval;
+    if (isPlaying && currentStep < execution.length - 1) {
+      interval = setInterval(() => {
+        setCurrentStep(prev => {
+          if (prev >= execution.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, speed);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentStep, execution.length, speed]);
+
+  const currentState = execution[currentStep];
+
   return (
     <div className="main-editor">
       <div className="editor-wrapper">
@@ -396,7 +491,12 @@ const MainEditor = () => {
                 onChange={(e) => {
                   const lang = e.target.value;
                   setLanguage(lang);
-                  setCode(localStorage.getItem(`code-${lang}`) || languages[lang].starter);
+                  const savedCode = localStorage.getItem(`code-${lang}`);
+                  if (savedCode) {
+                    setCode(savedCode);
+                  } else {
+                    setCode(languages[lang].starter);
+                  }
                 }}
               >
                 {Object.entries(languages).map(([key, val]) => (
@@ -407,6 +507,18 @@ const MainEditor = () => {
               <button onClick={runCode} className="btn run" disabled={loading}>
                 {loading ? "Running..." : "Run Code"}
               </button>
+              
+              {language === 'javascript' && (
+                <button 
+                  onClick={visualizeCode} 
+                  className="btn visualize" 
+                  disabled={visualizerLoading}
+                  style={{background: 'linear-gradient(45deg, #e233ff, #ff6b00)'}}
+                >
+                  <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
+                </button>
+              )}
+              
               <button onClick={reset} className="btn reset" disabled={loading}>Reset</button>
               <button onClick={downloadPDF} className="btn pdf" disabled={loading}>
                 Export as PDF
@@ -415,7 +527,99 @@ const MainEditor = () => {
 
             <div className="editor-output-wrapper">
               <div className="code-editor-column">
-                <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />
+                {showVisualizer && execution.length > 0 ? (
+                  <div className="visualizer-section">
+                    <div className="visualizer-header">
+                      <h3>🔍 Code Execution Visualizer</h3>
+                      <button 
+                        onClick={() => setShowVisualizer(false)} 
+                        className="btn close-visualizer"
+                        style={{background: '#666', padding: '0.5rem 1rem', fontSize: '0.8rem'}}
+                      >
+                        Close Visualizer
+                      </button>
+                    </div>
+                    
+                    <div className="code-display">
+                      <div className="code-lines">
+                        {code.split('\n').map((line, index) => (
+                          <div 
+                            key={index}
+                            className={`code-line ${
+                              currentState?.lineNumber === index + 1 ? 'active-line' : ''
+                            }`}
+                          >
+                            <span className="line-number">{index + 1}</span>
+                            <span className="line-code">{line}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="visualizer-controls">
+                      <div className="playback-controls">
+                        <button onClick={resetVisualizer} className="control-btn">
+                          <FaRedo />
+                        </button>
+                        <button onClick={prevStep} disabled={currentStep === 0} className="control-btn">
+                          <FaStepBackward />
+                        </button>
+                        <button onClick={togglePlay} className="control-btn play-btn">
+                          {isPlaying ? <FaPause /> : <FaPlay />}
+                        </button>
+                        <button 
+                          onClick={nextStep} 
+                          disabled={currentStep >= execution.length - 1} 
+                          className="control-btn"
+                        >
+                          <FaStepForward />
+                        </button>
+                      </div>
+
+                      <div className="speed-control">
+                        <label>Speed: </label>
+                        <input
+                          type="range"
+                          min="200"
+                          max="2000"
+                          value={speed}
+                          onChange={(e) => setSpeed(Number(e.target.value))}
+                        />
+                        <span>{(2200 - speed) / 1000}x</span>
+                      </div>
+
+                      <div className="step-info">
+                        Step {currentStep + 1} of {execution.length}
+                      </div>
+                    </div>
+
+                    {currentState && (
+                      <div className="state-info">
+                        <div className="variables-panel">
+                          <h4>Variables</h4>
+                          <div className="variables-list">
+                            {Object.entries(currentState.variables).map(([name, info]) => (
+                              <div key={name} className="variable-item">
+                                <span className="var-name">{name}</span>
+                                <span className="var-value">{String(info.value)}</span>
+                                <span className="var-type">{info.type}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="execution-details">
+                          <h4>Current Step</h4>
+                          <p><strong>Line:</strong> {currentState.lineNumber}</p>
+                          <p><strong>Code:</strong> {currentState.code}</p>
+                          <p><strong>Type:</strong> {currentState.type}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />
+                )}
               </div>
 
               <div className="output-column">
