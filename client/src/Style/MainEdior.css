@@ -370,6 +370,239 @@
 
 /* ---------------- Responsive ---------------- */
 
+/* ---------------- Code Visualizer Styles ---------------- */
+
+.visualizer-section {
+  background: var(--soft-black);
+  border: 2px solid var(--elegant-orange);
+  border-radius: 2px;
+  padding: 1.5rem;
+  color: var(--cream);
+}
+
+.visualizer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--elegant-orange);
+}
+
+.visualizer-header h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--accent-orange);
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.code-display {
+  background: var(--primary-black);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--elegant-orange);
+}
+
+.code-lines {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.code-line {
+  display: flex;
+  padding: 4px 0;
+  transition: all 0.3s ease;
+}
+
+.code-line.active-line {
+  background: rgba(255, 107, 0, 0.2);
+  border-left: 4px solid var(--accent-orange);
+  padding-left: 8px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { background: rgba(255, 107, 0, 0.2); }
+  50% { background: rgba(255, 107, 0, 0.4); }
+}
+
+.line-number {
+  color: #666;
+  margin-right: 15px;
+  min-width: 30px;
+  text-align: right;
+}
+
+.line-code {
+  color: var(--cream);
+}
+
+.visualizer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.playback-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--elegant-orange);
+  color: var(--cream);
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: var(--elegant-orange);
+  transform: translateY(-2px);
+}
+
+.control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.play-btn {
+  background: var(--elegant-orange);
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.speed-control input[type="range"] {
+  width: 120px;
+}
+
+.step-info {
+  background: rgba(212, 88, 31, 0.1);
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  color: var(--accent-orange);
+}
+
+.state-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.variables-panel, .execution-details {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 1rem;
+  border: 1px solid rgba(212, 88, 31, 0.3);
+}
+
+.variables-panel h4, .execution-details h4 {
+  color: var(--accent-orange);
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+}
+
+.variables-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variable-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.var-name {
+  color: var(--accent-orange);
+  font-weight: bold;
+}
+
+.var-value {
+  color: var(--cream);
+}
+
+.var-type {
+  color: #888;
+  font-size: 11px;
+}
+
+.execution-details p {
+  margin: 6px 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.execution-details strong {
+  color: var(--accent-orange);
+}
+
+/* Light theme overrides for visualizer */
+:root.light .visualizer-section {
+  background: white;
+  color: var(--primary-black);
+}
+
+:root.light .code-display {
+  background: var(--warm-white);
+}
+
+:root.light .line-code {
+  color: var(--primary-black);
+}
+
+:root.light .control-btn {
+  color: var(--primary-black);
+}
+
+:root.light .var-value {
+  color: var(--primary-black);
+}
+
+@media (max-width: 768px) {
+  .state-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .playback-controls {
+    flex-wrap: wrap;
+  }
+  
+  .visualizer-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+/* ---------------- End Visualizer Styles ---------------- */
+
 @media (max-width: 768px) {
   .main-editor {
     padding: 1.5rem 1rem;
