@@ -288,7 +288,7 @@ app.get('/health', (req, res) => {
 
 // Test endpoint
 app.get('/test', (req, res) => {
-  res.json({ message: 'Server is working!', port: process.env.PORT || 3001 });
+  res.json({ message: 'Server is working!', port: process.env.PORT || 4334 });
 });
 
-server.listen(process.env.PORT || 3001, () => console.log(`✅ JustCode Server with Enhanced Visualizer running on port ${process.env.PORT || 3001}`));
+server.listen(process.env.PORT || 4334, () => console.log(`✅ JustCode Server with Enhanced Visualizer running on port ${process.env.PORT || 4334}`));
