@@ -33,7 +33,7 @@ const HomePage = () => {
             AI-powered code editor & collaboration platform for developers.
           </p>
           <div className="hero-buttons animate-on-scroll">
-            <a href="/editor" className="btn-primary">Start Coding</a>
+            <a href="/login" className="btn-primary">Start Coding</a>
             <a href="#features" className="btn-secondary">Explore Features</a>
           </div>
         </div>
@@ -91,7 +91,7 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="cta-section animate-on-scroll">
         <h2>Ready to Start Coding?</h2>
-        <a href="/editor" className="btn-primary">Get Started</a>
+        <a href="/login" className="btn-primary">Get Started</a>
       </section>
 
       {/* Footer */}
