@@ -172,3 +172,22 @@ html, body, #root {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Code Editor Button */
+.btn-editor,.btn-primary {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #fff;
+  padding: 0.75rem 1.75rem;
+  margin-left: 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editor, .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}

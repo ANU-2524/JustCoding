@@ -1,12 +1,11 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import ProtectedRoute from "./components/ProtectedRoute";
-import HomePage from "./components/HomePage"; // Optional
-import JoinRoom from "./components/JoinRoom"; // 👈 added
-import LiveRoom from "./components/LiveRoom"; // 👈 added
+import HomePage from "./components/HomePage";
+import JoinRoom from "./components/JoinRoom";
+import LiveRoom from "./components/LiveRoom";
 
 function App() {
   return (

@@ -1,9 +1,12 @@
 // src/components/HomePage.jsx
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 import "../Style/HomePage.css";
-import { FaRobot, FaCode, FaUsers, FaFilePdf } from "react-icons/fa";
+import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const HomePage = () => {
+  const navigate = useNavigate(); // initialize navigate
+
   // IntersectionObserver for scroll animations
   useEffect(() => {
     const sections = document.querySelectorAll(".animate-on-scroll");
@@ -32,11 +35,27 @@ const HomePage = () => {
           <p className="animate-on-scroll">
             AI-powered code editor & collaboration platform for developers.
           </p>
+
+          {/* Buttons */}
           <div className="hero-buttons animate-on-scroll">
-            <a href="/login" className="btn-primary">Start Coding</a>
+            <button
+              className="btn-primary"
+              onClick={() => navigate("/login")}
+            >
+              Start Coding
+            </button>
+
             <a href="#features" className="btn-secondary">Explore Features</a>
+
+            <button
+              className="btn-editor"
+              onClick={() => navigate("/editor")} // navigate to CodeEditor.jsx
+            >
+              Open Code Editor
+            </button>
           </div>
         </div>
+
         {/* Floating shapes */}
         <div className="floating-shape shape1"></div>
         <div className="floating-shape shape2"></div>
@@ -64,6 +83,7 @@ const HomePage = () => {
           </div>
           <div className="feature-card animate-on-scroll">
             <FaFilePdf className="feature-icon"/>
+            <h3>Export & Share</h3>
             <p>Export your code to PDF or share instantly.</p>
           </div>
         </div>
@@ -91,16 +111,21 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="cta-section animate-on-scroll">
         <h2>Ready to Start Coding?</h2>
-        <a href="/login" className="btn-primary">Get Started</a>
+        <button
+          className="btn-primary"
+          onClick={() => navigate("/login")}
+        >
+          Get Started
+        </button>
       </section>
 
       {/* Footer */}
       <footer className="footer animate-on-scroll">
         <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
         <div className="social-icons">
-          <a href="#"><i className="fab fa-twitter"></i>Twitter</a>
-          <a href="#"><i className="fab fa-github"></i>GitHub</a>
-          <a href="#"><i className="fab fa-linkedin"></i>LinkedIn</a>
+          <a href="#" aria-label="Twitter"><FaTwitter /> Twitter</a>
+          <a href="#" aria-label="GitHub"><FaGithub /> GitHub</a>
+          <a href="#" aria-label="LinkedIn"><FaLinkedin /> LinkedIn</a>
         </div>
       </footer>
     </div>
