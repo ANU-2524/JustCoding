@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
