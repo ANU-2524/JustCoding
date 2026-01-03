@@ -431,14 +431,14 @@ const MainEditor = () => {
   return (
     <div className="main-editor">
       <div className="editor-wrapper">
-        <div className={`app-container ${theme === "vs-dark" ? "dark-theme" : "light-theme"}`}>
+        <div className="app-container">
           {loading && (
             <Loader message={loadingMessage || "Running code..."} />
           )}
           <div className="inner-container">
             <div className="header">
               <h1 className="logo">JustCode ...💪</h1>
-              <div className="flex gap-2 items-center">
+              <div className="header-actions">
                 <button onClick={handleThemeToggle} className="theme-toggle">
                   {theme === "vs-dark" ? <FaSun /> : <FaMoon />}
                 </button>
