@@ -181,6 +181,11 @@
   padding: 1rem 0;
 }
 
+:root.dark .main-editor .select-lang,
+:root.light .main-editor .select-lang {
+  transition: none !important;
+}
+
 .main-editor .select-lang {
   padding: 0.75rem 1.5rem;
   border-radius: 2px;
@@ -191,7 +196,33 @@
   font-family: 'Lora', serif;
   min-width: 200px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.main-editor .select-lang {
+  will-change: background-color, border-color;
+  transform: translateZ(0);
+}
+
+.main-editor .select-lang {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.main-editor .select-lang {
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--accent-orange) 50%),
+    linear-gradient(135deg, var(--accent-orange) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50%),
+    calc(100% - 14px) calc(50%);
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
 }
 
 .main-editor .select-lang:hover {
