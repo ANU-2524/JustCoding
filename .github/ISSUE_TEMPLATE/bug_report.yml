@@ -1,0 +1,47 @@
+name: 🐞 Bug Report
+description: Report bugs, errors, or unexpected behavior
+title: '[BUG] '
+labels: ['bug', 'triage']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: What happened? Include error messages or screenshots.
+      placeholder: "Example: Wallet balance shows incorrect amount after refresh"
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we trigger this consistently?
+      placeholder: |
+        1. Go to wallet page
+        2. Refresh 3x
+        3. See incorrect balance
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - Frontend (React/Vue)
+        - Backend (API)
+        - Wallet Integration
+        - Database
+        - Authentication
+        - Other
+      multiple: true
+    validations:
+      required: true
