@@ -121,7 +121,7 @@ const HomePage = () => {
 
       {/* Footer */}
       <footer className="footer animate-on-scroll">
-        <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.</p>
         <div className="social-icons">
           <a href="https://x.com/_Anuuu_Soniii_" aria-label="Twitter"><FaTwitter /> Twitter</a>
           <a href="https://github.com/ANU-2524/" aria-label="GitHub"><FaGithub /> GitHub</a>
