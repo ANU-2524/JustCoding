@@ -123,9 +123,9 @@ const HomePage = () => {
       <footer className="footer animate-on-scroll">
         <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
         <div className="social-icons">
-          <a href="#" aria-label="Twitter"><FaTwitter /> Twitter</a>
-          <a href="#" aria-label="GitHub"><FaGithub /> GitHub</a>
-          <a href="#" aria-label="LinkedIn"><FaLinkedin /> LinkedIn</a>
+          <a href="https://x.com/_Anuuu_Soniii_" aria-label="Twitter"><FaTwitter /> Twitter</a>
+          <a href="https://github.com/ANU-2524/" aria-label="GitHub"><FaGithub /> GitHub</a>
+          <a href="https://www.linkedin.com/in/anu--soni/" aria-label="LinkedIn"><FaLinkedin /> LinkedIn</a>
         </div>
       </footer>
     </div>
