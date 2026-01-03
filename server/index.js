@@ -5,6 +5,7 @@ const axios = require('axios');
 const http = require("http");
 const { Server } = require("socket.io");
 const gptRoute = require("./routes/gptRoute.js");
+const codeQualityRoute = require("./routes/codeQuality.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -73,6 +74,190 @@ const languageMap = {
 };
 
 app.use("/api/gpt", gptRoute);
+app.use("/api/code-quality", codeQualityRoute);
+
+// Enhanced visualizer endpoint
+app.post('/api/visualizer/visualize', (req, res) => {
+  const { code, language } = req.body;
+  
+  if (language !== 'javascript') {
+    return res.status(400).json({ error: 'Only JavaScript supported currently' });
+  }
+  
+  try {
+    const execution = parseJavaScriptCode(code);
+    res.json({
+      success: true,
+      totalSteps: execution.length,
+      execution
+    });
+  } catch (error) {
+    res.status(400).json({ 
+      success: false, 
+      error: 'Code parsing failed: ' + error.message 
+    });
+  }
+});
+
+function parseJavaScriptCode(code) {
+  const lines = code.split('\n');
+  const execution = [];
+  const variables = {};
+  const callStack = [];
+  let stepId = 0;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line.startsWith('//')) continue;
+    
+    const step = {
+      stepId: stepId++,
+      lineNumber: i + 1,
+      code: line,
+      type: getStatementType(line),
+      variables: JSON.parse(JSON.stringify(variables)),
+      callStack: [...callStack],
+      output: null
+    };
+    
+    // Variable declarations
+    const varDecl = line.match(/(let|const|var)\s+(\w+)\s*=\s*(.+);?/);
+    if (varDecl) {
+      const [, , varName, valueExpr] = varDecl;
+      const value = evaluateExpression(valueExpr.replace(/;$/, ''), variables);
+      variables[varName] = {
+        value: value.value,
+        type: value.type,
+        memory: `0x${Math.random().toString(16).substr(2, 6)}`
+      };
+    }
+    
+    // Assignments
+    const assignment = line.match(/(\w+)\s*=\s*(.+);?/);
+    if (assignment && !varDecl) {
+      const [, varName, valueExpr] = assignment;
+      if (variables[varName]) {
+        const value = evaluateExpression(valueExpr.replace(/;$/, ''), variables);
+        variables[varName].value = value.value;
+        variables[varName].type = value.type;
+      }
+    }
+    
+    // Console.log statements
+    const consoleLog = line.match(/console\.log\((.+)\);?/);
+    if (consoleLog) {
+      const expr = consoleLog[1];
+      const result = evaluateExpression(expr, variables);
+      step.output = result.value;
+    }
+    
+    // If statements
+    if (line.includes('if')) {
+      const condition = line.match(/if\s*\((.+)\)/);
+      if (condition) {
+        const result = evaluateExpression(condition[1], variables);
+        step.conditionResult = result.value;
+      }
+    }
+    
+    execution.push(step);
+  }
+  
+  return execution;
+}
+
+function evaluateExpression(expr, variables) {
+  expr = expr.trim();
+  
+  // String literals
+  if (expr.startsWith('"') && expr.endsWith('"')) {
+    return { value: expr.slice(1, -1), type: 'string' };
+  }
+  if (expr.startsWith("'") && expr.endsWith("'")) {
+    return { value: expr.slice(1, -1), type: 'string' };
+  }
+  
+  // Numbers
+  if (/^\d+(\.\d+)?$/.test(expr)) {
+    return { value: parseFloat(expr), type: 'number' };
+  }
+  
+  // Booleans
+  if (expr === 'true' || expr === 'false') {
+    return { value: expr === 'true', type: 'boolean' };
+  }
+  
+  // Variables
+  if (variables[expr]) {
+    return { value: variables[expr].value, type: variables[expr].type };
+  }
+  
+  // Simple arithmetic
+  const arithmetic = expr.match(/(\w+)\s*([+\-*/])\s*(\w+|\d+)/);
+  if (arithmetic) {
+    const [, left, op, right] = arithmetic;
+    const leftVal = variables[left] ? variables[left].value : parseFloat(left);
+    const rightVal = variables[right] ? variables[right].value : parseFloat(right);
+    
+    let result;
+    switch (op) {
+      case '+': result = leftVal + rightVal; break;
+      case '-': result = leftVal - rightVal; break;
+      case '*': result = leftVal * rightVal; break;
+      case '/': result = leftVal / rightVal; break;
+      default: result = leftVal;
+    }
+    return { value: result, type: 'number' };
+  }
+  
+  // Comparisons
+  const comparison = expr.match(/(\w+|\d+)\s*(>=|<=|==|!=|>|<)\s*(\w+|\d+)/);
+  if (comparison) {
+    const [, left, op, right] = comparison;
+    const leftVal = variables[left] ? variables[left].value : parseFloat(left);
+    const rightVal = variables[right] ? variables[right].value : parseFloat(right);
+    
+    let result;
+    switch (op) {
+      case '>=': result = leftVal >= rightVal; break;
+      case '<=': result = leftVal <= rightVal; break;
+      case '==': result = leftVal == rightVal; break;
+      case '!=': result = leftVal != rightVal; break;
+      case '>': result = leftVal > rightVal; break;
+      case '<': result = leftVal < rightVal; break;
+      default: result = false;
+    }
+    return { value: result, type: 'boolean' };
+  }
+  
+  // String concatenation
+  if (expr.includes('+') && expr.includes('"')) {
+    const parts = expr.split('+').map(p => p.trim());
+    let result = '';
+    for (const part of parts) {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        result += part.slice(1, -1);
+      } else if (variables[part]) {
+        result += variables[part].value;
+      } else {
+        result += part;
+      }
+    }
+    return { value: result, type: 'string' };
+  }
+  
+  return { value: expr, type: 'unknown' };
+}
+
+function getStatementType(line) {
+  if (line.includes('let') || line.includes('const') || line.includes('var')) return 'declaration';
+  if (line.includes('if') || line.includes('else')) return 'conditional';
+  if (line.includes('for') || line.includes('while')) return 'loop';
+  if (line.includes('function')) return 'function';
+  if (line.includes('console.log')) return 'output';
+  if (line.includes('=') && !line.includes('==') && !line.includes('>=') && !line.includes('<=')) return 'assignment';
+  return 'expression';
+}
 
 app.post('/compile', async (req, res) => {
   const { language, code, stdin } = req.body;
@@ -94,6 +279,16 @@ app.post('/compile', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => res.send('🔥 JustCode backend running'));
+app.get('/', (req, res) => res.send('🔥 JustCode backend running with enhanced visualizer'));
 
-server.listen(4334, () => console.log("✅ Server running on https://justcoding.onrender.com"));
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server is working!', port: process.env.PORT || 3001 });
+});
+
+server.listen(process.env.PORT || 3001, () => console.log(`✅ JustCode Server with Enhanced Visualizer running on port ${process.env.PORT || 3001}`));
