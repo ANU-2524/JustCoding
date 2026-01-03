@@ -161,9 +161,53 @@ body {
 .cta-section a:hover { transform: scale(1.1); background-color: #e0e7ff; }
 
 /* ================= Footer ================= */
-.footer { background-color: #111827; color: #d1d5db; text-align: center; padding: 4rem 2rem; font-size: 0.95rem; }
-.footer .social-icons a { margin: 0 0.5rem; color: #93c5fd; transition: color 0.3s; }
-.footer .social-icons a:hover { color: #ffffff; }
+.footer {
+  background-color: #0b1220;
+  color: #d1d5db;
+  padding: 3.5rem 2rem;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer p { margin: 0; opacity: 0.9; }
+
+.footer .social-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.footer .social-icons a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  color: #93c5fd;
+  background: rgba(255,255,255,0.02);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.footer .social-icons a svg { width: 1.05em; height: 1.05em; }
+
+.footer .social-icons a:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.45);
+}
+
+@media (max-width: 520px) {
+  .footer { padding: 2.5rem 1rem; }
+  .footer .social-icons { flex-direction: column; gap: 0.6rem; }
+}
 
 /* ================= Scroll Animations ================= */
 .animate-on-scroll {
@@ -174,4 +218,23 @@ body {
 .animate-on-scroll.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Code Editor Button */
+.btn-editor,.btn-primary {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #fff;
+  padding: 0.75rem 1.75rem;
+  margin-left: 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editor, .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
 }
