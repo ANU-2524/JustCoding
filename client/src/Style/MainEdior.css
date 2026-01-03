@@ -300,6 +300,83 @@
   box-shadow: 0 2px 8px rgba(212, 88, 31, 0.4);
 }
 
+/* ---------------- Code Editor ---------------- */
+
+.code-editor-wrapper {
+  background: var(--primary-black);
+  color: var(--cream);
+  border: 2px solid var(--elegant-orange);
+  border-radius: 2px;
+  overflow: hidden; /* CRITICAL for Monaco */
+  position: relative;
+}
+
+.code-editor-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.code-editor-wrapper.focused {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 12px rgba(212, 88, 31, 0.3);
+}
+
+.code-editor-wrapper.focused::after {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+:root.light .code-editor-wrapper {
+  background: var(--warm-white);
+  color: var(--primary-black);
+}
+
+:root.light .code-editor-wrapper::after {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+:root.light .code-editor-wrapper.focused {
+  box-shadow: 0 0 12px rgba(212, 88, 31, 0.25);
+}
+
+.code-editor-wrapper .monaco-editor,
+.code-editor-wrapper .monaco-editor-background,
+.code-editor-wrapper .monaco-editor .margin {
+  background-color: var(--primary-black) !important;
+}
+
+.code-editor-wrapper .cursor {
+  background-color: var(--accent-orange) !important;
+}
+
+.code-editor-wrapper .line-numbers {
+  color: rgba(250, 246, 241, 0.4) !important;
+}
+
+.code-editor-wrapper .selected-text {
+  background-color: rgba(212, 88, 31, 0.25) !important;
+}
+
+:root.light .code-editor-wrapper {
+  background: var(--warm-white);
+  color: var(--primary-black);
+}
+
+:root.light .code-editor-wrapper .monaco-editor,
+:root.light .code-editor-wrapper .monaco-editor-background,
+:root.light .code-editor-wrapper .monaco-editor .margin {
+  background-color: var(--warm-white) !important;
+}
+
+:root.light .code-editor-wrapper .line-numbers {
+  color: rgba(26, 26, 26, 0.4) !important;
+}
+
+
 /* ---------------- Code & Output ---------------- */
 
 .main-editor .input-box,
