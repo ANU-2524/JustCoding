@@ -28,7 +28,7 @@ const LiveRoomEntry = () => {
   };
 
   return (
-    <div className="join-room-container">
+    <div className="join-room-container join-room-page">
       <motion.div
         className="join-room-card"
         initial={{ opacity: 0, y: 50 }}

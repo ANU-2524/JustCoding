@@ -11,6 +11,7 @@ body {
   flex-direction: column;
   height: 100vh;
   background: #bad4ee4e;
+  padding-top: 70px; /* Space for fixed navbar */
 }
 
 /* Fix the horizontal overflow and add proper structure */

@@ -46,9 +46,23 @@
   margin: 0;
 }
 
+
+/* ---------------- Core Layout ---------------- */
+
+.main-editor {
+  padding-top: 80px; /* Space for fixed navbar */
+  font-family: 'Lora', serif;
+  background: linear-gradient(to bottom, var(--primary-black) 0%, var(--soft-black) 100%);
+  min-height: 100vh;
+  padding: 3rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
 .logo-icon {
   color: var(--accent-primary);
   font-size: 1.75rem;
+
 }
 
 .header-right {
