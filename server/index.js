@@ -12,9 +12,12 @@ const server = http.createServer(app);
 
 const userMap = {}; // ✅ Store { socketId: { username, roomId } }
 
+// Allow frontend origin from env (set FRONTEND_URL in your hosting),
+// fallback to the previously used Vercel domain. Keep localhost for local dev.
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://just-coding-theta.vercel.app";
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://just-coding-theta.vercel.app"
+  FRONTEND_URL
 ];
 
 app.use(cors({
