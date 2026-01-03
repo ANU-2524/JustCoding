@@ -513,9 +513,13 @@ const MainEditor = () => {
                   onClick={visualizeCode} 
                   className="btn visualize" 
                   disabled={visualizerLoading}
-                  style={{background: 'linear-gradient(45deg, #e233ff, #ff6b00)'}}
+                  title="Step through your code execution with variable tracking"
+                  style={{background: 'linear-gradient(45deg, #e233ff, #ff6b00)', position: 'relative'}}
                 >
-                  <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
+                  <FaEye /> {visualizerLoading ? "Analyzing..." : "🔍 Visualize Code"}
+                  {!showVisualizer && (
+                    <span className="visualizer-hint">NEW!</span>
+                  )}
                 </button>
               )}
               
@@ -531,13 +535,19 @@ const MainEditor = () => {
                   <div className="visualizer-section">
                     <div className="visualizer-header">
                       <h3>🔍 Code Execution Visualizer</h3>
-                      <button 
-                        onClick={() => setShowVisualizer(false)} 
-                        className="btn close-visualizer"
-                        style={{background: '#666', padding: '0.5rem 1rem', fontSize: '0.8rem'}}
-                      >
-                        Close Visualizer
-                      </button>
+                      <div className="visualizer-actions">
+                        <span className="execution-status">
+                          {isPlaying ? '▶️ Playing' : '⏸️ Paused'} | 
+                          Step {currentStep + 1}/{execution.length}
+                        </span>
+                        <button 
+                          onClick={() => setShowVisualizer(false)} 
+                          className="btn close-visualizer"
+                          style={{background: '#666', padding: '0.5rem 1rem', fontSize: '0.8rem'}}
+                        >
+                          ✕ Close
+                        </button>
+                      </div>
                     </div>
                     
                     <div className="code-display">
@@ -596,23 +606,63 @@ const MainEditor = () => {
                     {currentState && (
                       <div className="state-info">
                         <div className="variables-panel">
-                          <h4>Variables</h4>
+                          <h4>📊 Variables & Memory</h4>
                           <div className="variables-list">
-                            {Object.entries(currentState.variables).map(([name, info]) => (
-                              <div key={name} className="variable-item">
-                                <span className="var-name">{name}</span>
-                                <span className="var-value">{String(info.value)}</span>
-                                <span className="var-type">{info.type}</span>
-                              </div>
-                            ))}
+                            {Object.entries(currentState.variables).length === 0 ? (
+                              <div className="no-variables">No variables declared yet</div>
+                            ) : (
+                              Object.entries(currentState.variables).map(([name, info]) => (
+                                <div key={name} className="variable-item">
+                                  <span className="var-name">{name}</span>
+                                  <span className="var-value">
+                                    {typeof info.value === 'string' ? `"${info.value}"` : String(info.value)}
+                                  </span>
+                                  <span className="var-type">{info.type}</span>
+                                  {info.memory && <span className="var-memory">{info.memory}</span>}
+                                </div>
+                              ))
+                            )}
                           </div>
                         </div>
 
                         <div className="execution-details">
-                          <h4>Current Step</h4>
-                          <p><strong>Line:</strong> {currentState.lineNumber}</p>
-                          <p><strong>Code:</strong> {currentState.code}</p>
-                          <p><strong>Type:</strong> {currentState.type}</p>
+                          <h4>🔍 Current Step Details</h4>
+                          <div className="step-details">
+                            <p><strong>Line:</strong> {currentState.lineNumber}</p>
+                            <p><strong>Code:</strong> <code>{currentState.code}</code></p>
+                            <p><strong>Type:</strong> <span className={`type-badge ${currentState.type}`}>{currentState.type}</span></p>
+                            {currentState.output && (
+                              <p><strong>Output:</strong> <span className="output-value">{currentState.output}</span></p>
+                            )}
+                            {currentState.conditionResult !== undefined && (
+                              <p><strong>Condition:</strong> <span className={`condition-result ${currentState.conditionResult}`}>
+                                {currentState.conditionResult ? 'true' : 'false'}
+                              </span></p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="data-structures">
+                          <h4>📋 Data Structures</h4>
+                          <div className="structures-list">
+                            {Object.entries(currentState.variables).filter(([, info]) => 
+                              typeof info.value === 'object' || Array.isArray(info.value)
+                            ).length === 0 ? (
+                              <div className="no-structures">No complex data structures</div>
+                            ) : (
+                              Object.entries(currentState.variables)
+                                .filter(([, info]) => typeof info.value === 'object' || Array.isArray(info.value))
+                                .map(([name, info]) => (
+                                  <div key={name} className="structure-item">
+                                    <span className="struct-name">{name}</span>
+                                    <span className="struct-type">{Array.isArray(info.value) ? 'Array' : 'Object'}</span>
+                                    <span className="struct-size">
+                                      {Array.isArray(info.value) ? `[${info.value.length}]` : `{${Object.keys(info.value).length}}`}
+                                    </span>
+                                  </div>
+                                ))
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
