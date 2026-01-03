@@ -8,8 +8,16 @@ import { useAuth } from "./AuthContext";
 
 const languages = {
   python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
+  cpp:        { name: 'C++',        starter: `#include <iostream>
+using namespace std;
+int main() {
+  return 0;
+}` },
+  java:       { name: 'Java',       starter: `public class Main {
+  public static void main(String[] args) {
+    
+  }
+}` },
   javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
 let age = 25;
 let name = "Alice";
@@ -20,7 +28,11 @@ if (isAdult) {
 }` },
   typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
   c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
+  go:         { name: 'Go',         starter: `package main
+import "fmt"
+func main() {
+  fmt.Println("Hello Go")
+}` },
   ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
   php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
   swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
@@ -44,7 +56,14 @@ const MainEditor = () => {
     const savedCode = localStorage.getItem(`code-${savedLang}`);
     if (savedCode) return savedCode;
     return savedLang === "javascript" ? 
-      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` : 
+      `// 🔍 Try the Visualizer with this code!
+let age = 25;
+let name = "Alice";
+let isAdult = age >= 18;
+console.log(name + " is " + age + " years old");
+if (isAdult) {
+  console.log("Can vote!");
+}` : 
       languages[savedLang]?.starter || languages.python.starter;
   });
   const [userInput, setUserInput] = useState("");

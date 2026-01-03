@@ -44,7 +44,7 @@ const handleGoogleSignIn = async () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container login-page">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>{isLogin ? "Login to JustCoding" : "Register for JustCoding"}</h2>
         <input

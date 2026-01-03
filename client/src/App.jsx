@@ -7,39 +7,44 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./components/HomePage"; // Optional
 import JoinRoom from "./components/JoinRoom"; // 👈 added
 import LiveRoom from "./components/LiveRoom"; // 👈 added
+import Navbar from "./components/Navbar";
+import "./Style/Navbar.css";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
+        <div className="app-container">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Main personal editor */}
-          <Route
-            path="/editor"
-            element={<MainEditor />}
-          />
+            {/* Main personal editor */}
+            <Route
+              path="/editor"
+              element={<MainEditor />}
+            />
 
-          {/* Collaborative editor */}
-          <Route
-            path="/live"
-            element={
-              <ProtectedRoute>
-                <JoinRoom />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/live/:roomId"
-            element={
-              <ProtectedRoute>
-                <LiveRoom />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+            {/* Collaborative editor */}
+            <Route
+              path="/live"
+              element={
+                <ProtectedRoute>
+                  <JoinRoom />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/live/:roomId"
+              element={
+                <ProtectedRoute>
+                  <LiveRoom />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </div>
       </Router>
     </AuthProvider>
   );

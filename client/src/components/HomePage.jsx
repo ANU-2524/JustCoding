@@ -21,7 +21,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="homepage">
+    <div className="homepage home-page">
 
       {/* Hero Section */}
       <section className="hero-section">
