@@ -39,19 +39,6 @@ func main() {
   php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
   swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
   rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
-
-  python: { name: 'Python', starter: `print("Hello World")` },
-  cpp: { name: 'C++', starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java: { name: 'Java', starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
-  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` },
-  typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
-  c: { name: 'C', starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go: { name: 'Go', starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
-  ruby: { name: 'Ruby', starter: `puts "Hello Ruby"` },
-  php: { name: 'PHP', starter: `<?php\necho "Hello PHP";` },
-  swift: { name: 'Swift', starter: `print("Hello Swift")` },
-  rust: { name: 'Rust', starter: `fn main() {\n  println!("Hello Rust");\n}` }
-
 };
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
@@ -71,21 +58,9 @@ const MainEditor = () => {
     const savedCode = localStorage.getItem(`code-${savedLang}`);
     if (savedCode) return savedCode;
 
-    return savedLang === "javascript" ? 
-      `// 🔍 Try the Visualizer with this code!
-let age = 25;
-let name = "Alice";
-let isAdult = age >= 18;
-console.log(name + " is " + age + " years old");
-if (isAdult) {
-  console.log("Can vote!");
-}` : 
-      languages[savedLang]?.starter || languages.python.starter;
-
-    return savedLang === "javascript" ?
-      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
-      languages[savedLang]?.starter || languages.javascript.starter;
-
+    return savedLang === "javascript"
+      ? `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}`
+      : languages[savedLang]?.starter || languages.javascript.starter;
   });
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
@@ -101,7 +76,6 @@ if (isAdult) {
 
   const { theme, toggleTheme, isDark } = useTheme();
   const { logout, currentUser } = useAuth();
-
   // Keep server alive
   useEffect(() => {
     const keepAlive = async () => {
@@ -116,15 +90,16 @@ if (isAdult) {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Apply shared link if present
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const shareId = params.get("share");
+    const shareId = params.get('share');
     if (shareId) {
-      const data = JSON.parse(localStorage.getItem(`shared-${shareId}`));
+      const data = JSON.parse(localStorage.getItem(`shared-${shareId}`) || 'null');
       if (data) {
         setLanguage(data.language);
         setCode(data.code);
-        setUserInput(data.userInput);
+        setUserInput(data.userInput || '');
       }
     }
   }, []);
@@ -147,25 +122,25 @@ if (isAdult) {
 
   const explainQuestion = async () => {
     if (!questionText.trim()) {
-      alert("Please paste a question first.");
+      alert('Please paste a question first.');
       return;
     }
     setIsExplaining(true);
-    localStorage.removeItem("question");
-    localStorage.removeItem("explanation");
+    localStorage.removeItem('question');
+    localStorage.removeItem('explanation');
     try {
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/explain`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: questionText }),
       }, 60000);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setExplanation(data.explanation);
-      localStorage.setItem("question", questionText);
-      localStorage.setItem("explanation", data.explanation);
+      localStorage.setItem('question', questionText);
+      localStorage.setItem('explanation', data.explanation);
     } catch (err) {
-      setExplanation(err.message || "Error explaining the question.");
+      setExplanation(err.message || 'Error explaining the question.');
     } finally {
       setIsExplaining(false);
     }

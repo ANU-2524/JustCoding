@@ -11,23 +11,19 @@ import LiveRoom from "./components/LiveRoom"; // 👈 added
 import Navbar from "./components/Navbar";
 import "./Style/Navbar.css";
 
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <div className="app-container">
-          <Navbar />
-
-import HomePage from "./components/HomePage";
-import JoinRoom from "./components/JoinRoom";
-import LiveRoom from "./components/LiveRoom";
+// function App() {
+//   return (
+//     <AuthProvider>
+//       <Router>
+        
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <Router>
-
+          <div className="app-container">
+          <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -64,9 +60,6 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
-
-        </Router>
-      </AuthProvider>
     </ThemeProvider>
 
   );
