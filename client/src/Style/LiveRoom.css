@@ -108,14 +108,6 @@ body, html {
   padding: 6px;
 }
 
-.ai-response {
-  margin-top: 10px;
-  background: #eef;
-  padding: 10px;
-  border-radius: 6px;
-}
-
-
 .CodeMirror {
   max-width: 100%;
   overflow-x: auto;
@@ -262,12 +254,11 @@ body, html {
 }
 
 .ai-response {
-  background: #f1f5f9;
   margin-top: 8px;
-  padding: 8px;
-  border-left: 4px solid #3b82f6;
-  white-space: pre-wrap;
-  font-size: 14px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 6px;
 }
 
 .chat-panel {
