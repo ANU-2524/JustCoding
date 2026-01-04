@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -8,6 +8,8 @@ const Navbar = () => {
   const { currentUser, logout } = useAuth();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -33,6 +35,19 @@ const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // Close menu when route changes
@@ -66,20 +81,44 @@ const Navbar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
-          
-          {currentUser && (
-            <div className="nav-user-info">
-              <span className="user-email">{currentUser.email}</span>
-            </div>
-          )}
         </div>
 
         <div className="nav-actions">
           {currentUser ? (
-            <button className="logout-btn" onClick={handleLogout}>
-              <FaSignOutAlt />
-              <span className="btn-text">Logout</span>
-            </button>
+            <div className="profile-dropdown" ref={profileRef}>
+              <div className="profile-btn-wrapper">
+                <button 
+                  className="profile-btn"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  aria-expanded={isProfileOpen}
+                  aria-haspopup="true"
+                >
+                  <div className="avatar-icon">
+                    {currentUser.photoURL ? (
+                      <img 
+                        src={currentUser.photoURL} 
+                        alt="Profile" 
+                        className="avatar-img"
+                      />
+                    ) : (
+                      <FaUser />
+                    )}
+                  </div>
+                  <FaCaretDown className="dropdown-arrow" />
+                </button>
+                
+                {isProfileOpen && (
+                  <div className="profile-dropdown-menu">
+                    <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
+                      <FaUser /> Edit Profile
+                    </Link>
+                    <button className="dropdown-item" onClick={handleLogout}>
+                      <FaSignOutAlt /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
             <Link to="/login" className="login-btn">
               Login
