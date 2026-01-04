@@ -1,16 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaCode, FaUsers, FaBars, FaTimes, FaHome, FaMoon, FaSun, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const dropdownRef = useRef(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
   const handleLogout = async () => {
@@ -22,6 +30,17 @@ const Navbar = () => {
     }
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -30,7 +49,6 @@ const Navbar = () => {
         setScrolled(false);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -53,7 +71,6 @@ const Navbar = () => {
           <FaCode className="logo-icon" />
           <span className="logo-text">Just<span className="highlight">Coding</span></span>
         </Link>
-
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           {navItems.map((item) => (
             <Link
@@ -66,26 +83,74 @@ const Navbar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
-          
-          {currentUser && (
-            <div className="nav-user-info">
-              <span className="user-email">{currentUser.email}</span>
-            </div>
-          )}
         </div>
-
         <div className="nav-actions">
+          {/* Theme Toggle Button */}
+          <button 
+            className="theme-toggle-btn" 
+            onClick={toggleTheme}
+            aria-label="Toggle dark/light mode"
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <FaSun /> : <FaMoon />}
+          </button>
+
           {currentUser ? (
-            <button className="logout-btn" onClick={handleLogout}>
-              <FaSignOutAlt />
-              <span className="btn-text">Logout</span>
-            </button>
+            <div className="profile-section" ref={dropdownRef}>
+              {/* Profile Image Icon Button */}
+              <button
+                className="profile-icon-btn"
+                onClick={toggleProfileDropdown}
+                aria-label="Open profile menu"
+                title="Profile menu"
+              >
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt="Profile"
+                    className="profile-image"
+                  />
+                ) : (
+                  <div className="profile-avatar">
+                    {currentUser.email ? currentUser.email[0].toUpperCase() : 'U'}
+                  </div>
+                )}
+              </button>
+
+              {/* Profile Dropdown Menu */}
+              {isProfileDropdownOpen && (
+                <div className="profile-dropdown">
+                  <div className="dropdown-header">
+                    <span className="user-email">{currentUser.email}</span>
+                  </div>
+                  <hr className="dropdown-divider" />
+                  <Link
+                    to="/profile"
+                    className="dropdown-item"
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  >
+                    <FaCog className="dropdown-icon" />
+                    Edit Profile
+                  </Link>
+                  <button
+                    className="dropdown-item logout-item"
+                    onClick={() => {
+                      handleLogout();
+                      setIsProfileDropdownOpen(false);
+                    }}
+                  >
+                    <FaSignOutAlt className="dropdown-icon" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <Link to="/login" className="login-btn">
               Login
             </Link>
           )}
-          
+
           <button className="nav-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
