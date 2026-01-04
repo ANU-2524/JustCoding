@@ -1,4 +1,11 @@
-/* ===== Extra Hover Enhancements for Features (Addon) ===== */
+/* ===== Extra Hover Enhancements for Features (UPDATED) ===== */
+
+.feature-card {
+  position: relative;          /* required for ::before */
+  overflow: hidden;            /* keep glow inside */
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
 
 /* Smooth icon animation */
 .feature-icon {
@@ -19,8 +26,8 @@
   border-radius: 20px;
   background: linear-gradient(
     120deg,
-    rgba(99,102,241,0.15),
-    rgba(79,70,229,0.25)
+    rgba(99, 102, 241, 0.15),
+    rgba(79, 70, 229, 0.25)
   );
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -34,6 +41,11 @@
 }
 
 /* Hover effects */
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
 .feature-card:hover::before {
   opacity: 1;
 }
