@@ -1,0 +1,27 @@
+name: 🚀 Feature Request
+description: Suggest new features or integrations
+title: '[FEATURE] '
+labels: ['feature', 'enhancement']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature description
+      description: What new capability?
+      placeholder: "NFT portfolio tracker with rarity scores"
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why this feature?
+      description: User need or competitor gap?
+      placeholder: "Users request NFT tracking like OpenSea"
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation ideas
+      description: APIs, libraries, rough approach?
+      placeholder: "Integrate Rarity.tools API"

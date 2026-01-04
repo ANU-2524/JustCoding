@@ -1,0 +1,57 @@
+name: 📚 Documentation Update
+description: Suggest improvements or report issues in documentation
+title: "[Docs]: "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve our documentation! 🙌  
+        Please fill out the details below.
+
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: 📌 What needs to be updated?
+      description: Clearly describe the documentation issue or improvement.
+      placeholder: The README is missing setup instructions for the server...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: 📄 Current Documentation
+      description: What does the documentation currently say?
+      placeholder: Currently, the README only explains the client setup.
+
+  - type: textarea
+    id: expected_change
+    attributes:
+      label: ✨ Suggested Change
+      description: What should be added, removed, or improved?
+      placeholder: Add step-by-step server setup instructions.
+
+  - type: input
+    id: file_location
+    attributes:
+      label: 📂 File / Section
+      description: Which file or section is affected?
+      placeholder: README.md / Installation section
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: 🤝 Contribution
+      description: Are you willing to work on this update?
+      options:
+        - label: I would like to work on this issue
+          required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 📝 Additional Context
+      description: Any other helpful information, references, or links.
