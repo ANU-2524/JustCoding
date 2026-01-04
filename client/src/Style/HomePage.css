@@ -1,64 +1,302 @@
-/* ===== Extra Hover Enhancements for Features (UPDATED) ===== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+  background-color: #f8fafc;
+  color: #1f2937;
+}
+
+.homepage {
+  padding-top: 80px; /* Space for fixed navbar */
+  min-height: 100vh;
+}
+
+/* ================= Hero Section ================= */
+.hero-section {
+  position: relative;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  padding: 12rem 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-section h1 {
+  font-size: 5rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+
+.hero-section .highlight {
+  background: linear-gradient(90deg, #facc15, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-section p {
+  font-size: 1.6rem;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+}
+
+.hero-buttons a {
+  margin: 0 0.7rem;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.4s ease;
+}
+
+.btn-primary {
+  background: #ffffff;
+  color: #3b82f6;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.btn-primary:hover { transform: scale(1.05); }
+
+.btn-secondary {
+  border: 2px solid white;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: white;
+  color: #3b82f6;
+  transform: scale(1.05);
+}
+
+/* Floating shapes */
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  animation: float 6s ease-in-out infinite alternate;
+}
+
+.shape1 { width: 200px; height: 200px; top: -50px; left: 20%; }
+.shape2 { width: 150px; height: 150px; bottom: 50px; right: 10%; }
+.shape3 { width: 250px; height: 250px; top: 30%; right: -80px; }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ================= Features ================= */
+.features-section { 
+  padding: 8rem 2rem; 
+  text-align: center; 
+}
+
+.features-section h2 { 
+  font-size: 3rem; 
+  margin-bottom: 4rem; 
+  font-weight: 900; 
+}
+
+.features-grid {
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
 .feature-card {
-  position: relative;          /* required for ::before */
-  overflow: hidden;            /* keep glow inside */
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
   cursor: pointer;
+  color: #1f2937;
+}
+
+.feature-card:hover { 
+  transform: translateY(-10px) scale(1.05); 
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+}
+
+.feature-icon { 
+  font-size: 2.5rem; 
+  color: #4f46e5; 
+  margin-bottom: 1rem; 
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: #1e40af;
+}
+
+.feature-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* ================= How It Works ================= */
+.how-section { 
+  padding: 8rem 2rem; 
+  text-align: center; 
+  max-width: 1000px; 
+  margin: 0 auto; 
+}
+
+.how-section h2 { 
+  font-size: 3rem; 
+  margin-bottom: 4rem; 
+  font-weight: 900; 
+}
+
+.how-steps {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.how-step {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.07);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  color: #1f2937;
+}
+
+.how-step:hover { 
+  transform: translateY(-5px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.1);
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: #1e40af;
+}
+
+.step-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+/* ================= CTA ================= */
+.cta-section {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  text-align: center;
+  padding: 8rem 2rem;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
+}
+
+.cta-section h2 { font-size: 3.2rem; margin-bottom: 2rem; font-weight: 900; }
+
+.cta-section a {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  background-color: white;
+  color: #3b82f6;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.cta-section a:hover { transform: scale(1.1); background-color: #e0e7ff; }
+
+/* ================= Footer ================= */
+.footer {
+  background-color: #0b1220;
+  color: #d1d5db;
+  padding: 3.5rem 2rem;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer p { margin: 0; opacity: 0.9; }
+
+.footer .social-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.footer .social-icons a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  color: #93c5fd;
+  background: rgba(255,255,255,0.02);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.footer .social-icons a svg { width: 1.05em; height: 1.05em; }
+
+.footer .social-icons a:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.45);
+}
+
+@media (max-width: 520px) {
+  .footer { padding: 2.5rem 1rem; }
+  .footer .social-icons { flex-direction: column; gap: 0.6rem; }
+}
+
+/* ================= Scroll Animations ================= */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+.animate-on-scroll.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Code Editor Button */
+.btn-editor,.btn-primary {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #fff;
+  padding: 0.75rem 1.75rem;
+  margin-left: 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editor, .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* ================= Feature Card Hover Enhancement ================= */
+.feature-card.animate-on-scroll:hover {
+  transform: translateY(-12px) scale(1.06);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Smooth icon animation */
-.feature-icon {
-  transition: transform 0.4s ease, color 0.4s ease;
-}
-
-/* Title + text transition */
-.feature-title,
-.feature-text {
-  transition: color 0.3s ease;
-}
-
-/* Glow overlay effect */
-.feature-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-  background: linear-gradient(
-    120deg,
-    rgba(99, 102, 241, 0.15),
-    rgba(79, 70, 229, 0.25)
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 0;
-}
-
-/* Keep content above overlay */
-.feature-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Hover effects */
-.feature-card:hover {
-  transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-}
-
-.feature-card:hover::before {
-  opacity: 1;
-}
-
-.feature-card:hover .feature-icon {
-  transform: scale(1.2) rotate(6deg);
-  color: #4338ca;
-}
-
-.feature-card:hover .feature-title {
-  color: #312e81;
-}
-
-.feature-card:hover .feature-text {
-  color: #1f2937;
-}
