@@ -56,6 +56,65 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 
 ---
 
+## 📁 Folder Structure
+```bash
+JustCode/
+├── client/ # Frontend (React + Vite)
+│ ├── src/
+│ ├── public/
+│ └── index.html
+│
+├── server/ # Backend (Node + Express)
+│
+├── README.md
+├── CONTRIBUTING.md
+└── .gitignore
+```
+
+## 🛠️ How to Run Locally
+
+### Prerequisites
+- Node.js (v18 or above)
+- npm or yarn
+- MongoDB (local or MongoDB Atlas)
+
+
+### 1️⃣ Clone the Repository
+
+git clone https://github.com/your-username/JustCoding.git
+
+cd JustCoding
+
+2️⃣ Run the Frontend (Client)
+```bash
+cd client
+npm install
+npm run dev
+
+```
+
+Frontend will run at:
+http://localhost:5173
+
+3️⃣ Run the Backend (Server)
+Open a new terminal and run:
+```bash
+cd server
+npm install
+npm run dev
+
+```
+
+Backend will run at:
+http://localhost:5000
+
+
+Important:
+You must keep two terminals running at the same time — one for the client and one for the server.
+
+---
+
+
 ## 🧪 Tech Stack (Because we love this stuff)
 
 - **Frontend**: React.js + Tailwind CSS + Framer Motion + Firebase
@@ -65,3 +124,22 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 - **Utilities**: jsPDF, UUID, Socket.io
 
 ---
+
+## 🤝 Contributing
+
+Contributions are welcome!  
+Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on forking, branching, committing, and submitting pull requests.
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 💙 Final Note
+
+JustCode is built to make learning and debugging code less intimidating and more human.
+
+If this project helped you — even a little — that means everything 🌱
