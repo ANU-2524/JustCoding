@@ -67,24 +67,24 @@ const HomePage = () => {
         <h2 className="animate-on-scroll">Features</h2>
         <div className="features-grid">
           <div className="feature-card animate-on-scroll">
-            <FaRobot className="feature-icon"/>
-            <h3>AI Code Explanation</h3>
-            <p>Understand and debug code with AI-powered insights.</p>
+            <FaRobot className="feature-icon" />
+            <h3 className="feature-title">AI Code Explanation</h3>
+            <p className="feature-text">Understand and debug code with AI-powered insights.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaCode className="feature-icon"/>
-            <h3>Multi-language Support</h3>
-            <p>Write code in multiple languages with ease.</p>
+            <FaCode className="feature-icon" />
+            <h3 className="feature-title">Multi-language Support</h3>
+            <p className="feature-text">Write code in multiple languages with ease.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaUsers className="feature-icon"/>
-            <h3>Real-time Collaboration</h3>
-            <p>Work together with teammates in DevZone.</p>
+            <FaUsers className="feature-icon" />
+            <h3 className="feature-title">Real-time Collaboration</h3>
+            <p className="feature-text">Work together with teammates in DevZone.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaFilePdf className="feature-icon"/>
-            <h3>Export & Share</h3>
-            <p>Export your code to PDF or share instantly.</p>
+            <FaFilePdf className="feature-icon" />
+            <h3 className="feature-title">Export & Share</h3>
+            <p className="feature-text">Export your code to PDF or share instantly.</p>
           </div>
         </div>
       </section>
@@ -93,17 +93,17 @@ const HomePage = () => {
       <section className="how-section">
         <h2 className="animate-on-scroll">How It Works</h2>
         <div className="how-steps">
-          <div className="animate-on-scroll">
-            <h3>1. Sign Up</h3>
-            <p>Create an account and access your AI-powered workspace.</p>
+          <div className="how-step animate-on-scroll">
+            <h3 className="step-title">1. Sign Up</h3>
+            <p className="step-text">Create an account and access your AI-powered workspace.</p>
           </div>
-          <div className="animate-on-scroll">
-            <h3>2. Start Coding</h3>
-            <p>Use our editor to write code in multiple languages with AI suggestions.</p>
+          <div className="how-step animate-on-scroll">
+            <h3 className="step-title">2. Start Coding</h3>
+            <p className="step-text">Use our editor to write code in multiple languages with AI suggestions.</p>
           </div>
-          <div className="animate-on-scroll">
-            <h3>3. Collaborate & Share</h3>
-            <p>Invite teammates to collaborate or export your work seamlessly.</p>
+          <div className="how-step animate-on-scroll">
+            <h3 className="step-title">3. Collaborate & Share</h3>
+            <p className="step-text">Invite teammates to collaborate or export your work seamlessly.</p>
           </div>
         </div>
       </section>
