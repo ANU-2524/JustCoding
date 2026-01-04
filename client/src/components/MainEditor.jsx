@@ -1,27 +1,50 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
 import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const languages = {
+
   python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
-  javascript: { name: 'JavaScript', starter: `console.log("Hello World");` },
+  cpp:        { name: 'C++',        starter: `#include <iostream>
+using namespace std;
+int main() {
+  return 0;
+}` },
+  java:       { name: 'Java',       starter: `public class Main {
+  public static void main(String[] args) {
+    
+  }
+}` },
+  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
+let age = 25;
+let name = "Alice";
+let isAdult = age >= 18;
+console.log(name + " is " + age + " years old");
+if (isAdult) {
+  console.log("Can vote!");
+}` },
   typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
   c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
+  go:         { name: 'Go',         starter: `package main
+import "fmt"
+func main() {
+  fmt.Println("Hello Go")
+}` },
   ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
   php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
   swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
   rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
 };
 
-const API_BASE = "https://justcoding.onrender.com";
-const REQUEST_TIMEOUT = 45000; // 45 seconds
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
+const REQUEST_TIMEOUT = 45000;
 
 const MainEditor = () => {
   const [debugResult, setDebugResult] = useState("");
@@ -31,16 +54,35 @@ const MainEditor = () => {
   const [isExplaining, setIsExplaining] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "python");
-  const [code, setCode] = useState(() =>
-    localStorage.getItem(`code-${localStorage.getItem("lang")}`) || languages.python.starter
-  );
+  const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "javascript");
+  const [code, setCode] = useState(() => {
+    const savedLang = localStorage.getItem("lang") || "javascript";
+    const savedCode = localStorage.getItem(`code-${savedLang}`);
+    if (savedCode) return savedCode;
+
+    return savedLang === "javascript"
+      ? `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}`
+      : languages[savedLang]?.starter || languages.javascript.starter;
+  });
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "vs-dark");
-  const { logout, currentUser } = useAuth();
+  const [showAISection, setShowAISection] = useState(false);
+  const [activeAITab, setActiveAITab] = useState("explain");
+  useEffect(() => {
+    localStorage.setItem("aiTab", activeAITab);
+  }, [activeAITab]);
 
-  // Keep server alive - ping every 8 minutes
+  // Visualizer states
+  const [showVisualizer, setShowVisualizer] = useState(false);
+  const [execution, setExecution] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1000);
+  const [visualizerLoading, setVisualizerLoading] = useState(false);
+
+  const { theme, toggleTheme, isDark } = useTheme();
+  const { logout, currentUser } = useAuth();
+  // Keep server alive
   useEffect(() => {
     const keepAlive = async () => {
       try {
@@ -49,39 +91,30 @@ const MainEditor = () => {
         console.log('Keep-alive ping failed');
       }
     };
-
-    // Initial ping
     keepAlive();
-
-    // Set interval
     const intervalId = setInterval(keepAlive, 8 * 60 * 1000);
-    
     return () => clearInterval(intervalId);
   }, []);
 
+  // Apply shared link if present
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const shareId = params.get("share");
+    const shareId = params.get('share');
     if (shareId) {
-      const data = JSON.parse(localStorage.getItem(`shared-${shareId}`));
+      const data = JSON.parse(localStorage.getItem(`shared-${shareId}`) || 'null');
       if (data) {
         setLanguage(data.language);
         setCode(data.code);
-        setUserInput(data.userInput);
+        setUserInput(data.userInput || '');
       }
     }
   }, []);
 
-  // Helper function for fetch with timeout
   const fetchWithTimeout = async (url, options, timeout = REQUEST_TIMEOUT) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-
     try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal
-      });
+      const response = await fetch(url, { ...options, signal: controller.signal });
       clearTimeout(timeoutId);
       return response;
     } catch (error) {
@@ -95,33 +128,25 @@ const MainEditor = () => {
 
   const explainQuestion = async () => {
     if (!questionText.trim()) {
-      alert("Please paste a question first.");
+      alert('Please paste a question first.');
       return;
     }
-    
     setIsExplaining(true);
-    localStorage.removeItem("question");
-    localStorage.removeItem("explanation");
-
+    localStorage.removeItem('question');
+    localStorage.removeItem('explanation');
     try {
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/explain`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: questionText }),
-      }, 60000); // 60 second timeout for AI
-
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
-      }
-
+      }, 60000);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setExplanation(data.explanation);
-      localStorage.setItem("question", questionText);
-      localStorage.setItem("explanation", data.explanation);
+      localStorage.setItem('question', questionText);
+      localStorage.setItem('explanation', data.explanation);
     } catch (err) {
-      const errorMsg = err.message || "Error explaining the question.";
-      setExplanation(errorMsg);
-      console.error("Explain error:", err);
+      setExplanation(err.message || 'Error explaining the question.');
     } finally {
       setIsExplaining(false);
     }
@@ -132,28 +157,20 @@ const MainEditor = () => {
       alert("Please write some code first.");
       return;
     }
-
     setDebugLoading(true);
     localStorage.removeItem("debugHelp");
-
     try {
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/debug`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, errorMessage: output }),
-      }, 60000); // 60 second timeout for AI
-
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
-      }
-
+      }, 60000);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setDebugResult(data.debugHelp);
       localStorage.setItem("debugHelp", data.debugHelp);
     } catch (err) {
-      const errorMsg = err.message || "Error getting debug help.";
-      setDebugResult(errorMsg);
-      console.error("Debug error:", err);
+      setDebugResult(err.message || "Error getting debug help.");
     } finally {
       setDebugLoading(false);
     }
@@ -162,53 +179,39 @@ const MainEditor = () => {
   useEffect(() => {
     localStorage.setItem(`code-${language}`, code);
     localStorage.setItem("lang", language);
-    localStorage.setItem("theme", theme);
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme === "vs-dark" ? "dark" : "light");
-  }, [code, language, theme]);
+  }, [code, language]);
 
   const runCode = async () => {
     if (!code.trim()) {
       setOutput("Please write some code first.");
       return;
     }
-
     setLoading(true);
     setLoadingMessage("Connecting to server...");
-    setOutput(""); // Clear previous output
-
-    // Show cold start warning after 3 seconds
+    setOutput("");
     const warningTimeout = setTimeout(() => {
       setLoadingMessage("Server is starting up (free tier)... Please wait 30-60s");
     }, 3000);
-
     try {
       const res = await fetchWithTimeout(`${API_BASE}/compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language, code, stdin: userInput }),
       });
-
       clearTimeout(warningTimeout);
-
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
-      }
-
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
       setLoadingMessage("Processing code...");
       const result = await res.json();
       setOutput(result.output || "No output");
     } catch (err) {
       clearTimeout(warningTimeout);
-      
       if (err.message.includes('timeout')) {
-        setOutput("⏱️ Request timeout. The server took too long to respond.\n\nTips:\n- Try again in a moment\n- Check your internet connection\n- Simplify your code if it's too complex");
+        setOutput("⏱️ Request timeout. The server took too long to respond.\\n\\nTips:\\n- Try again in a moment\\n- Check your internet connection\\n- Simplify your code if it's too complex");
       } else if (err.message.includes('Failed to fetch')) {
-        setOutput("🌐 Network error. Cannot reach the server.\n\nTips:\n- Check your internet connection\n- The server might be down\n- Try again in a few minutes");
+        setOutput("🌐 Network error. Cannot reach the server.\\n\\nTips:\\n- Check your internet connection\\n- The server might be down\\n- Try again in a few minutes");
       } else {
-        setOutput(`❌ Error: ${err.message}\n\nPlease try again.`);
+        setOutput(`❌ Error: ${err.message}\\n\\nPlease try again.`);
       }
-      console.error("Run code error:", err);
     } finally {
       clearTimeout(warningTimeout);
       setLoading(false);
@@ -217,28 +220,27 @@ const MainEditor = () => {
   };
 
   const reset = () => {
-    setCode(languages[language].starter);
+    const newCode = language === "javascript" ?
+      `// 🔍 Try the Visualizer with this code!\\nlet age = 25;\\nlet name = "Alice";\\nlet isAdult = age >= 18;\\nconsole.log(name + " is " + age + " years old");\\nif (isAdult) {\\n  console.log("Can vote!");\\n}` :
+      languages[language].starter;
+    setCode(newCode);
     setUserInput("");
     setOutput("");
     setExplanation("");
     setQuestionText("");
     setDebugResult("");
+    setShowVisualizer(false);
+    setExecution([]);
     localStorage.removeItem("question");
     localStorage.removeItem("explanation");
     localStorage.removeItem("debugHelp");
   };
 
-  const handleThemeToggle = () => {
-    setTheme((prev) => (prev === "vs-dark" ? "light" : "vs-dark"));
-  };
-
   const downloadPDF = () => {
     const doc = new jsPDF();
     const title = `JustCode - ${languages[language].name} Code`;
-
     doc.setFontSize(16);
     doc.text(title, 10, 10);
-
     let y = 20;
 
     const question = localStorage.getItem("question");
@@ -255,13 +257,13 @@ const MainEditor = () => {
       y += 5;
     }
 
-    const explanation = localStorage.getItem("explanation");
-    if (explanation) {
+    const explanationText = localStorage.getItem("explanation");
+    if (explanationText) {
       if (y > 250) { doc.addPage(); y = 10; }
       doc.setFontSize(12);
       doc.text("Explanation:", 10, y);
       y += 8;
-      const eLines = doc.splitTextToSize(explanation, 180);
+      const eLines = doc.splitTextToSize(explanationText, 180);
       eLines.forEach(line => {
         if (y > 280) { doc.addPage(); y = 10; }
         doc.text(line, 10, y);
@@ -333,105 +335,392 @@ const MainEditor = () => {
     }
   };
 
+  // Visualizer functions
+  const visualizeCode = async () => {
+    if (language !== 'javascript') {
+      alert('Code visualization is currently only available for JavaScript');
+      return;
+    }
+
+    setVisualizerLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setExecution(data.execution);
+        setCurrentStep(0);
+        setShowVisualizer(true);
+      } else {
+        alert('Visualization failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Visualization failed:', error);
+      alert('Failed to connect to server. Please check your connection.');
+    }
+    setVisualizerLoading(false);
+  };
+
+  const nextStep = () => {
+    if (currentStep < execution.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const resetVisualizer = () => {
+    setCurrentStep(0);
+    setIsPlaying(false);
+  };
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  useEffect(() => {
+    let interval;
+    if (isPlaying && currentStep < execution.length - 1) {
+      interval = setInterval(() => {
+        setCurrentStep(prev => {
+          if (prev >= execution.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, speed);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentStep, execution.length, speed]);
+
+  const currentState = execution[currentStep];
+
   return (
-    <div className="main-editor">
-      <div className="editor-wrapper">
-        <div className="app-container">
-          {loading && (
-            <Loader message={loadingMessage || "Running code..."} />
+    <div className="workspace">
+      {loading && <Loader message={loadingMessage || "Running code..."} />}
+
+      {/* Header */}
+      {/* <header className="workspace-header">
+        <div className="header-left">
+          <h1 className="logo">
+            <FaCode className="logo-icon" />
+            <span>Editor</span>
+          </h1>
+        </div>
+        <div className="header-right">
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            <span className="icon">
+              {isDark ? <FaSun /> : <FaMoon />}
+            </span>
+          </button>
+          {currentUser && (
+            <button onClick={handleLogout} className="logout-btn">
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </button>
           )}
-          <div className="inner-container">
-            <div className="header">
-              <h1 className="logo">JustCode ...💪</h1>
-              <div className="header-actions">
-                <button onClick={handleThemeToggle} className="theme-toggle">
-                  {theme === "vs-dark" ? <FaSun /> : <FaMoon />}
-                </button>
-                {currentUser && (
-                  <button onClick={handleLogout} className="logout-btn">Logout</button>
-                )}
+        </div>
+      </header> */}
+
+      {/* Main Content */}
+      <main className="workspace-main">
+        {/* AI Helper Section (Collapsible) */}
+        <section className="ai-section glass-card">
+          <button
+            className="ai-section-toggle"
+            onClick={() => setShowAISection(!showAISection)}
+          >
+            <div className="toggle-left">
+              <FaLightbulb className="toggle-icon" />
+              <span>AI Assistant</span>
+              <span className="toggle-hint">Get help with your questions & debug your code</span>
+            </div>
+            {showAISection ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+
+          {showAISection && (
+            <div className="ai-section-content">
+              <div className="ai-tabs">
+                <div className="ai-tab-header">
+                  <button
+                    className={`ai-tab ${activeAITab === "explain" ? "active" : ""}`}
+                    onClick={() => setActiveAITab("explain")}
+                  >
+                    <FaLightbulb />
+                    Question Helper
+                  </button>
+
+                  <button
+                    className={`ai-tab ${activeAITab === "debug" ? "active" : ""}`}
+                    onClick={() => setActiveAITab("debug")}
+                  >
+                    <FaBug />
+                    Debug Helper
+                  </button>
+                </div>
+
+                <div className="ai-tab-content">
+                  {activeAITab === "explain" && (
+                    <div className="ai-card">
+                      <h3><FaLightbulb /> Question Helper</h3>
+                      <textarea
+                        className="input-field"
+                        rows={3}
+                        placeholder="Paste your coding question here..."
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                      />
+                      <button
+                        className="btn-primary"
+                        onClick={explainQuestion}
+                        disabled={isExplaining}
+                      >
+                        {isExplaining ? "Explaining..." : "Explain Question"}
+                      </button>
+
+                      {explanation && (
+                        <div className="ai-response markdown-body">
+                          <h4>Explanation:</h4>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {explanation}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeAITab === "debug" && (
+                    <div className="ai-card">
+                      <h3><FaBug /> Debug Helper</h3>
+                      <p className="ai-card-desc">
+                        Having errors? Get AI-powered debugging suggestions.
+                      </p>
+
+                      <button
+                        className="btn-primary"
+                        onClick={debugCode}
+                        disabled={debugLoading}
+                      >
+                        {debugLoading ? "Debugging..." : "Debug My Code"}
+                      </button>
+
+                      {debugResult && (
+                        <div className="ai-response markdown-body">
+                          <h4>Debug Suggestion:</h4>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {debugResult}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            
-            <div className="question-section">
-              <textarea
-                className="input-box"
-                rows={3}
-                placeholder="Paste your question HERE !!"
-                value={questionText}
-                onChange={(e) => setQuestionText(e.target.value)}
-              />
-              <button className="btn explain" onClick={explainQuestion} disabled={isExplaining}>
-                {isExplaining ? "Explaining..." : "Explain This Question"}
-              </button>
+          )}
+        </section>
 
-              {explanation && (
-                <div className="explanation-box">
-                  <h3>Explanation:</h3>
-                  <p>{explanation}</p>
-                </div>
-              )}
-            </div>
-
-            <button 
-              className="btn debug" 
-              style={{ marginTop: "8px" }} 
-              onClick={debugCode}
-              disabled={debugLoading}
+        {/* Toolbar */}
+        <section className="toolbar">
+          <div className="toolbar-left">
+            <select
+              className="language-select"
+              value={language}
+              onChange={(e) => {
+                const lang = e.target.value;
+                setLanguage(lang);
+                const savedCode = localStorage.getItem(`code-${lang}`);
+                if (savedCode) {
+                  setCode(savedCode);
+                } else {
+                  setCode(lang === "javascript" ?
+                    `// 🔍 Try the Visualizer with this code!\\nlet age = 25;\\nlet name = "Alice";\\nlet isAdult = age >= 18;\\nconsole.log(name + " is " + age + " years old");\\nif (isAdult) {\\n  console.log("Can vote!");\\n}` :
+                    languages[lang].starter);
+                }
+                setShowVisualizer(false);
+              }}
             >
-              {debugLoading ? "Debugging..." : "Debug My Code"}
+              {Object.entries(languages).map(([key, val]) => (
+                <option key={key} value={key}>{val.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="toolbar-right">
+            <button onClick={runCode} className="btn-run" disabled={loading}>
+              <FaPlay />
+              <span>{loading ? "Running..." : "Run"}</span>
             </button>
 
-            {debugResult && (
-              <div className="debug-result">
-                <h3>Debug Suggestion:</h3>
-                <pre>{debugResult}</pre>
-              </div>
+            {language === 'javascript' && (
+              <button
+                onClick={visualizeCode}
+                className="btn-visualize"
+                disabled={visualizerLoading}
+                title="Step through your code execution with variable tracking"
+              >
+                <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
+                {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
+              </button>
             )}
 
-            <div className="toolbar">
-              <select
-                className="select-lang"
-                value={language}
-                onChange={(e) => {
-                  const lang = e.target.value;
-                  setLanguage(lang);
-                  setCode(localStorage.getItem(`code-${lang}`) || languages[lang].starter);
-                }}
-              >
-                {Object.entries(languages).map(([key, val]) => (
-                  <option key={key} value={key}>{val.name}</option>
-                ))}
-              </select>
+            <button onClick={reset} className="btn-secondary" disabled={loading}>
+              <FaUndo />
+              <span>Reset</span>
+            </button>
+            <button onClick={downloadPDF} className="btn-secondary" disabled={loading}>
+              <FaFilePdf />
+              <span>Export PDF</span>
+            </button>
+          </div>
+        </section>
 
-              <button onClick={runCode} className="btn run" disabled={loading}>
-                {loading ? "Running..." : "Run Code"}
-              </button>
-              <button onClick={reset} className="btn reset" disabled={loading}>Reset</button>
-              <button onClick={downloadPDF} className="btn pdf" disabled={loading}>
-                Export as PDF
-              </button>
+        {/* Editor & Output */}
+        <section className="editor-section">
+          <div className={`editor-panel glass-card ${showVisualizer ? 'visualizer-mode' : ''}`}>
+            <div className="panel-header">
+              <span className="panel-title">{showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}</span>
+              <span className="language-badge">{languages[language].name}</span>
             </div>
+            <div className="editor-container">
+              {showVisualizer && execution.length > 0 ? (
+                <div className="visualizer-content">
+                  <div className="visualizer-controls-top">
+                    <div className="playback-controls">
+                      <button onClick={resetVisualizer} className="control-btn" title="Reset">
+                        <FaRedo />
+                      </button>
+                      <button onClick={prevStep} disabled={currentStep === 0} className="control-btn" title="Previous Step">
+                        <FaStepBackward />
+                      </button>
+                      <button onClick={togglePlay} className="control-btn play-btn" title={isPlaying ? 'Pause' : 'Play'}>
+                        {isPlaying ? <FaPause /> : <FaPlay />}
+                      </button>
+                      <button onClick={nextStep} disabled={currentStep >= execution.length - 1} className="control-btn" title="Next Step">
+                        <FaStepForward />
+                      </button>
+                    </div>
+                    <div className="speed-control">
+                      <label>Speed: </label>
+                      <input
+                        type="range"
+                        min="200"
+                        max="2000"
+                        value={speed}
+                        onChange={(e) => setSpeed(Number(e.target.value))}
+                      />
+                      <span>{(2200 - speed) / 1000}x</span>
+                    </div>
+                    <div className="step-info">
+                      Step {currentStep + 1} / {execution.length}
+                    </div>
+                    <button onClick={() => setShowVisualizer(false)} className="btn-close-visualizer" title="Close Visualizer">
+                      ✕
+                    </button>
+                  </div>
 
-            <div className="editor-output-wrapper">
-              <div className="code-editor-column">
-                <CodeEditor language={language} code={code} setCode={setCode} theme={theme} />
-              </div>
+                  <div className="code-display">
+                    <div className="code-lines">
+                      {code.split('\\n').map((line, index) => (
+                        <div
+                          key={index}
+                          className={`code-line ${currentState?.lineNumber === index + 1 ? 'active-line' : ''}`}
+                        >
+                          <span className="line-number">{index + 1}</span>
+                          <span className="line-code">{line}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="output-column">
-                <textarea
-                  className="input-box"
-                  rows={5}
-                  placeholder="Enter input values !!"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                ></textarea>
-                <pre className="output-box">{output}</pre>
-              </div>
+                  {currentState && (
+                    <div className="state-info">
+                      <div className="variables-panel">
+                        <h4>📊 Variables</h4>
+                        <div className="variables-list">
+                          {Object.entries(currentState.variables).length === 0 ? (
+                            <div className="no-variables">No variables yet</div>
+                          ) : (
+                            Object.entries(currentState.variables).map(([name, info]) => (
+                              <div key={name} className="variable-item">
+                                <span className="var-name">{name}</span>
+                                <span className="var-value">
+                                  {typeof info.value === 'string' ? `"${info.value}"` : String(info.value)}
+                                </span>
+                                <span className="var-type">{info.type}</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="execution-details">
+                        <h4>🔍 Step Details</h4>
+                        <div className="step-details">
+                          <p><strong>Line:</strong> {currentState.lineNumber}</p>
+                          <p><strong>Code:</strong> <code>{currentState.code}</code></p>
+                          <p><strong>Type:</strong> <span className={`type-badge ${currentState.type}`}>{currentState.type}</span></p>
+                          {currentState.output && (
+                            <p><strong>Output:</strong> <span className="output-value">{currentState.output}</span></p>
+                          )}
+                          {currentState.conditionResult !== undefined && (
+                            <p><strong>Condition:</strong> <span className={`condition-result ${currentState.conditionResult}`}>
+                              {currentState.conditionResult ? 'true' : 'false'}
+                            </span></p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <CodeEditor
+                  language={language}
+                  code={code}
+                  setCode={setCode}
+                  theme={isDark ? "vs-dark" : "light"}
+                />
+              )}
             </div>
           </div>
-        </div>
-      </div>
+
+          <div className="io-panel">
+            <div className="input-panel glass-card">
+              <div className="panel-header">
+                <span className="panel-title">Input</span>
+              </div>
+              <textarea
+                className="io-textarea"
+                rows={5}
+                placeholder="Enter input values here..."
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+              />
+            </div>
+
+            <div className="output-panel glass-card">
+              <div className="panel-header">
+                <span className="panel-title">Output</span>
+              </div>
+              <pre className="output-content">{output || "Your output will appear here..."}</pre>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
