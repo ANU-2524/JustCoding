@@ -415,7 +415,7 @@ const MainEditor = () => {
         <div className="header-left">
           <h1 className="logo">
             <FaCode className="logo-icon" />
-            <span>JustCode</span>
+            <span>Editor</span>
           </h1>
         </div>
         <div className="header-right">

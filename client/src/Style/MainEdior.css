@@ -12,6 +12,7 @@
   flex-direction: column;
   background: var(--bg-primary);
   transition: background-color var(--transition-slow);
+  padding-top: 70px; /* Space for fixed navbar */
 }
 
 /* ========================================
@@ -46,11 +47,9 @@
   margin: 0;
 }
 
-
 /* ---------------- Core Layout ---------------- */
 
 .main-editor {
-  padding-top: 80px; /* Space for fixed navbar */
   font-family: 'Lora', serif;
   background: linear-gradient(to bottom, var(--primary-black) 0%, var(--soft-black) 100%);
   min-height: 100vh;
@@ -58,6 +57,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
 
 .logo-icon {
   color: var(--accent-primary);
@@ -91,7 +91,6 @@
   border-color: var(--color-error);
   color: var(--color-error);
   background: rgba(248, 81, 73, 0.1);
-}
 }
 
 /* ========================================
