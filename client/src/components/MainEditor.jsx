@@ -6,6 +6,8 @@ import Loader from './Loader';
 import '../Style/MainEdior.css';
 import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const languages = {
   python: { name: 'Python', starter: `print("Hello World")` },
@@ -44,6 +46,10 @@ const MainEditor = () => {
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
   const [showAISection, setShowAISection] = useState(false);
+  const [activeAITab, setActiveAITab] = useState("explain");
+  useEffect(() => {
+    localStorage.setItem("aiTab", activeAITab);
+  }, [activeAITab]);
 
   // Visualizer states
   const [showVisualizer, setShowVisualizer] = useState(false);
@@ -428,47 +434,78 @@ const MainEditor = () => {
 
           {showAISection && (
             <div className="ai-section-content">
-              <div className="ai-grid">
-                {/* Question Explainer */}
-                <div className="ai-card">
-                  <h3><FaLightbulb /> Question Helper</h3>
-                  <textarea
-                    className="input-field"
-                    rows={3}
-                    placeholder="Paste your coding question here..."
-                    value={questionText}
-                    onChange={(e) => setQuestionText(e.target.value)}
-                  />
+              <div className="ai-tabs">
+                <div className="ai-tab-header">
                   <button
-                    className="btn-primary"
-                    onClick={explainQuestion}
-                    disabled={isExplaining}
+                    className={`ai-tab ${activeAITab === "explain" ? "active" : ""}`}
+                    onClick={() => setActiveAITab("explain")}
                   >
-                    {isExplaining ? "Explaining..." : "Explain Question"}
+                    <FaLightbulb />
+                    Question Helper
                   </button>
-                  {explanation && (
-                    <div className="ai-response">
-                      <h4>Explanation:</h4>
-                      <p>{explanation}</p>
-                    </div>
-                  )}
+
+                  <button
+                    className={`ai-tab ${activeAITab === "debug" ? "active" : ""}`}
+                    onClick={() => setActiveAITab("debug")}
+                  >
+                    <FaBug />
+                    Debug Helper
+                  </button>
                 </div>
 
-                {/* Debug Helper */}
-                <div className="ai-card">
-                  <h3><FaBug /> Debug Helper</h3>
-                  <p className="ai-card-desc">Having errors? Get AI-powered debugging suggestions.</p>
-                  <button
-                    className="btn-primary"
-                    onClick={debugCode}
-                    disabled={debugLoading}
-                  >
-                    {debugLoading ? "Debugging..." : "Debug My Code"}
-                  </button>
-                  {debugResult && (
-                    <div className="ai-response">
-                      <h4>Debug Suggestion:</h4>
-                      <pre>{debugResult}</pre>
+                <div className="ai-tab-content">
+                  {activeAITab === "explain" && (
+                    <div className="ai-card">
+                      <h3><FaLightbulb /> Question Helper</h3>
+                      <textarea
+                        className="input-field"
+                        rows={3}
+                        placeholder="Paste your coding question here..."
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                      />
+                      <button
+                        className="btn-primary"
+                        onClick={explainQuestion}
+                        disabled={isExplaining}
+                      >
+                        {isExplaining ? "Explaining..." : "Explain Question"}
+                      </button>
+
+                      {explanation && (
+                        <div className="ai-response markdown-body">
+                          <h4>Explanation:</h4>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {explanation}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeAITab === "debug" && (
+                    <div className="ai-card">
+                      <h3><FaBug /> Debug Helper</h3>
+                      <p className="ai-card-desc">
+                        Having errors? Get AI-powered debugging suggestions.
+                      </p>
+
+                      <button
+                        className="btn-primary"
+                        onClick={debugCode}
+                        disabled={debugLoading}
+                      >
+                        {debugLoading ? "Debugging..." : "Debug My Code"}
+                      </button>
+
+                      {debugResult && (
+                        <div className="ai-response markdown-body">
+                          <h4>Debug Suggestion:</h4>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {debugResult}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
