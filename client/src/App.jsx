@@ -32,7 +32,11 @@ function App() {
             {/* Main personal editor */}
             <Route
               path="/editor"
-              element={<MainEditor />}
+              element={
+                <ProtectedRoute>
+                  <MainEditor />
+                </ProtectedRoute>
+              }
             />
             
             {/* Profile route */}
