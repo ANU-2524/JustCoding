@@ -1,4 +1,3 @@
-
 body {
   margin: 0;
   padding: 0;
@@ -90,9 +89,16 @@ body {
 }
 
 /* ================= Features ================= */
-.features-section { padding: 8rem 2rem; text-align: center; }
+.features-section { 
+  padding: 8rem 2rem; 
+  text-align: center; 
+}
 
-.features-section h2 { font-size: 3rem; margin-bottom: 4rem; font-weight: 900; }
+.features-section h2 { 
+  font-size: 3rem; 
+  margin-bottom: 4rem; 
+  font-weight: 900; 
+}
 
 .features-grid {
   display: grid;
@@ -103,21 +109,52 @@ body {
 }
 
 .feature-card {
-  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
   padding: 2.5rem 2rem;
   border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
   transition: transform 0.5s ease, box-shadow 0.5s ease;
   cursor: pointer;
+  color: #1f2937;
 }
 
-.feature-card:hover { transform: translateY(-10px) scale(1.05); }
+.feature-card:hover { 
+  transform: translateY(-10px) scale(1.05); 
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+}
 
-.feature-icon { font-size: 2.5rem; color: #3b82f6; margin-bottom: 1rem; }
+.feature-icon { 
+  font-size: 2.5rem; 
+  color: #4f46e5; 
+  margin-bottom: 1rem; 
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: #1e40af;
+}
+
+.feature-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+}
 
 /* ================= How It Works ================= */
-.how-section { padding: 8rem 2rem; text-align: center; max-width: 1000px; margin: 0 auto; }
-.how-section h2 { font-size: 3rem; margin-bottom: 4rem; font-weight: 900; }
+.how-section { 
+  padding: 8rem 2rem; 
+  text-align: center; 
+  max-width: 1000px; 
+  margin: 0 auto; 
+}
+
+.how-section h2 { 
+  font-size: 3rem; 
+  margin-bottom: 4rem; 
+  font-weight: 900; 
+}
 
 .how-steps {
   display: grid;
@@ -125,15 +162,32 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
-.how-steps div {
+.how-step {
   background: #ffffff;
   padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.07);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+  color: #1f2937;
 }
 
-.how-steps div:hover { transform: translateY(-5px); }
+.how-step:hover { 
+  transform: translateY(-5px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.1);
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  color: #1e40af;
+}
+
+.step-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
 
 /* ================= CTA ================= */
 .cta-section {
