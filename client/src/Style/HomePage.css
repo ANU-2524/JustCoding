@@ -292,3 +292,11 @@ body {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
 }
+
+/* ================= Feature Card Hover Enhancement ================= */
+.feature-card.animate-on-scroll:hover {
+  transform: translateY(-12px) scale(1.06);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
