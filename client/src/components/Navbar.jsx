@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaMoon, FaSun } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
 
@@ -30,7 +32,6 @@ const Navbar = () => {
         setScrolled(false);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -53,7 +54,6 @@ const Navbar = () => {
           <FaCode className="logo-icon" />
           <span className="logo-text">Just<span className="highlight">Coding</span></span>
         </Link>
-
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           {navItems.map((item) => (
             <Link
@@ -66,15 +66,24 @@ const Navbar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
-          
+
           {currentUser && (
             <div className="nav-user-info">
               <span className="user-email">{currentUser.email}</span>
             </div>
           )}
         </div>
-
         <div className="nav-actions">
+          {/* Theme Toggle Button */}
+          <button 
+            className="theme-toggle-btn" 
+            onClick={toggleTheme}
+            aria-label="Toggle dark/light mode"
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <FaSun /> : <FaMoon />}
+          </button>
+
           {currentUser ? (
             <button className="logout-btn" onClick={handleLogout}>
               <FaSignOutAlt />
@@ -85,7 +94,7 @@ const Navbar = () => {
               Login
             </Link>
           )}
-          
+
           <button className="nav-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
