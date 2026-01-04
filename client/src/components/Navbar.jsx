@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { Link, useLocation } from 'react-router-dom';
+import DarkModeToggle from './DarkModeToggle';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -66,7 +67,7 @@ const Navbar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
-          
+
           {currentUser && (
             <div className="nav-user-info">
               <span className="user-email">{currentUser.email}</span>
@@ -75,6 +76,7 @@ const Navbar = () => {
         </div>
 
         <div className="nav-actions">
+          <DarkModeToggle />
           {currentUser ? (
             <button className="logout-btn" onClick={handleLogout}>
               <FaSignOutAlt />
@@ -85,7 +87,7 @@ const Navbar = () => {
               Login
             </Link>
           )}
-          
+
           <button className="nav-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>

@@ -1,4 +1,3 @@
-
 body {
   margin: 0;
   padding: 0;
@@ -9,7 +8,8 @@ body {
 }
 
 .homepage {
-  padding-top: 80px; /* Space for fixed navbar */
+  padding-top: 80px;
+  /* Space for fixed navbar */
   min-height: 100vh;
 }
 
@@ -55,10 +55,12 @@ body {
   color: #3b82f6;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.btn-primary:hover { transform: scale(1.05); }
+.btn-primary:hover {
+  transform: scale(1.05);
+}
 
 .btn-secondary {
   border: 2px solid white;
@@ -75,24 +77,56 @@ body {
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   animation: float 6s ease-in-out infinite alternate;
 }
 
-.shape1 { width: 200px; height: 200px; top: -50px; left: 20%; }
-.shape2 { width: 150px; height: 150px; bottom: 50px; right: 10%; }
-.shape3 { width: 250px; height: 250px; top: 30%; right: -80px; }
+.shape1 {
+  width: 200px;
+  height: 200px;
+  top: -50px;
+  left: 20%;
+}
+
+.shape2 {
+  width: 150px;
+  height: 150px;
+  bottom: 50px;
+  right: 10%;
+}
+
+.shape3 {
+  width: 250px;
+  height: 250px;
+  top: 30%;
+  right: -80px;
+}
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* ================= Features ================= */
-.features-section { padding: 8rem 2rem; text-align: center; }
+.features-section {
+  padding: 8rem 2rem;
+  text-align: center;
+}
 
-.features-section h2 { font-size: 3rem; margin-bottom: 4rem; font-weight: 900; }
+.features-section h2 {
+  font-size: 3rem;
+  margin-bottom: 4rem;
+  font-weight: 900;
+}
 
 .features-grid {
   display: grid;
@@ -106,18 +140,34 @@ body {
   background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
   padding: 2.5rem 2rem;
   border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
   transition: transform 0.5s ease, box-shadow 0.5s ease;
   cursor: pointer;
 }
 
-.feature-card:hover { transform: translateY(-10px) scale(1.05); }
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.05);
+}
 
-.feature-icon { font-size: 2.5rem; color: #3b82f6; margin-bottom: 1rem; }
+.feature-icon {
+  font-size: 2.5rem;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
 
 /* ================= How It Works ================= */
-.how-section { padding: 8rem 2rem; text-align: center; max-width: 1000px; margin: 0 auto; }
-.how-section h2 { font-size: 3rem; margin-bottom: 4rem; font-weight: 900; }
+.how-section {
+  padding: 8rem 2rem;
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.how-section h2 {
+  font-size: 3rem;
+  margin-bottom: 4rem;
+  font-weight: 900;
+}
 
 .how-steps {
   display: grid;
@@ -126,14 +176,18 @@ body {
 }
 
 .how-steps div {
-  background: #ffffff;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.07);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
 }
 
-.how-steps div:hover { transform: translateY(-5px); }
+
+.how-steps div:hover {
+  transform: translateY(-5px);
+}
 
 /* ================= CTA ================= */
 .cta-section {
@@ -144,7 +198,11 @@ body {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
 }
 
-.cta-section h2 { font-size: 3.2rem; margin-bottom: 2rem; font-weight: 900; }
+.cta-section h2 {
+  font-size: 3.2rem;
+  margin-bottom: 2rem;
+  font-weight: 900;
+}
 
 .cta-section a {
   display: inline-block;
@@ -154,11 +212,14 @@ body {
   background-color: white;
   color: #3b82f6;
   font-weight: 700;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
-.cta-section a:hover { transform: scale(1.1); background-color: #e0e7ff; }
+.cta-section a:hover {
+  transform: scale(1.1);
+  background-color: #e0e7ff;
+}
 
 /* ================= Footer ================= */
 .footer {
@@ -172,7 +233,10 @@ body {
   gap: 1rem;
 }
 
-.footer p { margin: 0; opacity: 0.9; }
+.footer p {
+  margin: 0;
+  opacity: 0.9;
+}
 
 .footer .social-icons {
   display: flex;
@@ -189,24 +253,33 @@ body {
   padding: 0.5rem 0.9rem;
   border-radius: 10px;
   color: #93c5fd;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.25s ease;
 }
 
-.footer .social-icons a svg { width: 1.05em; height: 1.05em; }
+.footer .social-icons a svg {
+  width: 1.05em;
+  height: 1.05em;
+}
 
 .footer .social-icons a:hover {
   color: #ffffff;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(2,6,23,0.45);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.45);
 }
 
 @media (max-width: 520px) {
-  .footer { padding: 2.5rem 1rem; }
-  .footer .social-icons { flex-direction: column; gap: 0.6rem; }
+  .footer {
+    padding: 2.5rem 1rem;
+  }
+
+  .footer .social-icons {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
 }
 
 /* ================= Scroll Animations ================= */
@@ -215,13 +288,15 @@ body {
   transform: translateY(30px);
   transition: all 0.8s ease;
 }
+
 .animate-on-scroll.show {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* Code Editor Button */
-.btn-editor,.btn-primary {
+.btn-editor,
+.btn-primary {
   background: linear-gradient(90deg, #4f46e5, #6366f1);
   color: #fff;
   padding: 0.75rem 1.75rem;
@@ -234,7 +309,16 @@ body {
   transition: all 0.3s ease;
 }
 
-.btn-editor, .btn-primary:hover {
+.btn-editor,
+.btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+
+.feature-card,
+.feature-card h3,
+.feature-card p,
+.feature-card span {
+  color: #000000
 }

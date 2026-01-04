@@ -1,6 +1,6 @@
 // src/components/HomePage.jsx
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -48,7 +48,7 @@ const HomePage = () => {
             <a href="#features" className="btn-secondary">Explore Features</a>
 
             <button
-              className="btn-editor"
+              className="btn-primary"
               onClick={() => navigate("/editor")} // navigate to CodeEditor.jsx
             >
               Open Code Editor
@@ -67,22 +67,22 @@ const HomePage = () => {
         <h2 className="animate-on-scroll">Features</h2>
         <div className="features-grid">
           <div className="feature-card animate-on-scroll">
-            <FaRobot className="feature-icon"/>
+            <FaRobot className="feature-icon" />
             <h3>AI Code Explanation</h3>
             <p>Understand and debug code with AI-powered insights.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaCode className="feature-icon"/>
+            <FaCode className="feature-icon" />
             <h3>Multi-language Support</h3>
             <p>Write code in multiple languages with ease.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaUsers className="feature-icon"/>
+            <FaUsers className="feature-icon" />
             <h3>Real-time Collaboration</h3>
             <p>Work together with teammates in DevZone.</p>
           </div>
           <div className="feature-card animate-on-scroll">
-            <FaFilePdf className="feature-icon"/>
+            <FaFilePdf className="feature-icon" />
             <h3>Export & Share</h3>
             <p>Export your code to PDF or share instantly.</p>
           </div>
