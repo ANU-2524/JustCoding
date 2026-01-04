@@ -3,6 +3,7 @@ import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
+import Profile from "./components/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import HomePage from "./components/HomePage"; // Optional
@@ -29,14 +30,20 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
 
             {/* Main personal editor */}
-
             <Route
               path="/editor"
               element={<MainEditor />}
             />
-
-            <Route path="/editor" element={<MainEditor />} />
-
+            
+            {/* Profile route */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Collaborative editor */}
             <Route
