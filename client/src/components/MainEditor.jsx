@@ -61,7 +61,14 @@ const MainEditor = () => {
     if (savedCode) return savedCode;
 
     return savedLang === "javascript"
-      ? `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}`
+      ? `// 🔍 Try the Visualizer with this code!
+let age = 25;
+let name = "Alice";
+let isAdult = age >= 18;
+console.log(name + " is " + age + " years old");
+if (isAdult) {
+  console.log("Can vote!");
+}`
       : languages[savedLang]?.starter || languages.javascript.starter;
   });
   const [userInput, setUserInput] = useState("");
@@ -221,7 +228,7 @@ const MainEditor = () => {
 
   const reset = () => {
     const newCode = language === "javascript" ?
-      `// 🔍 Try the Visualizer with this code!\\nlet age = 25;\\nlet name = "Alice";\\nlet isAdult = age >= 18;\\nconsole.log(name + " is " + age + " years old");\\nif (isAdult) {\\n  console.log("Can vote!");\\n}` :
+      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
       languages[language].starter;
     setCode(newCode);
     setUserInput("");
@@ -428,12 +435,6 @@ const MainEditor = () => {
               {isDark ? <FaSun /> : <FaMoon />}
             </span>
           </button>
-          {currentUser && (
-            <button onClick={handleLogout} className="logout-btn">
-              <FaSignOutAlt />
-              <span>Logout</span>
-            </button>
-          )}
         </div>
       </header>
 
@@ -549,7 +550,7 @@ const MainEditor = () => {
                   setCode(savedCode);
                 } else {
                   setCode(lang === "javascript" ?
-                    `// 🔍 Try the Visualizer with this code!\\nlet age = 25;\\nlet name = "Alice";\\nlet isAdult = age >= 18;\\nconsole.log(name + " is " + age + " years old");\\nif (isAdult) {\\n  console.log("Can vote!");\\n}` :
+                    `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
                     languages[lang].starter);
                 }
                 setShowVisualizer(false);
