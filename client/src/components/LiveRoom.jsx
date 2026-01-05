@@ -7,6 +7,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { getExplanation, getDebugSuggestion } from './OpenAIService';
 import '../Style/LiveRoom.css';
+import { endSession, incrementStat, startSession, touchLastActive } from '../services/localStore';
 
 // ✅ Language starter code
 const languages = {
@@ -29,6 +30,7 @@ const LiveRoom = () => {
   const username = searchParams.get("user");
   const navigate = useNavigate();
   const socket = useRef(null);
+  const sessionIdRef = useRef(null);
 
   const [code, setCode] = useState(languages.javascript.starter);
   const [language, setLanguage] = useState("javascript");
@@ -48,6 +50,9 @@ const LiveRoom = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    sessionIdRef.current = startSession({ roomId, username });
+    touchLastActive();
+
     socket.current = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4334");
     socket.current.emit("join-room", { roomId, username });
 
@@ -69,7 +74,14 @@ const LiveRoom = () => {
       setTimeout(() => setSystemMsg(''), 3000);
     });
 
-    return () => socket.current.disconnect();
+    return () => {
+      try {
+        socket.current?.disconnect();
+      } finally {
+        endSession(sessionIdRef.current);
+        touchLastActive();
+      }
+    };
   }, [roomId, username]);
 
   useEffect(() => {
@@ -111,6 +123,7 @@ const LiveRoom = () => {
 const explainQuestion = async () => {
   if (!questionText.trim()) return;
   setIsExplaining(true);
+  incrementStat('aiExplains', 1);
   const result = await getExplanation(questionText);
   setExplanation(result);
   setIsExplaining(false);
@@ -119,6 +132,7 @@ const explainQuestion = async () => {
 
 const debugCode = async () => {
   setDebugLoading(true);
+  incrementStat('aiDebugs', 1);
   const result = await getDebugSuggestion(code, output);
   setDebugResult(result);
   setDebugLoading(false);

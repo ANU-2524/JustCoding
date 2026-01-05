@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
 import '../Style/Profile.css';
+import {
+  addSnippet,
+  deleteSnippet,
+  getProfileLocal,
+  getStats,
+  listSessions,
+  listSnippets,
+  updateProfileLocal,
+  updateSnippet,
+} from '../services/localStore';
 
 const Profile = () => {
   const { currentUser } = useAuth();
@@ -9,25 +19,48 @@ const Profile = () => {
     displayName: '',
     email: '',
     photoURL: '',
-    bio: ''
+    bio: '',
+    githubUrl: '',
+    linkedinUrl: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [tempPhoto, setTempPhoto] = useState('');
 
+  const [activeTab, setActiveTab] = useState('snippets');
+  const [snippets, setSnippets] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [stats, setStats] = useState(null);
+
+  const [newTitle, setNewTitle] = useState('');
+  const [newLanguage, setNewLanguage] = useState('javascript');
+  const [newCode, setNewCode] = useState('');
+
   useEffect(() => {
-    if (currentUser) {
-      // Check if there's a saved photo in localStorage, otherwise use the Firebase photoURL
-      const savedPhoto = localStorage.getItem('userPhoto') || currentUser.photoURL;
-      
-      setProfile({
-        displayName: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
-        email: currentUser.email || '',
-        photoURL: savedPhoto || '',
-        bio: localStorage.getItem('userBio') || ''
-      });
-      setTempPhoto(savedPhoto || '');
-    }
+    const local = getProfileLocal();
+    const fallbackName = currentUser?.displayName || currentUser?.email?.split('@')[0] || local.displayName || 'Guest';
+    const fallbackEmail = currentUser?.email || '';
+    const fallbackPhoto = local.photoURL || currentUser?.photoURL || '';
+
+    setProfile({
+      displayName: local.displayName || fallbackName,
+      email: fallbackEmail,
+      photoURL: fallbackPhoto,
+      bio: local.bio || '',
+      githubUrl: local.githubUrl || '',
+      linkedinUrl: local.linkedinUrl || '',
+    });
+    setTempPhoto(fallbackPhoto || '');
   }, [currentUser]);
+
+  const refreshData = () => {
+    setSnippets(listSnippets());
+    setSessions(listSessions());
+    setStats(getStats());
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,29 +83,18 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      // Save profile info to localStorage
-      localStorage.setItem('userBio', profile.bio);
-      
-      // If there's a new photo selected, we would normally upload it to Firebase Storage
-      // For now, we'll store the photo in localStorage as a data URL
-      if (tempPhoto && tempPhoto !== currentUser.photoURL) {
-        localStorage.setItem('userPhoto', tempPhoto);
-      }
-      
-      // In a real app, you would update the user profile in Firebase
-      // await updateProfile(auth.currentUser, {
-      //   displayName: profile.displayName,
-      //   photoURL: tempPhoto
-      // });
-      
-      // Update the profile state with the new photo
-      setProfile(prev => ({
-        ...prev,
-        photoURL: tempPhoto
-      }));
+      updateProfileLocal({
+        displayName: profile.displayName,
+        bio: profile.bio,
+        photoURL: tempPhoto || '',
+        githubUrl: profile.githubUrl,
+        linkedinUrl: profile.linkedinUrl,
+      });
+
+      setProfile(prev => ({ ...prev, photoURL: tempPhoto }));
       
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      refreshData();
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Error updating profile. Please try again.');
@@ -81,13 +103,79 @@ const Profile = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setTempPhoto(currentUser.photoURL || '');
+    const local = getProfileLocal();
+    const fallbackName = currentUser?.displayName || currentUser?.email?.split('@')[0] || local.displayName || 'Guest';
+    const fallbackEmail = currentUser?.email || '';
+    const fallbackPhoto = local.photoURL || currentUser?.photoURL || '';
+
+    setTempPhoto(fallbackPhoto || '');
     setProfile({
-      displayName: currentUser.displayName || currentUser.email?.split('@')[0] || 'User',
-      email: currentUser.email || '',
-      photoURL: currentUser.photoURL || '',
-      bio: localStorage.getItem('userBio') || ''
+      displayName: local.displayName || fallbackName,
+      email: fallbackEmail,
+      photoURL: fallbackPhoto,
+      bio: local.bio || '',
+      githubUrl: local.githubUrl || '',
+      linkedinUrl: local.linkedinUrl || '',
     });
+  };
+
+  const normalizeUrl = (value) => {
+    const v = String(value || '').trim();
+    if (!v) return '';
+    if (v.startsWith('http://') || v.startsWith('https://')) return v;
+    return `https://${v}`;
+  };
+
+  const identityLabel = useMemo(() => {
+    if (currentUser?.email) return currentUser.email;
+    return 'Guest (saved in this browser)';
+  }, [currentUser]);
+
+  const formatDate = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString();
+  };
+
+  const formatDuration = (startedAt, endedAt) => {
+    if (!startedAt) return '';
+    const start = new Date(startedAt).getTime();
+    const end = endedAt ? new Date(endedAt).getTime() : Date.now();
+    if (Number.isNaN(start) || Number.isNaN(end)) return '';
+    const sec = Math.max(0, Math.floor((end - start) / 1000));
+    const min = Math.floor(sec / 60);
+    const rem = sec % 60;
+    return `${min}m ${rem}s`;
+  };
+
+  const handleCreateSnippet = () => {
+    if (!newTitle.trim()) {
+      alert('Please enter a snippet title.');
+      return;
+    }
+    addSnippet({ title: newTitle.trim(), language: newLanguage, code: newCode });
+    setNewTitle('');
+    setNewCode('');
+    refreshData();
+    setActiveTab('snippets');
+  };
+
+  const handleDeleteSnippet = (id) => {
+    const ok = window.confirm('Delete this snippet?');
+    if (!ok) return;
+    deleteSnippet(id);
+    refreshData();
+  };
+
+  const handleLoadSnippetToEditor = (snippet) => {
+    try {
+      localStorage.setItem('lang', snippet.language);
+      localStorage.setItem(`code-${snippet.language}`, snippet.code);
+      alert('Snippet loaded into Editor (open /editor).');
+    } catch {
+      // no-op
+    }
   };
 
   return (
@@ -148,8 +236,12 @@ const Profile = () => {
               )}
             </h1>
             <p className="profile-email">
-              {profile.email}
-              <span className="email-note">(Email cannot be changed here)</span>
+              {identityLabel}
+              {currentUser?.email ? (
+                <span className="email-note">(Auth is optional; data still saves locally)</span>
+              ) : (
+                <span className="email-note">(No login required)</span>
+              )}
             </p>
           </div>
         </div>
@@ -170,6 +262,207 @@ const Profile = () => {
               <p className="bio-text">
                 {profile.bio || 'No bio added yet.'}
               </p>
+            )}
+          </div>
+
+          <div className="links-section">
+            <h3>Links</h3>
+            {isEditing ? (
+              <div className="links-form">
+                <div className="link-row">
+                  <label className="link-label"><FaGithub /> GitHub</label>
+                  <input
+                    type="text"
+                    name="githubUrl"
+                    value={profile.githubUrl}
+                    onChange={handleInputChange}
+                    className="dash-input"
+                    placeholder="github.com/yourname"
+                  />
+                </div>
+                <div className="link-row">
+                  <label className="link-label"><FaLinkedin /> LinkedIn</label>
+                  <input
+                    type="text"
+                    name="linkedinUrl"
+                    value={profile.linkedinUrl}
+                    onChange={handleInputChange}
+                    className="dash-input"
+                    placeholder="linkedin.com/in/yourname"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="links-list">
+                <a
+                  className={`link-item ${profile.githubUrl ? '' : 'disabled'}`}
+                  href={profile.githubUrl ? normalizeUrl(profile.githubUrl) : undefined}
+                  target={profile.githubUrl ? "_blank" : undefined}
+                  rel={profile.githubUrl ? "noreferrer" : undefined}
+                  onClick={(e) => {
+                    if (!profile.githubUrl) e.preventDefault();
+                  }}
+                >
+                  <FaGithub /> <span>{profile.githubUrl ? 'GitHub' : 'GitHub (not set)'}</span>
+                </a>
+                <a
+                  className={`link-item ${profile.linkedinUrl ? '' : 'disabled'}`}
+                  href={profile.linkedinUrl ? normalizeUrl(profile.linkedinUrl) : undefined}
+                  target={profile.linkedinUrl ? "_blank" : undefined}
+                  rel={profile.linkedinUrl ? "noreferrer" : undefined}
+                  onClick={(e) => {
+                    if (!profile.linkedinUrl) e.preventDefault();
+                  }}
+                >
+                  <FaLinkedin /> <span>{profile.linkedinUrl ? 'LinkedIn' : 'LinkedIn (not set)'}</span>
+                </a>
+              </div>
+            )}
+          </div>
+
+          <div className="dashboard">
+            <div className="dashboard-tabs">
+              <button
+                className={`dash-tab ${activeTab === 'snippets' ? 'active' : ''}`}
+                onClick={() => setActiveTab('snippets')}
+              >
+                <FaCode /> Snippets
+              </button>
+              <button
+                className={`dash-tab ${activeTab === 'sessions' ? 'active' : ''}`}
+                onClick={() => setActiveTab('sessions')}
+              >
+                Sessions
+              </button>
+              <button
+                className={`dash-tab ${activeTab === 'stats' ? 'active' : ''}`}
+                onClick={() => setActiveTab('stats')}
+              >
+                Stats
+              </button>
+            </div>
+
+            {activeTab === 'snippets' && (
+              <div className="dash-panel">
+                <div className="dash-panel-header">
+                  <h3>Your Snippets</h3>
+                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
+                </div>
+
+                <div className="snippet-create">
+                  <h4>Create Snippet</h4>
+                  <input
+                    className="dash-input"
+                    placeholder="Title"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                  />
+                  <select
+                    className="dash-input"
+                    value={newLanguage}
+                    onChange={(e) => setNewLanguage(e.target.value)}
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                    <option value="c">C</option>
+                    <option value="go">Go</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="php">PHP</option>
+                    <option value="swift">Swift</option>
+                    <option value="rust">Rust</option>
+                  </select>
+                  <textarea
+                    className="dash-textarea"
+                    placeholder="Paste code here..."
+                    rows={6}
+                    value={newCode}
+                    onChange={(e) => setNewCode(e.target.value)}
+                  />
+                  <button className="dash-btn primary" onClick={handleCreateSnippet}>Save Snippet</button>
+                </div>
+
+                <div className="snippet-list">
+                  {snippets.length === 0 ? (
+                    <p className="dash-empty">No snippets yet.</p>
+                  ) : (
+                    snippets.map((s) => (
+                      <div key={s.id} className="snippet-item">
+                        <div className="snippet-meta">
+                          <div className="snippet-title">{s.title}</div>
+                          <div className="snippet-sub">{s.language} • Updated {formatDate(s.updatedAt)}</div>
+                        </div>
+                        <div className="snippet-actions">
+                          <button className="dash-btn" onClick={() => handleLoadSnippetToEditor(s)}>Load to Editor</button>
+                          <button
+                            className="dash-btn"
+                            onClick={() => {
+                              const title = window.prompt('Rename snippet', s.title);
+                              if (!title) return;
+                              updateSnippet(s.id, { title: title.trim() });
+                              refreshData();
+                            }}
+                          >
+                            Rename
+                          </button>
+                          <button className="dash-btn danger" onClick={() => handleDeleteSnippet(s.id)}>
+                            <FaTrash /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'sessions' && (
+              <div className="dash-panel">
+                <div className="dash-panel-header">
+                  <h3>Past Collaboration Sessions</h3>
+                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
+                </div>
+
+                {sessions.length === 0 ? (
+                  <p className="dash-empty">No sessions tracked yet. Join a room in Collaborate.</p>
+                ) : (
+                  <div className="session-list">
+                    {sessions.map((sess) => (
+                      <div key={sess.id} className="session-item">
+                        <div className="session-title">Room: {sess.roomId || '(unknown)'}</div>
+                        <div className="session-sub">
+                          As: {sess.username || '(unknown)'} • Started {formatDate(sess.startedAt)}
+                          {sess.endedAt ? ` • Duration ${formatDuration(sess.startedAt, sess.endedAt)}` : ' • (active)'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'stats' && (
+              <div className="dash-panel">
+                <div className="dash-panel-header">
+                  <h3>Usage Stats</h3>
+                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
+                </div>
+                {!stats ? (
+                  <p className="dash-empty">Loading...</p>
+                ) : (
+                  <div className="stats-grid">
+                    <div className="stat-card"><div className="stat-value">{stats.runs || 0}</div><div className="stat-label">Runs</div></div>
+                    <div className="stat-card"><div className="stat-value">{stats.visualizes || 0}</div><div className="stat-label">Visualizes</div></div>
+                    <div className="stat-card"><div className="stat-value">{stats.aiExplains || 0}</div><div className="stat-label">AI Explains</div></div>
+                    <div className="stat-card"><div className="stat-value">{stats.aiDebugs || 0}</div><div className="stat-label">AI Debugs</div></div>
+                    <div className="stat-card"><div className="stat-value">{stats.snippetsCreated || 0}</div><div className="stat-label">Snippets Created</div></div>
+                    <div className="stat-card"><div className="stat-value">{stats.sessionsJoined || 0}</div><div className="stat-label">Sessions Joined</div></div>
+                    <div className="stat-card wide"><div className="stat-value">{stats.lastActiveAt ? formatDate(stats.lastActiveAt) : '—'}</div><div className="stat-label">Last Active</div></div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

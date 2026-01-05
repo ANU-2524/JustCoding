@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
@@ -8,6 +8,7 @@ import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { addSnippet, incrementStat, touchLastActive } from '../services/localStore';
 
 const languages = {
 
@@ -142,6 +143,7 @@ if (isAdult) {
     localStorage.removeItem('question');
     localStorage.removeItem('explanation');
     try {
+      incrementStat('aiExplains', 1);
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/explain`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -167,6 +169,7 @@ if (isAdult) {
     setDebugLoading(true);
     localStorage.removeItem("debugHelp");
     try {
+      incrementStat('aiDebugs', 1);
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/debug`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -200,6 +203,7 @@ if (isAdult) {
       setLoadingMessage("Server is starting up (free tier)... Please wait 30-60s");
     }, 3000);
     try {
+      incrementStat('runs', 1);
       const res = await fetchWithTimeout(`${API_BASE}/compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -347,6 +351,7 @@ if (isAdult) {
     setVisualizerLoading(true);
 
     try {
+      incrementStat('visualizes', 1);
       const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -367,6 +372,15 @@ if (isAdult) {
       alert('Failed to connect to server. Please check your connection.');
     }
     setVisualizerLoading(false);
+  };
+
+  const saveCurrentAsSnippet = () => {
+    const title = window.prompt('Snippet title');
+    if (!title) return;
+    addSnippet({ title: title.trim(), language, code });
+    incrementStat('snippetsCreated', 1);
+    touchLastActive();
+    alert('Saved to Profile → Snippets');
   };
 
   const nextStep = () => {
@@ -560,6 +574,11 @@ if (isAdult) {
             <button onClick={runCode} className="btn-run" disabled={loading}>
               <FaPlay />
               <span>{loading ? "Running..." : "Run"}</span>
+            </button>
+
+            <button onClick={saveCurrentAsSnippet} className="btn-secondary" disabled={loading}>
+              <FaSave />
+              <span>Save Snippet</span>
             </button>
 
             {/* Remove JavaScript-only restriction */}
