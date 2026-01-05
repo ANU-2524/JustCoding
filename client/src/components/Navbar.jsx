@@ -26,11 +26,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -45,14 +41,12 @@ const Navbar = () => {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsProfileOpen(false);
   }, [location.pathname]);
 
   const navItems = [
@@ -69,7 +63,73 @@ const Navbar = () => {
           <span className="logo-text">Just<span className="highlight">Coding</span></span>
         </Link>
 
+        {/* Desktop Navigation Links (center) */}
+        <div className="nav-menu-desktop desktop-only">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </div>
+
+        <div className="nav-actions">
+          {/* Desktop Profile Dropdown */}
+          {currentUser && (
+            <div className="profile-dropdown desktop-only" ref={profileRef}>
+              <button 
+                className="profile-btn"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                aria-expanded={isProfileOpen}
+                aria-haspopup="true"
+              >
+                <div className="avatar-icon">
+                  {currentUser.photoURL ? (
+                    <img 
+                      src={currentUser.photoURL} 
+                      alt="Profile" 
+                      className="avatar-img"
+                    />
+                  ) : (
+                    <FaUser />
+                  )}
+                </div>
+                <FaCaretDown className="dropdown-arrow" />
+              </button>
+              
+              {isProfileOpen && (
+                <div className="profile-dropdown-menu">
+                  <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
+                    <FaUser /> Profile
+                  </Link>
+                  <button className="dropdown-item" onClick={handleLogout}>
+                    <FaSignOutAlt /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Desktop Login Button */}
+          {!currentUser && (
+            <Link to="/login" className="login-btn desktop-only">
+              Login
+            </Link>
+          )}
+          
+          {/* Mobile Hamburger Toggle */}
+          <button className="nav-toggle" onClick={toggleMenu} aria-label="Toggle menu">
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+        
+        {/* Mobile Menu */}
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
+          {/* Navigation Links */}
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -81,53 +141,55 @@ const Navbar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
-        </div>
-
-        <div className="nav-actions">
+          
+          {/* Mobile Profile Section (when logged in) */}
           {currentUser ? (
-            <div className="profile-dropdown" ref={profileRef}>
-              <div className="profile-btn-wrapper">
-                <button 
-                  className="profile-btn"
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  aria-expanded={isProfileOpen}
-                  aria-haspopup="true"
-                >
-                  <div className="avatar-icon">
-                    {currentUser.photoURL ? (
-                      <img 
-                        src={currentUser.photoURL} 
-                        alt="Profile" 
-                        className="avatar-img"
-                      />
-                    ) : (
-                      <FaUser />
-                    )}
-                  </div>
-                  <FaCaretDown className="dropdown-arrow" />
-                </button>
-                
-                {isProfileOpen && (
-                  <div className="profile-dropdown-menu">
-                    <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                      <FaUser /> Edit Profile
-                    </Link>
-                    <button className="dropdown-item" onClick={handleLogout}>
-                      <FaSignOutAlt /> Logout
-                    </button>
-                  </div>
-                )}
+            <div className="mobile-profile-section">
+              <div className="mobile-profile-header">
+                <div className="mobile-avatar">
+                  {currentUser.photoURL ? (
+                    <img 
+                      src={currentUser.photoURL} 
+                      alt="Profile" 
+                      className="avatar-img"
+                    />
+                  ) : (
+                    <FaUser />
+                  )}
+                </div>
+                <span className="mobile-user-email">
+                  {currentUser.email?.split('@')[0] || 'User'}
+                </span>
               </div>
+              
+              <Link 
+                to="/profile" 
+                className="mobile-profile-link"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FaUser /> <span>Profile</span>
+              </Link>
+              
+              <button 
+                className="mobile-logout-btn"
+                onClick={() => {
+                  handleLogout();
+                  setIsMenuOpen(false);
+                }}
+              >
+                <FaSignOutAlt /> <span>Logout</span>
+              </button>
             </div>
           ) : (
-            <Link to="/login" className="login-btn">
+            /* Mobile Login Button (when not logged in) */
+            <Link 
+              to="/login" 
+              className="mobile-login-btn"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Login
             </Link>
           )}
-          
-          <button className="nav-toggle" onClick={toggleMenu}>
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
         </div>
       </div>
     </nav>

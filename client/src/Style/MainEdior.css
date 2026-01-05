@@ -15,6 +15,13 @@
   padding-top: 70px; /* Space for fixed navbar */
 }
 
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .workspace {
+    padding-top: 60px; /* Adjust for mobile navbar height */
+  }
+}
+
 /* ========================================
    Header
    ======================================== */
