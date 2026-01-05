@@ -57,6 +57,82 @@
         box-shadow: 0 0 15px rgba(255,220,80,0.7);
       }
     </style>
+    
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+
+          v.onload = function() {
+            // Initialize Voiceflow chat when on editor page or if we're navigating to it
+            function initVoiceflow() {
+              // Use a more robust approach to check if we're on the editor page
+              // Consider the URL after potential redirects or routing
+              const isEditorPage = () => {
+                // Check current path
+                const path = window.location.pathname;
+                return path === '/editor' || path === '/editor/';
+              };
+              
+              if (isEditorPage()) {
+                // Check if the chat is already loaded to avoid duplicates
+                if (window.voiceflow && window.voiceflow.chat && !window.voiceflow.chat.isLoaded) {
+                  window.voiceflow.chat.load({
+                    verify: { projectID: '695a95066f20de2ac229a353' },
+                    url: 'https://general-runtime.voiceflow.com',
+                    versionID: 'production',
+                    voice: {
+                      url: "https://runtime-api.voiceflow.com"
+                    }
+                  });
+                  
+                  // Mark as loaded to prevent re-initialization
+                  window.voiceflow.chat.isLoaded = true;
+                }
+              } else {
+                // If we're not on the editor page, reset the loaded flag
+                if (window.voiceflow && window.voiceflow.chat) {
+                  window.voiceflow.chat.isLoaded = false;
+                }
+              }
+            }
+            
+            // Initialize after a delay to ensure React app has loaded
+            setTimeout(initVoiceflow, 500);
+            
+            // Also check for route changes (for SPA navigation)
+            const originalPushState = history.pushState;
+            history.pushState = function() {
+                originalPushState.apply(history, arguments);
+                setTimeout(initVoiceflow, 300);
+            };
+            
+            // Listen for popstate events (browser back/forward)
+            window.addEventListener('popstate', function() {
+              setTimeout(initVoiceflow, 300);
+            });
+            
+            // Listen for hash changes (another way routes can change)
+            window.addEventListener('hashchange', function() {
+              setTimeout(initVoiceflow, 300);
+            });
+            
+            // Listen for page visibility changes which can occur on refresh
+            document.addEventListener('visibilitychange', function() {
+              if (!document.hidden) {
+                // Page is visible again (after refresh or tab switch)
+                setTimeout(initVoiceflow, 500);
+              }
+            });
+            
+            // Listen for focus events
+            window.addEventListener('focus', function() {
+              setTimeout(initVoiceflow, 300);
+            });
+          }
+          
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
   </head>
   <body>
     <!-- Cursor trail circles -->
@@ -116,27 +192,6 @@
 
         animateCircles();
       });
-    </script>
-
-    <script type="text/javascript">
-      (function(d, t) {
-          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-
-          v.onload = function() {
-            // Only initialize Voiceflow chat on editor page
-            if (window.location.pathname === '/editor') {
-              window.voiceflow.chat.load({
-                verify: { projectID: '695a95066f20de2ac229a353' },
-                url: 'https://general-runtime.voiceflow.com',
-                versionID: 'production',
-                voice: {
-                  url: "https://runtime-api.voiceflow.com"
-                }
-              });
-            }
-          }
-          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-      })(document, 'script');
     </script>
   </body>
 </html>
