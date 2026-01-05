@@ -117,11 +117,15 @@ You must keep two terminals running at the same time — one for the client and 
 
 ## 🧪 Tech Stack (Because we love this stuff)
 
-- **Frontend**: React.js + Tailwind CSS + Framer Motion + Firebase
-- **Backend**: Node.js + Express.js  
-- **Database**: MongoDB Atlas  
-- **AI**: OpenAI GPT APIs (explain + debug)  
-- **Utilities**: jsPDF, UUID, Socket.io
+| Layer | Stack |
+|------|------|
+| **Frontend** | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="42"/> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" width="42"/> <img src="https://cdn.simpleicons.org/framer/0055FF" width="42"/> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/firebase/firebase-plain.svg" width="42"/> |
+| **Backend** | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="42"/> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original.svg" width="42"/> |
+| **Database** | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg" width="42"/> |
+| **AI** | <img src="https://img.shields.io/badge/OpenAI-000000?style=for-the-badge&logo=openai&logoColor=white" height="42"/> |
+| **Utilities** | <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" width="42"/> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/socketio/socketio-original.svg" width="42"/> |
+
+
 
 ---
 
@@ -131,6 +135,16 @@ Contributions are welcome!
 Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on forking, branching, committing, and submitting pull requests.
 
 ---
+
+## ❤️ Our Contributors
+
+![Contributors](https://contributors-img.web.app/image?repo=ANU-2524/JustCoding)
+
+👉 View all contributors: https://github.com/ANU-2524/JustCoding/graphs/contributors
+
+
+
+
 
 ## 📄 License
 
