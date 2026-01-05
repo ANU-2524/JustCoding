@@ -54,6 +54,12 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 - 🤝 **DevZone – Real-Time Collaboration**  
   Create or join rooms, share the link, and code together. No extensions, no fuss.
 
+- 👤 **Profile Dashboard (No login required)**
+  - Save and manage code snippets
+  - View past collaboration sessions (basic local history)
+  - Track usage stats (runs, visualizes, AI actions)
+  - Note: data is stored locally in your browser (`localStorage`), so it won’t sync across devices yet.
+
 ---
 
 ## 📁 Folder Structure

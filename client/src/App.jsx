@@ -4,7 +4,7 @@ import { ThemeProvider } from "./components/ThemeContext";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import Profile from "./components/Profile";
-import ProtectedRoute from "./components/ProtectedRoute";
+// Note: Auth remains available, but core app is usable without login.
 
 import HomePage from "./components/HomePage"; // Optional
 import JoinRoom from "./components/JoinRoom"; // 👈 added
@@ -33,9 +33,7 @@ function App() {
             <Route
               path="/editor"
               element={
-                <ProtectedRoute>
-                  <MainEditor />
-                </ProtectedRoute>
+                <MainEditor />
               }
             />
             
@@ -43,9 +41,7 @@ function App() {
             <Route
               path="/profile"
               element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
+                <Profile />
               }
             />
 
@@ -53,17 +49,13 @@ function App() {
             <Route
               path="/live"
               element={
-                <ProtectedRoute>
-                  <JoinRoom />
-                </ProtectedRoute>
+                <JoinRoom />
               }
             />
             <Route
               path="/live/:roomId"
               element={
-                <ProtectedRoute>
-                  <LiveRoom />
-                </ProtectedRoute>
+                <LiveRoom />
               }
             />
           </Routes>

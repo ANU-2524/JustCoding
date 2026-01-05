@@ -53,6 +53,7 @@ const Navbar = () => {
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
+    { path: '/profile', label: 'Profile', icon: <FaUser /> },
   ];
 
   return (
