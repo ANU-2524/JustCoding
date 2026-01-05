@@ -117,5 +117,26 @@
         animateCircles();
       });
     </script>
+
+    <script type="text/javascript">
+      (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+
+          v.onload = function() {
+            // Only initialize Voiceflow chat on editor page
+            if (window.location.pathname === '/editor') {
+              window.voiceflow.chat.load({
+                verify: { projectID: '695a95066f20de2ac229a353' },
+                url: 'https://general-runtime.voiceflow.com',
+                versionID: 'production',
+                voice: {
+                  url: "https://runtime-api.voiceflow.com"
+                }
+              });
+            }
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
   </body>
 </html>
