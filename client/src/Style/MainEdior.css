@@ -649,3 +649,57 @@
     padding: 0.65rem 1.25rem;
   }
 }
+
+/* Enhanced Code Display with Syntax Highlighting */
+.code-display {
+  position: relative;
+  background: var(--primary-black);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--elegant-orange);
+  overflow: hidden;
+}
+
+.visualizer-code {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.execution-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.execution-line {
+  height: 24px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.execution-line.active-execution {
+  background: rgba(255, 107, 0, 0.2);
+  border-left: 4px solid var(--accent-orange);
+  animation: pulse-execution 1s infinite;
+}
+
+.execution-pointer {
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-orange);
+  font-weight: bold;
+  font-size: 12px;
+  animation: blink 1s infinite;
+}
+
+@keyframes pulse-execution {
+  0%, 100% { background: rgba(255, 107, 0, 0.2); }
+  50% { background: rgba(255, 107, 0, 0.4); }
+}

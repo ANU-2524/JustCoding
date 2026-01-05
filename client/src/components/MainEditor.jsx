@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import CodeEditor from './CodeEditor';
+import CodeHighlighter from './CodeHighlighter';
 import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye } from 'react-icons/fa';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
+import '../Style/CodeHighlighter.css';
 import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
 
@@ -480,7 +482,13 @@ const MainEditor = () => {
             {debugResult && (
               <div className="debug-result">
                 <h3>Debug Suggestion:</h3>
-                <pre>{debugResult}</pre>
+                <CodeHighlighter 
+                  code={debugResult}
+                  language="text"
+                  theme={theme === "vs-dark" ? "dark" : "light"}
+                  showLineNumbers={false}
+                  showCopyButton={true}
+                />
               </div>
             )}
 
@@ -541,16 +549,25 @@ const MainEditor = () => {
                     </div>
                     
                     <div className="code-display">
-                      <div className="code-lines">
+                      <CodeHighlighter 
+                        code={code}
+                        language={language}
+                        theme={theme === "vs-dark" ? "dark" : "light"}
+                        showLineNumbers={true}
+                        showCopyButton={false}
+                        className="visualizer-code"
+                      />
+                      <div className="execution-overlay">
                         {code.split('\n').map((line, index) => (
                           <div 
                             key={index}
-                            className={`code-line ${
-                              currentState?.lineNumber === index + 1 ? 'active-line' : ''
+                            className={`execution-line ${
+                              currentState?.lineNumber === index + 1 ? 'active-execution' : ''
                             }`}
                           >
-                            <span className="line-number">{index + 1}</span>
-                            <span className="line-code">{line}</span>
+                            {currentState?.lineNumber === index + 1 && (
+                              <div className="execution-pointer">▶</div>
+                            )}
                           </div>
                         ))}
                       </div>
