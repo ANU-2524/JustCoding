@@ -1,32 +1,182 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
-import CodeHighlighter from './CodeHighlighter';
 import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye } from 'react-icons/fa';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
-import '../Style/CodeHighlighter.css';
 import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
 
 const languages = {
-  python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
-  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
-let age = 25;
-let name = "Alice";
-let isAdult = age >= 18;
-console.log(name + " is " + age + " years old");
-if (isAdult) {
-  console.log("Can vote!");
+  python:     { name: 'Python',     starter: `x = 10
+y = 20
+sum_val = x + y
+print(sum_val)
+if sum_val > 25:
+    print("Large")` },
+  cpp:        { name: 'C++',        starter: `#include <iostream>
+using namespace std;
+
+int main() {
+    int x = 10;
+    int y = 20;
+    int sum = x + y;
+    cout << sum << endl;
+    if (sum > 25) {
+        cout << "Large" << endl;
+    }
+    return 0;
 }` },
-  typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
-  c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
-  ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
-  php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
-  swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
-  rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
+  java:       { name: 'Java',       starter: `public class Main {
+    public static void main(String[] args) {
+        int x = 10;
+        int y = 20;
+        int sum = x + y;
+        System.out.println(sum);
+        if (sum > 25) {
+            System.out.println("Large");
+        }
+    }
+}` },
+  javascript: { name: 'JavaScript', starter: `let x = 10;
+let y = 20;
+let sum = x + y;
+console.log(sum);
+if (sum > 25) {
+  console.log("Large");
+}` },
+  typescript: { name: 'TypeScript', starter: `let x: number = 10;
+let y: number = 20;
+let sum: number = x + y;
+console.log(sum);
+if (sum > 25) {
+  console.log("Large");
+}` },
+  c:          { name: 'C',          starter: `#include <stdio.h>
+
+int main() {
+    int x = 10;
+    int y = 20;
+    int sum = x + y;
+    printf("%d\\n", sum);
+    if (sum > 25) {
+        printf("Large\\n");
+    }
+    return 0;
+}` },
+  go:         { name: 'Go',         starter: `package main
+
+import "fmt"
+
+func main() {
+    x := 10
+    y := 20
+    sum := x + y
+    fmt.Println(sum)
+    if sum > 25 {
+        fmt.Println("Large")
+    }
+}` },
+  ruby:       { name: 'Ruby',       starter: `x = 10
+y = 20
+sum = x + y
+puts sum
+if sum > 25
+  puts "Large"
+end` },
+  php:        { name: 'PHP',        starter: `<?php
+$x = 10;
+$y = 20;
+$sum = $x + $y;
+echo $sum . "\\n";
+if ($sum > 25) {
+    echo "Large\\n";
+}
+?>` },
+  swift:      { name: 'Swift',      starter: `let x = 10
+let y = 20
+let sum = x + y
+print(sum)
+if sum > 25 {
+    print("Large")
+}` },
+  rust:       { name: 'Rust',       starter: `fn main() {
+    let x = 10;
+    let y = 20;
+    let sum = x + y;
+    println!("{}", sum);
+    if sum > 25 {
+        println!("Large");
+    }
+}` },
+  csharp:     { name: 'C#',         starter: `using System;
+
+class Program {
+    static void Main() {
+        int x = 10;
+        int y = 20;
+        int sum = x + y;
+        Console.WriteLine(sum);
+        if (sum > 25) {
+            Console.WriteLine("Large");
+        }
+    }
+}` },
+  kotlin:     { name: 'Kotlin',     starter: `fun main() {
+    val x = 10
+    val y = 20
+    val sum = x + y
+    println(sum)
+    if (sum > 25) {
+        println("Large")
+    }
+}` },
+  scala:      { name: 'Scala',      starter: `object Main extends App {
+  val x = 10
+  val y = 20
+  val sum = x + y
+  println(sum)
+  if (sum > 25) {
+    println("Large")
+  }
+}` },
+  dart:       { name: 'Dart',       starter: `void main() {
+  int x = 10;
+  int y = 20;
+  int sum = x + y;
+  print(sum);
+  if (sum > 25) {
+    print('Large');
+  }
+}` },
+  lua:        { name: 'Lua',        starter: `x = 10
+y = 20
+sum = x + y
+print(sum)
+if sum > 25 then
+    print("Large")
+end` },
+  perl:       { name: 'Perl',       starter: `my $x = 10;
+my $y = 20;
+my $sum = $x + $y;
+print $sum . "\\n";
+if ($sum > 25) {
+    print "Large\\n";
+}` },
+  r:          { name: 'R',          starter: `x <- 10
+y <- 20
+sum <- x + y
+print(sum)
+if (sum > 25) {
+  print("Large")
+}` },
+  matlab:     { name: 'MATLAB',     starter: `x = 10;
+y = 20;
+sum = x + y;
+disp(sum);
+if sum > 25
+    disp('Large');
+end` },
+  sql:        { name: 'SQL',        starter: `SELECT 10 + 20 AS sum;` }
 };
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
@@ -45,13 +195,12 @@ const MainEditor = () => {
     const savedLang = localStorage.getItem("lang") || "python";
     const savedCode = localStorage.getItem(`code-${savedLang}`);
     if (savedCode) return savedCode;
-    return savedLang === "javascript" ? 
-      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` : 
-      languages[savedLang]?.starter || languages.python.starter;
+    return languages[savedLang]?.starter || languages.python.starter;
   });
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "vs-dark");
+  // Remove unused callback import
   const { logout, currentUser } = useAuth();
 
   // Visualizer states
@@ -361,11 +510,6 @@ const MainEditor = () => {
 
   // Visualizer functions
   const visualizeCode = async () => {
-    if (language !== 'javascript') {
-      alert('Code visualization is currently only available for JavaScript');
-      return;
-    }
-    
     setVisualizerLoading(true);
     
     try {
@@ -382,7 +526,7 @@ const MainEditor = () => {
         setCurrentStep(0);
         setShowVisualizer(true);
       } else {
-        alert('Visualization failed: ' + (data.error || 'Unknown error'));
+        alert('Visualization: ' + (data.error || 'Not supported for this language'));
       }
     } catch (error) {
       console.error('Visualization failed:', error);
@@ -482,13 +626,7 @@ const MainEditor = () => {
             {debugResult && (
               <div className="debug-result">
                 <h3>Debug Suggestion:</h3>
-                <CodeHighlighter 
-                  code={debugResult}
-                  language="text"
-                  theme={theme === "vs-dark" ? "dark" : "light"}
-                  showLineNumbers={false}
-                  showCopyButton={true}
-                />
+                <pre className="debug-code">{debugResult}</pre>
               </div>
             )}
 
@@ -516,16 +654,14 @@ const MainEditor = () => {
                 {loading ? "Running..." : "Run Code"}
               </button>
               
-              {language === 'javascript' && (
-                <button 
-                  onClick={visualizeCode} 
-                  className="btn visualize" 
-                  disabled={visualizerLoading}
-                  style={{background: 'linear-gradient(45deg, #e233ff, #ff6b00)'}}
-                >
-                  <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
-                </button>
-              )}
+              <button 
+                onClick={visualizeCode} 
+                className="btn visualize" 
+                disabled={visualizerLoading}
+                style={{background: 'linear-gradient(45deg, #e233ff, #ff6b00)'}}
+              >
+                <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
+              </button>
               
               <button onClick={reset} className="btn reset" disabled={loading}>Reset</button>
               <button onClick={downloadPDF} className="btn pdf" disabled={loading}>
@@ -549,25 +685,16 @@ const MainEditor = () => {
                     </div>
                     
                     <div className="code-display">
-                      <CodeHighlighter 
-                        code={code}
-                        language={language}
-                        theme={theme === "vs-dark" ? "dark" : "light"}
-                        showLineNumbers={true}
-                        showCopyButton={false}
-                        className="visualizer-code"
-                      />
-                      <div className="execution-overlay">
+                      <div className="code-lines">
                         {code.split('\n').map((line, index) => (
                           <div 
                             key={index}
-                            className={`execution-line ${
-                              currentState?.lineNumber === index + 1 ? 'active-execution' : ''
+                            className={`code-line ${
+                              currentState?.lineNumber === index + 1 ? 'active-line' : ''
                             }`}
                           >
-                            {currentState?.lineNumber === index + 1 && (
-                              <div className="execution-pointer">▶</div>
-                            )}
+                            <span className="line-number">{index + 1}</span>
+                            <span className="line-code">{line}</span>
                           </div>
                         ))}
                       </div>

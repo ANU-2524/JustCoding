@@ -76,13 +76,9 @@ const languageMap = {
 app.use("/api/gpt", gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 
-// Simple visualizer endpoint
+// Multi-language visualizer endpoint
 app.post('/api/visualizer/visualize', (req, res) => {
   const { code, language } = req.body;
-  
-  if (language !== 'javascript') {
-    return res.status(400).json({ error: 'Only JavaScript supported' });
-  }
   
   const lines = code.split('\n').filter(line => line.trim());
   const execution = [];
@@ -90,25 +86,16 @@ app.post('/api/visualizer/visualize', (req, res) => {
   
   lines.forEach((line, index) => {
     const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('//')) {
-      // Variable declarations
-      const varMatch = trimmed.match(/(let|const|var)\s+(\w+)\s*=\s*(.+)/);
+    if (trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('#')) {
+      // Basic variable parsing for all languages
+      let varMatch = trimmed.match(/(\w+)\s*=\s*(.+)/);
+      
       if (varMatch) {
-        let value = varMatch[3].replace(/;$/, '').trim();
-        // Remove quotes for strings
+        let value = varMatch[2].replace(/;$/, '').trim();
         if (value.startsWith('"') && value.endsWith('"')) {
           value = value.slice(1, -1);
         }
-        variables[varMatch[2]] = { value, type: typeof value === 'string' && isNaN(value) ? 'string' : 'number' };
-      }
-      
-      // Handle expressions like age >= 18
-      const exprMatch = trimmed.match(/(\w+)\s*=\s*(.+)/);
-      if (exprMatch && !varMatch) {
-        let value = exprMatch[2].replace(/;$/, '').trim();
-        if (value.includes('>=') || value.includes('<=') || value.includes('==')) {
-          variables[exprMatch[1]] = { value: 'true/false', type: 'boolean' };
-        }
+        variables[varMatch[1]] = { value, type: isNaN(value) ? 'string' : 'number' };
       }
       
       execution.push({
@@ -122,10 +109,9 @@ app.post('/api/visualizer/visualize', (req, res) => {
   });
   
   function getStatementType(line) {
-    if (line.includes('let') || line.includes('const') || line.includes('var')) return 'declaration';
     if (line.includes('if') || line.includes('else')) return 'conditional';
-    if (line.includes('console.log')) return 'output';
     if (line.includes('=') && !line.includes('==')) return 'assignment';
+    if (line.includes('print') || line.includes('console.log') || line.includes('cout') || line.includes('printf') || line.includes('System.out')) return 'output';
     return 'expression';
   }
   
