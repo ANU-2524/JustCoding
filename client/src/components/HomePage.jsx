@@ -38,6 +38,7 @@ const HomePage = () => {
 
           {/* Buttons */}
           <div className="hero-buttons animate-on-scroll">
+            {/* Requires login */}
             <button
               className="btn-primary"
               onClick={() => navigate("/login")}
@@ -47,9 +48,10 @@ const HomePage = () => {
 
             <a href="#features" className="btn-secondary">Explore Features</a>
 
+            {/* Open editor without login */}
             <button
               className="btn-editor"
-              onClick={() => navigate("/editor")} // navigate to CodeEditor.jsx
+              onClick={() => navigate("/editor")}
             >
               Open Code Editor
             </button>
