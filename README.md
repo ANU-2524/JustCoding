@@ -138,9 +138,13 @@ Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on forking, 
 
 ## ❤️ Our Contributors
 
-<a href="https://github.com/ANU-2524/JustCoding/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ANU-2524/JustCoding&max=300" />
-</a>
+![Contributors](https://contributors-img.web.app/image?repo=ANU-2524/JustCoding)
+
+👉 View all contributors: https://github.com/ANU-2524/JustCoding/graphs/contributors
+
+
+
+
 
 ## 📄 License
 
