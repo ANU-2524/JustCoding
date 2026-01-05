@@ -335,13 +335,8 @@ const MainEditor = () => {
     }
   };
 
-  // Visualizer functions
+  // Universal Visualizer - works with all languages
   const visualizeCode = async () => {
-    if (language !== 'javascript') {
-      alert('Code visualization is currently only available for JavaScript');
-      return;
-    }
-
     setVisualizerLoading(true);
 
     try {
@@ -358,7 +353,7 @@ const MainEditor = () => {
         setCurrentStep(0);
         setShowVisualizer(true);
       } else {
-        alert('Visualization failed: ' + (data.error || 'Unknown error'));
+        alert('Visualization: ' + (data.error || 'Not supported for this language'));
       }
     } catch (error) {
       console.error('Visualization failed:', error);
@@ -566,17 +561,16 @@ const MainEditor = () => {
               <span>{loading ? "Running..." : "Run"}</span>
             </button>
 
-            {language === 'javascript' && (
-              <button
-                onClick={visualizeCode}
-                className="btn-visualize"
-                disabled={visualizerLoading}
-                title="Step through your code execution with variable tracking"
-              >
-                <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
-                {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
-              </button>
-            )}
+            {/* Remove JavaScript-only restriction */}
+            <button
+              onClick={visualizeCode}
+              className="btn-visualize"
+              disabled={visualizerLoading}
+              title="Step through your code execution with variable tracking"
+            >
+              <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
+              {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
+            </button>
 
             <button onClick={reset} className="btn-secondary" disabled={loading}>
               <FaUndo />
