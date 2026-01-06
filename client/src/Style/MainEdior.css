@@ -60,10 +60,16 @@
   font-family: 'Lora', serif;
   background: linear-gradient(to bottom, var(--primary-black) 0%, var(--soft-black) 100%);
   min-height: 100vh;
-  padding: 3rem 2rem;
+  padding: 2rem 1rem;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .main-editor {
+    padding: 1rem 0.5rem;
+  }
 }
 
 .logo-icon {
@@ -344,6 +350,21 @@
   border-radius: var(--radius-lg);
 }
 
+@media (max-width: 1024px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+}
+
 .toolbar-left,
 .toolbar-right {
   display: flex;
@@ -496,6 +517,27 @@
   gap: var(--space-lg);
   flex: 1;
   min-height: 500px;
+}
+
+@media (max-width: 1200px) {
+  .editor-section {
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 1024px) {
+  .editor-section {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .editor-section {
+    min-height: auto;
+    gap: var(--space-sm);
+  }
 }
 
 .editor-panel {
@@ -982,6 +1024,7 @@
 @media (max-width: 1024px) {
   .editor-section {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
 
   .io-panel {
@@ -996,9 +1039,19 @@
   .state-info {
     grid-template-columns: 1fr;
   }
+  
+  .toolbar-left,
+  .toolbar-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 768px) {
+  .workspace {
+    padding-top: 60px;
+  }
+
   .workspace-header {
     padding: var(--space-sm) var(--space-md);
   }
@@ -1013,6 +1066,7 @@
 
   .workspace-main {
     padding: var(--space-md);
+    gap: var(--space-md);
   }
 
   .toolbar {
@@ -1024,10 +1078,12 @@
   .toolbar-right {
     flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
   }
 
   .language-select {
     width: 100%;
+    max-width: none;
   }
 
   .io-panel {
@@ -1045,9 +1101,37 @@
   .logout-btn span {
     display: none;
   }
+  
+  /* Editor container improvements */
+  .editor-container {
+    min-height: 300px;
+  }
+  
+  .output-container {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  /* AI section mobile improvements */
+  .ai-tabs {
+    gap: 0.5rem;
+  }
+  
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .workspace-main {
+    padding: var(--space-sm);
+  }
+  
+  .toolbar {
+    padding: var(--space-sm);
+  }
+
   .toolbar-right {
     width: 100%;
   }
@@ -1055,6 +1139,8 @@
   .toolbar-right button {
     flex: 1;
     justify-content: center;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
   }
 
   .btn-secondary span {
@@ -1064,5 +1150,52 @@
   .btn-run,
   .btn-visualize {
     flex: 2;
+  }
+  
+  .language-select {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  /* Very small screen adjustments */
+  .editor-container {
+    min-height: 250px;
+  }
+  
+  .input-panel,
+  .output-panel {
+    min-height: 120px;
+  }
+  
+  .ai-card {
+    padding: var(--space-sm);
+  }
+  
+  .tab-button {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ========================================
+   Code Editor Responsive Styles
+   ======================================== */
+.code-editor-container {
+  height: 70vh;
+  min-height: 300px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .code-editor-container {
+    height: 50vh;
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .code-editor-container {
+    height: 40vh;
+    min-height: 200px;
   }
 }

@@ -17,15 +17,26 @@ body {
   position: relative;
   background: linear-gradient(135deg, #3b82f6, #6366f1);
   color: white;
-  padding: 12rem 2rem;
+  padding: 8rem 2rem 6rem;
   text-align: center;
   overflow: hidden;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .hero-section h1 {
-  font-size: 5rem;
+  font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: 900;
   margin-bottom: 1rem;
+  line-height: 1.1;
 }
 
 .hero-section .highlight {
@@ -35,18 +46,50 @@ body {
 }
 
 .hero-section p {
-  font-size: 1.6rem;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
   max-width: 700px;
   margin: 0 auto 3rem;
+  line-height: 1.5;
 }
 
-.hero-buttons a {
-  margin: 0 0.7rem;
-  padding: 1rem 2.5rem;
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.hero-buttons a,
+.hero-buttons button {
+  margin: 0;
+  padding: 1rem 2rem;
   border-radius: 12px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.4s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  min-width: 160px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.8rem;
+  }
+  
+  .hero-buttons a,
+  .hero-buttons button {
+    width: 100%;
+    max-width: 280px;
+    padding: 1.2rem 2rem;
+    font-size: 1.1rem;
+  }
 }
 
 .btn-primary {
@@ -102,10 +145,25 @@ body {
 
 .features-grid {
   display: grid;
-  gap: 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .features-grid {
+    padding: 0;
+  }
 }
 
 .feature-card {
@@ -261,6 +319,34 @@ body {
 @media (max-width: 520px) {
   .footer { padding: 2.5rem 1rem; }
   .footer .social-icons { flex-direction: column; gap: 0.6rem; }
+  
+  /* Additional mobile fixes */
+  .hero-section h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .hero-section p {
+    font-size: 1.1rem !important;
+  }
+  
+  .features-section h2,
+  .how-section h2,
+  .cta-section h2 {
+    font-size: 2rem !important;
+  }
+  
+  .feature-card,
+  .how-step {
+    padding: 1.5rem 1rem;
+  }
+  
+  .floating-shape {
+    display: none; /* Hide decorative elements on very small screens */
+  }
+  
+  .cta-section {
+    padding: 4rem 1rem;
+  }
 }
 
 /* ================= Scroll Animations ================= */
