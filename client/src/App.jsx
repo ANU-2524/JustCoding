@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/ThemeContext";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import Profile from "./components/Profile";
+import ScrollToTop from "./components/ScrollToTop";
 // Note: Auth remains available, but core app is usable without login.
 
 import HomePage from "./components/HomePage"; // Optional
@@ -59,7 +60,7 @@ function App() {
               }
             />
           </Routes>
-
+          <ScrollToTop />
         </div>
       </Router>
     </AuthProvider>
