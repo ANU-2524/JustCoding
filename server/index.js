@@ -4,6 +4,13 @@ const cors = require('cors');
 const axios = require('axios');
 const http = require("http");
 const { Server } = require("socket.io");
+const { 
+  generalLimiter, 
+  aiLimiter, 
+  codeLimiter, 
+  rateLimitLogger 
+} = require('./middleware/simpleRateLimiter');
+// const usageTracker = require('./middleware/usageTracker');
 const gptRoute = require("./routes/gptRoute.js");
 const codeQualityRoute = require("./routes/codeQuality.js");
 
@@ -25,7 +32,12 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+// Security: Request size limiting
+app.use(express.json({ limit: '2kb' }));
+
+// Security: Rate limiting
+app.use(rateLimitLogger);
+app.use(generalLimiter);
 
 const io = new Server(server, {
   cors: {
@@ -76,11 +88,12 @@ const languageMap = {
   cpp:        { ext: 'cpp', version: '10.2.0' },
 };
 
-app.use("/api/gpt", gptRoute);
+// AI routes with security
+app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 
-// Enhanced visualizer endpoint
-app.post('/api/visualizer/visualize', (req, res) => {
+// ✅ Enhanced visualizer endpoint with rate limiting
+app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
   const { code, language } = req.body;
   
   if (language !== 'javascript') {
@@ -262,23 +275,58 @@ function getStatementType(line) {
   return 'expression';
 }
 
-app.post('/compile', async (req, res) => {
+// Code execution endpoint with security
+app.post('/compile', codeLimiter, async (req, res) => {
   const { language, code, stdin } = req.body;
+  
+  // Input validation
+  if (!language || !code) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: language and code' 
+    });
+  }
+  
+  // Code length validation
+  if (code.length > 10000) {
+    return res.status(400).json({ 
+      error: 'Code too long. Maximum 10,000 characters allowed.' 
+    });
+  }
+  
+  // Input validation
+  if (stdin && stdin.length > 1000) {
+    return res.status(400).json({ 
+      error: 'Input too long. Maximum 1,000 characters allowed.' 
+    });
+  }
+  
   const langInfo = languageMap[language];
-  if (!langInfo) return res.status(400).json({ error: 'Unsupported language' });
+  if (!langInfo) {
+    return res.status(400).json({ 
+      error: 'Unsupported language',
+      supportedLanguages: Object.keys(languageMap)
+    });
+  }
 
   try {
     const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
       language,
       version: langInfo.version,
-      stdin,
+      stdin: stdin || '',
       files: [{ name: `main.${langInfo.ext}`, content: code }],
     });
 
-    res.json({ output: response.data.run.stdout || response.data.run.stderr || "No output" });
+    // ✅ Sanitize output
+    const output = response.data.run.stdout || response.data.run.stderr || "No output";
+    const sanitizedOutput = output.substring(0, 5000); // Limit output size
+    
+    res.json({ output: sanitizedOutput });
   } catch (error) {
-    console.error("Compile Error:", error);
-    res.status(500).json({ error: 'Execution failed', details: error.message });
+    console.error("Compile Error:", error.message);
+    res.status(500).json({ 
+      error: 'Code execution failed. Please try again.',
+      tip: 'Check your code for syntax errors.'
+    });
   }
 });
 
