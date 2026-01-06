@@ -696,6 +696,24 @@
   max-height: 400px;
 }
 
+/* Highlight the active executing line */
+.active-line {
+  background: rgba(59, 130, 246, 0.18);
+  border-left: 3px solid #3b82f6;
+  position: relative;
+}
+
+
+/* Arrow indicator (Python Tutor style) */
+.active-line::before {
+  content: "▶";
+  position: absolute;
+  left: -1.2rem;
+  color: #3b82f6;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
 .code-lines {
   font-family: var(--font-mono);
   font-size: 14px;

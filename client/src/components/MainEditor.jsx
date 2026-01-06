@@ -9,6 +9,8 @@ import { useAuth } from "./AuthContext";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { addSnippet, incrementStat, touchLastActive } from '../services/localStore';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const languages = {
 
@@ -647,19 +649,28 @@ if (isAdult) {
                     </button>
                   </div>
 
-                  <div className="code-display">
-                    <div className="code-lines">
-                      {code.split('\\n').map((line, index) => (
-                        <div
-                          key={index}
-                          className={`code-line ${currentState?.lineNumber === index + 1 ? 'active-line' : ''}`}
-                        >
-                          <span className="line-number">{index + 1}</span>
-                          <span className="line-code">{line}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+<div className="code-display">
+  <SyntaxHighlighter
+    language={language}
+    style={isDark ? oneDark : undefined}
+    showLineNumbers
+    wrapLines
+    customStyle={{
+      margin: 0,
+      background: "transparent",
+      fontSize: "14px",
+    }}
+    lineProps={(lineNumber) => ({
+      className:
+        lineNumber === currentState?.lineNumber
+          ? "active-line"
+          : "",
+    })}
+  >
+    {code}
+  </SyntaxHighlighter>
+</div>
+
 
                   {currentState && (
                     <div className="state-info">
