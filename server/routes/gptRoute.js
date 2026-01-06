@@ -12,8 +12,21 @@ const MODEL_NAME = "mistralai/mistral-7b-instruct";
 router.post("/explain", async (req, res) => {
   const { question } = req.body;
 
+  // Enhanced input validation
   if (!question) {
     return res.status(400).json({ error: "❌ Missing 'question' in request body." });
+  }
+  
+  if (typeof question !== 'string') {
+    return res.status(400).json({ error: "❌ 'question' must be a string." });
+  }
+  
+  if (question.length > 2000) {
+    return res.status(400).json({ error: "❌ Question too long. Maximum 2000 characters allowed." });
+  }
+  
+  if (question.trim().length === 0) {
+    return res.status(400).json({ error: "❌ Question cannot be empty." });
   }
 
   try {
@@ -52,8 +65,29 @@ router.post("/explain", async (req, res) => {
 router.post("/debug", async (req, res) => {
   const { code, errorMessage } = req.body;
 
+  // Enhanced input validation
   if (!code) {
     return res.status(400).json({ error: "❌ Missing 'code' in request body." });
+  }
+  
+  if (typeof code !== 'string') {
+    return res.status(400).json({ error: "❌ 'code' must be a string." });
+  }
+  
+  if (code.length > 10000) {
+    return res.status(400).json({ error: "❌ Code too long. Maximum 10,000 characters allowed." });
+  }
+  
+  if (code.trim().length === 0) {
+    return res.status(400).json({ error: "❌ Code cannot be empty." });
+  }
+  
+  if (errorMessage && typeof errorMessage !== 'string') {
+    return res.status(400).json({ error: "❌ 'errorMessage' must be a string." });
+  }
+  
+  if (errorMessage && errorMessage.length > 5000) {
+    return res.status(400).json({ error: "❌ Error message too long. Maximum 5,000 characters allowed." });
   }
 
   try {
