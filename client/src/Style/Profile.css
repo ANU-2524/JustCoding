@@ -4,9 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 80px 20px 30px;
-  background: linear-gradient(to bottom, var(--primary-black) 0%, var(--soft-black) 100%);
-  font-family: 'Lora', serif;
+
 }
 
 .profile-card {
