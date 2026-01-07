@@ -7,7 +7,7 @@ const Cursor = () => {
   const circlesRef = useRef([]);
 
   useEffect(() => {
-    const NUM_CIRCLES = 12; // Fewer circles for a cleaner trail
+    const NUM_CIRCLES = 18; // Increased for a more fluid, energetic trail
     const container = containerRef.current;
     
     // Create circles
@@ -15,9 +15,10 @@ const Cursor = () => {
     for (let i = 0; i < NUM_CIRCLES; i++) {
       const circle = document.createElement("div");
       circle.className = "circle";
+      if (i === 0) circle.classList.add("glow");
       
       const opacity = 1 - (i / NUM_CIRCLES);
-      circle.style.opacity = (opacity * 0.6).toString(); // Softer opacity
+      circle.style.opacity = (opacity * 0.8).toString(); // Brighter opacity
       
       container.appendChild(circle);
       
@@ -72,8 +73,8 @@ const Cursor = () => {
         circleData.y = y;
 
         const nextCircle = circlesRef.current[index + 1] || circlesRef.current[0];
-        x += (nextCircle.x - x) * 0.4; // Slightly faster follow speed
-        y += (nextCircle.y - y) * 0.4;
+        x += (nextCircle.x - x) * 0.5; // Snapier, more energetic follow speed
+        y += (nextCircle.y - y) * 0.5;
       });
 
       animationFrame = requestAnimationFrame(animate);
