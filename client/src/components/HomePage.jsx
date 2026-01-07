@@ -38,8 +38,9 @@ const HomePage = () => {
 
           {/* Buttons */}
           <div className="hero-buttons animate-on-scroll">
+
             <button
-              className="btn-primary"
+              className="btn-secondary"
               onClick={() => navigate("/login")}
             >
               Start Coding
