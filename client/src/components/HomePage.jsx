@@ -1,11 +1,14 @@
 // src/components/HomePage.jsx
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
+import { useTheme } from "./ThemeContext";
+import "../Style/theme.css";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
+  const { theme, isDark } = useTheme(); // Add theme context
 
   // IntersectionObserver for scroll animations
   useEffect(() => {

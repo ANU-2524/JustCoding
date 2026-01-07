@@ -1,6 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import '../Style/theme.css';
 import '../Style/Profile.css';
 import {
   addSnippet,
@@ -15,6 +17,7 @@ import {
 
 const Profile = () => {
   const { currentUser } = useAuth();
+  const { theme, isDark } = useTheme(); // Add theme context
   const [profile, setProfile] = useState({
     displayName: '',
     email: '',
