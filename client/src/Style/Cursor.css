@@ -10,34 +10,45 @@
 
 .circle {
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 106, 0, 0.8) 0%, rgba(255, 68, 0, 0.4) 70%, rgba(255, 0, 0, 0) 100%);
-  box-shadow: 0 0 10px rgba(255, 106, 0, 0.4);
+  background-color: var(--accent-primary, #7c3aed);
+  box-shadow: 0 0 10px var(--accent-glow, rgba(124, 58, 237, 0.4));
   transform: translate(-50%, -50%);
   will-change: transform, left, top;
-  transition: transform 0.1s ease-out;
+  mix-blend-mode: difference;
+}
+
+/* The first circle is the main cursor point */
+.circle:first-child {
+  width: 12px;
+  height: 12px;
+  background-color: var(--text-primary, #fff);
+  mix-blend-mode: normal;
+  box-shadow: 0 0 15px var(--accent-primary, #7c3aed);
+  z-index: 2;
 }
 
 .circle.glow {
-  width: 32px;
-  height: 32px;
-  background: radial-gradient(circle, rgba(255, 106, 0, 0.4) 0%, rgba(255, 68, 0, 0.1) 70%, rgba(255, 0, 0, 0) 100%);
-  box-shadow: 0 0 20px rgba(255, 106, 0, 0.2);
-  z-index: -1;
+  display: none; /* Removed the chunky glow */
 }
 
 /* Click effect */
 .circle.clicking {
-  transform: translate(-50%, -50%) scale(1.5);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 106, 0, 0.4) 70%, rgba(255, 0, 0, 0) 100%);
+  transform: translate(-50%, -50%) scale(2.5);
+  background-color: var(--color-info, #58a6ff);
+  opacity: 0.8 !important;
 }
 
 /* Hover effect */
 .circle.hovering {
-  transform: translate(-50%, -50%) scale(1.2);
-  background: radial-gradient(circle, rgba(255, 180, 0, 0.9) 0%, rgba(255, 100, 0, 0.5) 70%, rgba(255, 50, 0, 0) 100%);
-  box-shadow: 0 0 15px rgba(255, 150, 0, 0.6);
+  transform: translate(-50%, -50%) scale(1.5);
+  background-color: var(--accent-secondary, #a78bfa);
+}
+
+.circle.hovering:first-child {
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
 }
