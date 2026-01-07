@@ -7,10 +7,36 @@
     <meta name="theme-color" content="#ff6600" />
 
     <link rel="icon" type="image/png" href="./src/assets/justcode-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="./src/output.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
     <title>JustCode</title>
+
+    <style>
+      /* Prevent white flash and show minimal loader until React mounts */
+      html, body {
+        background: #0d1117; /* matches dark theme */
+        min-height: 100%;
+      }
+      #app-preloader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #0d1117;
+        z-index: 9999;
+      }
+      .spinner {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: 3px solid rgba(124,58,237,0.25);
+        border-top-color: #7c3aed;
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
     <script type="text/javascript">
       (function(d, t) {
@@ -89,6 +115,7 @@
     </script>
   </head>
   <body>
+    <div id="app-preloader"><div class="spinner"></div></div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

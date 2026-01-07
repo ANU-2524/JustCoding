@@ -1,9 +1,13 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './Style/theme.css'
 
-createRoot(document.getElementById('root')).render(
-  <App />
+const rootEl = document.getElementById('root')
+const preloader = document.getElementById('app-preloader')
 
-)
+createRoot(rootEl).render(<App />)
+
+// Remove preloader after first paint
+requestAnimationFrame(() => {
+  if (preloader) preloader.remove()
+})
