@@ -1,6 +1,7 @@
 // src/components/HomePage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
