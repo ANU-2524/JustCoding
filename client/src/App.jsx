@@ -11,6 +11,7 @@ import HomePage from "./components/HomePage";
 import JoinRoom from "./components/JoinRoom";
 import LiveRoom from "./components/LiveRoom";
 import Navbar from "./components/Navbar";
+import "./Style/theme.css";
 import "./Style/Navbar.css";
 
 // function App() {
