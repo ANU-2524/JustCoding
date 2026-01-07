@@ -9,6 +9,8 @@ import {
   sendPasswordResetEmail
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom"; // ✅ Added useLocation
+import { useTheme } from "./ThemeContext";
+import "../Style/theme.css";
 import "../Style/LoginPage.css";
 import { FcGoogle } from "react-icons/fc";
 
@@ -18,6 +20,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const location = useLocation(); // ✅ used to detect original page
+  const { theme, isDark } = useTheme(); // Add theme context
 
   const from = location.state?.from?.pathname || "/editor"; // 👈 default to /editor if no previous page
 

@@ -6,25 +6,25 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
-  font-family: 'Manrope', sans-serif;
+  background: var(--bg-primary);
+  font-family: var(--font-primary);
   padding-top: 80px; /* Space for fixed navbar */
 }
 
 .login-form {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--glass-bg);
   padding: 3rem;
-  border-radius: 16px;
-  box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-colored);
   width: 380px;
   text-align: center;
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
 }
 
 .login-form h2 {
   margin-bottom: 1.8rem;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -34,45 +34,46 @@
   width: 100%;
   padding: 12px 15px;
   margin-bottom: 1.2rem;
-  border: none;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   font-size: 15px;
-  transition: background 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .login-form input:focus {
   outline: none;
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: var(--bg-elevated);
+  border-color: var(--accent-primary);
 }
 
 .login-form button {
   width: 100%;
-  background-color: #00ffe0;
-  color: #000;
+  background: var(--accent-gradient);
+  color: var(--text-primary);
   padding: 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .login-form button:hover {
-  background-color: #00ccb5;
   transform: translateY(-2px);
+  box-shadow: var(--shadow-colored);
 }
 
 .login-form p {
   margin-top: 1.5rem;
   font-size: 14px;
-  color: #ddd;
+  color: var(--text-secondary);
 }
 
 .login-form span {
-  color: #00ffe0;
+  color: var(--accent-primary);
   cursor: pointer;
   font-weight: 700;
   text-decoration: underline;
@@ -83,35 +84,38 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #ffffff;
-  color: #000;
-  border: none;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
   padding: 0.9rem 1.2rem;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
-  transition: background 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
   margin-top: 1rem;
 }
 
 .google-button:hover {
-  background: #f1f1f1;
+  background: var(--bg-hover);
   transform: scale(1.05);
+  box-shadow: var(--shadow-md);
 }
 
 .logout-btn {
-  background-color: #f44336;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--text-primary);
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .logout-btn:hover {
-  background-color: #d32f2f;
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }

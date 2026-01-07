@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:wght@400;500;600&display=swap');
+@import './theme.css';
 
 :root {
-  --elegant-orange: #d4581f;
-  --accent-orange: #ff7043;
-  --gold-accent: #c87941;
-  --primary-black: #1a1a1a;
-  --soft-black: #2d2d2d;
-  --cream: #faf6f1;
-  --warm-white: #f5f1ec;
-  --text-light: #f0f0f0;
+  --elegant-orange: var(--accent-primary, #7c3aed);
+  --accent-orange: var(--accent-secondary, #a78bfa);
+  --gold-accent: var(--accent-primary, #7c3aed);
+  --primary-black: var(--bg-primary, #1a1a1a);
+  --soft-black: var(--bg-secondary, #2d2d2d);
+  --cream: var(--text-primary, #faf6f1);
+  --warm-white: var(--bg-elevated, #f5f1ec);
+  --text-light: var(--text-primary, #f0f0f0);
 }
 
 .join-room-container {
