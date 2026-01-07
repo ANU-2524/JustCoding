@@ -1,0 +1,61 @@
+.circle-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.circle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  background-color: var(--accent-primary, #7c3aed);
+  box-shadow: 0 0 15px var(--accent-glow, rgba(124, 58, 237, 0.6));
+  transform: translate(-50%, -50%);
+  will-change: transform, left, top;
+  mix-blend-mode: screen; /* Changed for a more "energetic" glow feel */
+}
+
+/* The first circle is the main cursor point */
+.circle:first-child {
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  mix-blend-mode: normal;
+  box-shadow: 0 0 20px var(--accent-primary, #7c3aed), 0 0 40px var(--accent-glow, rgba(124, 58, 237, 0.4));
+  z-index: 2;
+}
+
+.circle.glow {
+  display: block;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, var(--accent-glow, rgba(124, 58, 237, 0.4)) 0%, transparent 70%);
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* Click effect */
+.circle.clicking {
+  transform: translate(-50%, -50%) scale(3);
+  background-color: #fff;
+  box-shadow: 0 0 30px #fff, 0 0 60px var(--accent-primary, #7c3aed);
+  opacity: 1 !important;
+}
+
+/* Hover effect */
+.circle.hovering {
+  transform: translate(-50%, -50%) scale(1.8);
+  background-color: var(--accent-secondary, #a78bfa);
+  box-shadow: 0 0 25px var(--accent-secondary, #a78bfa);
+}
+
+.circle.hovering:first-child {
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+}
