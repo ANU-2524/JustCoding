@@ -11,6 +11,7 @@ import HomePage from "./components/HomePage"; // Optional
 import JoinRoom from "./components/JoinRoom"; // 👈 added
 import LiveRoom from "./components/LiveRoom"; // 👈 added
 import Navbar from "./components/Navbar";
+import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
 // function App() {
@@ -25,6 +26,7 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="app-container">
+          <Cursor />
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
