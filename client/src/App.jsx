@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import Profile from "./components/Profile";
 import ScrollToTop from "./components/ScrollToTop";
-// Note: Auth remains available, but core app is usable without login.
 
-import HomePage from "./components/HomePage"; // Optional
-import JoinRoom from "./components/JoinRoom"; // 👈 added
-import LiveRoom from "./components/LiveRoom"; // 👈 added
+import HomePage from "./components/HomePage";
+import JoinRoom from "./components/JoinRoom";
+import LiveRoom from "./components/LiveRoom";
 import Navbar from "./components/Navbar";
 import "./Style/Navbar.css";
 
@@ -30,33 +30,41 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Main personal editor */}
+            {/* Main personal editor - Protected */}
             <Route
               path="/editor"
               element={
-                <MainEditor />
+                <ProtectedRoute>
+                  <MainEditor />
+                </ProtectedRoute>
               }
             />
             
-            {/* Profile route */}
+            {/* Profile route - Protected */}
             <Route
               path="/profile"
               element={
-                <Profile />
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
               }
             />
 
-            {/* Collaborative editor */}
+            {/* Collaborative editor - Protected */}
             <Route
               path="/live"
               element={
-                <JoinRoom />
+                <ProtectedRoute>
+                  <JoinRoom />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/live/:roomId"
               element={
-                <LiveRoom />
+                <ProtectedRoute>
+                  <LiveRoom />
+                </ProtectedRoute>
               }
             />
           </Routes>

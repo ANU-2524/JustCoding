@@ -5,7 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-  browserPopupRedirectResolver
+  browserPopupRedirectResolver,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom"; // ✅ Added useLocation
 import "../Style/LoginPage.css";
@@ -20,14 +21,27 @@ const LoginPage = () => {
 
   const from = location.state?.from?.pathname || "/editor"; // 👈 default to /editor if no previous page
 
-const handleGoogleSignIn = async () => {
-  try {
-    await signInWithPopup(auth, provider); // ✅ set resolver
-    navigate(from); // take back to /editor or intended route
-  } catch (err) {
-    alert(err.message);
-  }
-};
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, provider); // ✅ set resolver
+      navigate(from); // take back to /editor or intended route
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      alert("Please enter your email address to reset your password.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent! Check your inbox.");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +75,24 @@ const handleGoogleSignIn = async () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        {isLogin && (
+          <p
+            className="forgot-password"
+            onClick={handleResetPassword}
+            style={{
+              textAlign: 'right',
+              cursor: 'pointer',
+              color: '#007bff',
+              fontSize: '0.9rem',
+              marginTop: '-10px',
+              marginBottom: '15px'
+            }}
+          >
+            Forgot Password?
+          </p>
+        )}
+
         <button type="submit">
           {isLogin ? "Login" : "Sign Up"}
         </button>

@@ -131,11 +131,7 @@
   padding: 0.6rem 1.1rem;
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 500;
-  color: rgba(229, 231, 235, 0.75);
-  border-radius: 999px;
-  transition: all 0.25s ease;
-}
+
 
 .nav-link:hover {
   color: #ffffff;
@@ -275,8 +271,7 @@
 
   .nav-toggle {
     display: block;
-    color: #00fff7;
-  }
+
 
   .mobile-profile-section {
     border-top: 1px solid rgba(124,58,237,0.3);
