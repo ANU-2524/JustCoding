@@ -50,10 +50,10 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const navItems = [
-    { path: '/', label: 'Home', icon: <FaHome /> },
-    { path: '/editor', label: 'Editor', icon: <FaCode /> },
-    { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
-    { path: '/profile', label: 'Profile', icon: <FaUser /> },
+    { path: '/', label: 'Home', icon: <FaHome />, protected: false },
+    { path: '/editor', label: 'Editor', icon: <FaCode />, protected: true },
+    { path: '/live', label: 'Collaborate', icon: <FaUsers />, protected: true },
+    { path: '/profile', label: 'Profile', icon: <FaUser />, protected: true },
   ];
 
   return (
@@ -66,16 +66,31 @@ const Navbar = () => {
 
         {/* Desktop Navigation Links (center) */}
         <div className="nav-menu-desktop desktop-only">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.protected && !currentUser) {
+              return (
+                <Link
+                  key={item.path}
+                  to="/login"
+                  className="nav-link disabled"
+                  title="Login required"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="nav-actions">
@@ -131,17 +146,33 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           {/* Navigation Links */}
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.protected && !currentUser) {
+              return (
+                <Link
+                  key={item.path}
+                  to="/login"
+                  className="nav-link disabled"
+                  onClick={() => setIsMenuOpen(false)}
+                  title="Login required"
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              );
+            }
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
           
           {/* Mobile Profile Section (when logged in) */}
           {currentUser ? (
