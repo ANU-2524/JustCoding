@@ -3,13 +3,15 @@ body {
   padding: 0;
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
-  background-color: #f8fafc;
-  color: #1f2937;
+  background-color: var(--bg-primary, #0d1117);
+  color: var(--text-primary, #f0f6fc);
 }
 
 .homepage {
   padding-top: 80px; /* Space for fixed navbar */
   min-height: 100vh;
+  background-color: var(--bg-primary, #0d1117);
+  color: var(--text-primary, #f0f6fc);
 }
 
 /* ================= Hero Section ================= */
@@ -134,7 +136,9 @@ body {
 /* ================= Features ================= */
 .features-section { 
   padding: 8rem 2rem; 
-  text-align: center; 
+  text-align: center;
+  background-color: var(--bg-primary, #0d1117);
+  color: var(--text-primary, #f0f6fc);
 }
 
 .features-section h2 { 
