@@ -4,18 +4,26 @@ const cors = require('cors');
 const axios = require('axios');
 const http = require("http");
 const { Server } = require("socket.io");
+const connectDB = require('./config/database');
+const BadgeService = require('./services/BadgeService');
 const { 
   generalLimiter, 
   aiLimiter, 
   codeLimiter, 
   rateLimitLogger 
 } = require('./middleware/simpleRateLimiter');
-// const usageTracker = require('./middleware/usageTracker');
 const gptRoute = require("./routes/gptRoute.js");
 const codeQualityRoute = require("./routes/codeQuality.js");
+const progressRoute = require("./routes/progress.js");
 
 const app = express();
 const server = http.createServer(app);
+
+// Initialize database connection
+connectDB();
+
+// Initialize badges on startup
+BadgeService.initializeBadges().catch(console.error);
 
 const userMap = {}; // ✅ Store { socketId: { username, roomId } }
 
@@ -91,6 +99,7 @@ const languageMap = {
 // AI routes with security
 app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
+app.use("/api/progress", progressRoute);
 
 // ✅ Enhanced visualizer endpoint with rate limiting
 app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
