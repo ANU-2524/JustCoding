@@ -3,7 +3,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
-import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
+import CardSwap, { Card } from './CardSwap';
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
@@ -135,10 +136,10 @@ const HomePage = () => {
         ></motion.div>
       </motion.section>
 
-      {/* Features Section */}
+      {/* Enhanced Features Section with Animated Cards */}
       <motion.section
         id="features"
-        className="features-section"
+        className="features-section-enhanced"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -149,112 +150,123 @@ const HomePage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
+          className="features-title"
         >
-          Features
+          Powerful Features
         </motion.h2>
-        <motion.div
-          className="features-grid"
-          initial="hidden"
-          whileInView="visible"
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.2
-              }
-            }
-          }}
+          className="features-subtitle"
         >
-          <motion.div
-            className="feature-card"
-            variants={{
-              hidden: { opacity: 0, y: 50, scale: 0.9 },
-              visible: { opacity: 1, y: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -10,
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
-            }}
-          >
-            <motion.div
-              whileHover={{ rotate: 10, scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 300 }}
+          Everything you need to boost your coding productivity
+        </motion.p>
+              
+        <div className="features-container">
+          <div className="animated-feature-container">
+            <CardSwap width={350} height={250} cardDistance={35} verticalDistance={45} delay={2000} pauseOnHover={true} skewAmount={4} easing='power2'>
+              <Card className="feature-card-animated">
+                <div className="feature-content">
+                  <div className="feature-icon-wrapper">
+                    <FaCode className="feature-icon-main" />
+                  </div>
+                  <h3 className="feature-title-animated">Multi-Language Support</h3>
+                  <p className="feature-desc">Code in multiple languages with real-time syntax highlighting.</p>
+                </div>
+              </Card>
+                      
+              <Card className="feature-card-animated">
+                <div className="feature-content">
+                  <div className="feature-icon-wrapper">
+                    <FaUsers className="feature-icon-main" />
+                  </div>
+                  <h3 className="feature-title-animated">Real-time Collaboration</h3>
+                  <p className="feature-desc">Work together with your team in live coding sessions.</p>
+                </div>
+              </Card>
+                      
+              <Card className="feature-card-animated">
+                <div className="feature-content">
+                  <div className="feature-icon-wrapper">
+                    <FaRobot className="feature-icon-main" />
+                  </div>
+                  <h3 className="feature-title-animated">AI-Powered Assistance</h3>
+                  <p className="feature-desc">Get instant code explanations and debugging help.</p>
+                </div>
+              </Card>
+                      
+              <Card className="feature-card-animated">
+                <div className="feature-content">
+                  <div className="feature-icon-wrapper">
+                    <FaChartLine className="feature-icon-main" />
+                  </div>
+                  <h3 className="feature-title-animated">Performance Analytics</h3>
+                  <p className="feature-desc">Monitor your coding habits and productivity metrics.</p>
+                </div>
+              </Card>
+            </CardSwap>
+          </div>
+                  
+          <div className="features-grid-static">
+            <motion.div 
+              className="feature-static"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
             >
-              <FaRobot className="feature-icon" />
+              <div className="feature-icon-wrapper-small">
+                <FaCodeBranch />
+              </div>
+              <h4>Version Control</h4>
+              <p>Track your code changes and manage project versions</p>
             </motion.div>
-            <h3 className="feature-title">AI Code Explanation</h3>
-            <p className="feature-text">Understand and debug code with AI-powered insights.</p>
-          </motion.div>
-          <motion.div
-            className="feature-card"
-            variants={{
-              hidden: { opacity: 0, y: 50, scale: 0.9 },
-              visible: { opacity: 1, y: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -10,
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
-            }}
-          >
-            <motion.div
-              whileHover={{ rotate: -10, scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 300 }}
+                    
+            <motion.div 
+              className="feature-static"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              viewport={{ once: true }}
             >
-              <FaCode className="feature-icon" />
+              <div className="feature-icon-wrapper-small">
+                <FaShieldAlt />
+              </div>
+              <h4>Secure Execution</h4>
+              <p>Run your code in a secure sandbox environment</p>
             </motion.div>
-            <h3 className="feature-title">Multi-language Support</h3>
-            <p className="feature-text">Write code in multiple languages with ease.</p>
-          </motion.div>
-          <motion.div
-            className="feature-card"
-            variants={{
-              hidden: { opacity: 0, y: 50, scale: 0.9 },
-              visible: { opacity: 1, y: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -10,
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
-            }}
-          >
-            <motion.div
-              whileHover={{ rotate: 10, scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 300 }}
+                    
+            <motion.div 
+              className="feature-static"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
             >
-              <FaUsers className="feature-icon" />
+              <div className="feature-icon-wrapper-small">
+                <FaCogs />
+              </div>
+              <h4>Customizable Themes</h4>
+              <p>Tailor your coding environment with various themes</p>
             </motion.div>
-            <h3 className="feature-title">Real-time Collaboration</h3>
-            <p className="feature-text">Work together with teammates in DevZone.</p>
-          </motion.div>
-          <motion.div
-            className="feature-card"
-            variants={{
-              hidden: { opacity: 0, y: 50, scale: 0.9 },
-              visible: { opacity: 1, y: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -10,
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
-            }}
-          >
-            <motion.div
-              whileHover={{ rotate: -10, scale: 1.1 }}
-              transition={{ type: "spring", stiffness: 300 }}
+                    
+            <motion.div 
+              className="feature-static"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              viewport={{ once: true }}
             >
-              <FaFilePdf className="feature-icon" />
+              <div className="feature-icon-wrapper-small">
+                <FaShareAlt />
+              </div>
+              <h4>Easy Sharing</h4>
+              <p>Share your code snippets and projects instantly</p>
             </motion.div>
-            <h3 className="feature-title">Export & Share</h3>
-            <p className="feature-text">Export your code to PDF or share instantly.</p>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </motion.section>
 
       {/* How It Works Section */}
