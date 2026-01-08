@@ -1,7 +1,7 @@
 // src/components/HomePage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -12,7 +12,17 @@ const HomePage = () => {
     e.preventDefault();
     const featuresSection = document.getElementById("features");
     if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: "smooth" });
+      const targetPosition = featuresSection.offsetTop - 80; // Offset for navbar
+      
+      animate(window.scrollY, targetPosition, {
+        type: "spring",
+        stiffness: 70,
+        damping: 20,
+        restDelta: 0.5,
+        onUpdate: (latest) => {
+          window.scrollTo(0, latest);
+        }
+      });
     }
   };
 
