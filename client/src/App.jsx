@@ -5,6 +5,7 @@ import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import Profile from "./components/Profile";
 import Dashboard from "./components/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 // Note: Auth remains available, but core app is usable without login.
 
@@ -37,7 +38,9 @@ function App() {
             <Route
               path="/editor"
               element={
-                <MainEditor />
+                <ProtectedRoute>
+                  <MainEditor />
+                </ProtectedRoute>
               }
             />
             
@@ -45,7 +48,9 @@ function App() {
             <Route
               path="/profile"
               element={
-                <Profile />
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
               }
             />
 
@@ -53,7 +58,9 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <Dashboard />
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
               }
             />
 
@@ -61,13 +68,17 @@ function App() {
             <Route
               path="/live"
               element={
-                <JoinRoom />
+                <ProtectedRoute>
+                  <JoinRoom />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/live/:roomId"
               element={
-                <LiveRoom />
+                <ProtectedRoute>
+                  <LiveRoom />
+                </ProtectedRoute>
               }
             />
           </Routes>

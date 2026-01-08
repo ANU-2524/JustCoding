@@ -1,16 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
 import { FaTrophy, FaMedal, FaFire, FaDownload, FaShare, FaChartBar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { useAuth } from './AuthContext';
 import ProgressService from '../services/progressService';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import '../Style/Dashboard.css';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+// Simple chart fallback components
+const SimpleBarChart = ({ data }) => (
+  <div className="simple-chart">
+    {data.labels.map((label, index) => (
+      <div key={label} className="chart-bar">
+        <div className="bar-label">{label}</div>
+        <div className="bar-container">
+          <div 
+            className="bar-fill" 
+            style={{ height: `${(data.datasets[0].data[index] / Math.max(...data.datasets[0].data)) * 100}%` }}
+          />
+        </div>
+        <div className="bar-value">{data.datasets[0].data[index]}</div>
+      </div>
+    ))}
+  </div>
+);
+
+const SimpleDoughnutChart = ({ data }) => (
+  <div className="simple-doughnut">
+    {data.labels.map((label, index) => (
+      <div key={label} className="doughnut-item">
+        <div 
+          className="color-dot" 
+          style={{ backgroundColor: data.datasets[0].backgroundColor[index] }}
+        />
+        <span>{label}: {data.datasets[0].data[index]}</span>
+      </div>
+    ))}
+  </div>
+);
 
 const Dashboard = () => {
+  const { currentUser } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -44,26 +73,17 @@ const Dashboard = () => {
 
   const exportToPDF = async () => {
     const element = document.getElementById('dashboard-content');
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL('image/png');
     
     const pdf = new jsPDF();
-    const imgWidth = 210;
-    const pageHeight = 295;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
+    pdf.setFontSize(20);
+    pdf.text('JustCode Progress Report', 20, 30);
     
-    let position = 0;
-    
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-    
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
+    pdf.setFontSize(12);
+    pdf.text(`User: ${dashboardData.user.displayName}`, 20, 50);
+    pdf.text(`Total Points: ${dashboardData.user.totalPoints}`, 20, 60);
+    pdf.text(`Level: ${dashboardData.user.level}`, 20, 70);
+    pdf.text(`Daily Streak: ${dashboardData.dailyStreak}`, 20, 80);
+    pdf.text(`Badges Earned: ${dashboardData.badges.length}`, 20, 90);
     
     pdf.save('justcode-progress.pdf');
   };
@@ -238,27 +258,11 @@ const Dashboard = () => {
             <div className="charts-grid">
               <div className="chart-card">
                 <h3>Activity Breakdown</h3>
-                <Bar 
-                  data={eventChartData} 
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { display: false }
-                    }
-                  }}
-                />
+                <SimpleBarChart data={eventChartData} />
               </div>
               <div className="chart-card">
                 <h3>Top Languages</h3>
-                <Doughnut 
-                  data={languageChartData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { position: 'bottom' }
-                    }
-                  }}
-                />
+                <SimpleDoughnutChart data={languageChartData} />
               </div>
             </div>
           </div>

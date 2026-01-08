@@ -1,7 +1,7 @@
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  padding: 6rem 2rem 2rem 2rem; /* Added top padding for navbar */
   color: white;
 }
 
@@ -85,6 +85,8 @@
   margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .user-info h1 {
@@ -330,7 +332,7 @@
 
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 1rem;
+    padding: 5rem 1rem 1rem 1rem; /* Adjusted for mobile navbar height */
   }
   
   .user-info h1 {
@@ -362,4 +364,69 @@
     grid-column: 2;
     text-align: right;
   }
+}
+
+.simple-chart {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  height: 200px;
+  padding: 1rem;
+}
+
+.chart-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-container {
+  flex: 1;
+  width: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  display: flex;
+  align-items: end;
+  margin: 0.5rem 0;
+}
+
+.bar-fill {
+  width: 100%;
+  background: linear-gradient(45deg, #4f46e5, #7c3aed);
+  border-radius: 4px;
+  min-height: 4px;
+  transition: height 0.3s ease;
+}
+
+.bar-label {
+  font-size: 0.8rem;
+  text-align: center;
+  word-break: break-word;
+}
+
+.bar-value {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.simple-doughnut {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.doughnut-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 }

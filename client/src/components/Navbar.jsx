@@ -50,12 +50,14 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const navItems = [
-    { path: '/', label: 'Home', icon: <FaHome /> },
-    { path: '/editor', label: 'Editor', icon: <FaCode /> },
-    { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
-    { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine /> },
-    { path: '/profile', label: 'Profile', icon: <FaUser /> },
+    { path: '/', label: 'Home', icon: <FaHome />, public: true },
+    { path: '/editor', label: 'Editor', icon: <FaCode />, public: false },
+    { path: '/live', label: 'Collaborate', icon: <FaUsers />, public: false },
+    { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine />, public: false },
+    { path: '/profile', label: 'Profile', icon: <FaUser />, public: false },
   ];
+
+  const visibleNavItems = navItems.filter(item => item.public || currentUser);
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${location.pathname === '/' ? 'hero-navbar' : ''}`}>
@@ -67,7 +69,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation Links (center) */}
         <div className="nav-menu-desktop desktop-only">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -132,7 +134,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           {/* Navigation Links */}
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}

@@ -4,6 +4,13 @@ const API_BASE = process.env.NODE_ENV === 'production'
 
 class ProgressService {
   static generateUserId() {
+    // Try to get Firebase user ID first
+    const firebaseUser = JSON.parse(localStorage.getItem('firebase:authUser:AIzaSyBqJ8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q:[DEFAULT]') || 'null');
+    if (firebaseUser && firebaseUser.uid) {
+      return firebaseUser.uid;
+    }
+    
+    // Fallback to local user ID
     let userId = localStorage.getItem('justcoding:userId');
     if (!userId) {
       userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

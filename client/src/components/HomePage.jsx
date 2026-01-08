@@ -1,11 +1,21 @@
 // src/components/HomePage.jsx
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
+import { useAuth } from "./AuthContext";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
+  const { currentUser } = useAuth();
+
+  const handleEditorClick = () => {
+    if (currentUser) {
+      navigate("/editor");
+    } else {
+      navigate("/login");
+    }
+  };
 
   // IntersectionObserver for scroll animations
   useEffect(() => {
@@ -42,16 +52,16 @@ const HomePage = () => {
               className="btn-primary"
               onClick={() => navigate("/login")}
             >
-              Start Coding
+              {currentUser ? "Go to Dashboard" : "Start Coding"}
             </button>
 
             <a href="#features" className="btn-secondary">Explore Features</a>
 
             <button
               className="btn-editor"
-              onClick={() => navigate("/editor")} // navigate to CodeEditor.jsx
+              onClick={handleEditorClick}
             >
-              Open Code Editor
+              {currentUser ? "Open Code Editor" : "Try Editor (Login Required)"}
             </button>
           </div>
         </div>
@@ -113,9 +123,9 @@ const HomePage = () => {
         <h2>Ready to Start Coding?</h2>
         <button
           className="btn-primary"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate(currentUser ? "/dashboard" : "/login")}
         >
-          Get Started
+          {currentUser ? "Go to Dashboard" : "Get Started"}
         </button>
       </section>
 

@@ -64,6 +64,7 @@ const Profile = () => {
   };
 
   const loadProgressData = async () => {
+    if (!currentUser) return;
     const data = await ProgressService.getDashboard();
     if (data) {
       setProgressData(data);
