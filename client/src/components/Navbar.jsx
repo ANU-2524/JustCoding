@@ -20,7 +20,7 @@ const Navbar = () => {
       await logout();
       window.location.href = "/";
     } catch (err) {
-      console.error("Logout failed:", err);
+      // Silently handle logout errors
     }
   };
 

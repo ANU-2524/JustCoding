@@ -41,7 +41,7 @@ class AnalyticsService {
         topLanguages: languageStats.slice(0, 5)
       };
     } catch (error) {
-      console.error('Analytics error:', error);
+      // Silently handle analytics errors
       return null;
     }
   }
@@ -108,7 +108,7 @@ class AnalyticsService {
 
       return event;
     } catch (error) {
-      console.error('Record event error:', error);
+      // Silently handle event recording errors
       return null;
     }
   }

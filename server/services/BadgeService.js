@@ -66,7 +66,7 @@ class BadgeService {
 
       return newBadges;
     } catch (error) {
-      console.error('Badge check error:', error);
+      // Silently handle badge check errors
       return [];
     }
   }
@@ -132,7 +132,7 @@ class BadgeService {
         earnedAt: user.createdAt // Simplified - could track individual earn dates
       }));
     } catch (error) {
-      console.error('Get badges error:', error);
+      // Silently handle get badges errors
       return [];
     }
   }

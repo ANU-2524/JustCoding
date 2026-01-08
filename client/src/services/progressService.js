@@ -4,10 +4,17 @@ const API_BASE = process.env.NODE_ENV === 'production'
 
 class ProgressService {
   static generateUserId() {
-    // Try to get Firebase user ID first
-    const firebaseUser = JSON.parse(localStorage.getItem('firebase:authUser:AIzaSyBqJ8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q9Z8Q:[DEFAULT]') || 'null');
-    if (firebaseUser && firebaseUser.uid) {
-      return firebaseUser.uid;
+    // Try to get Firebase user ID from auth context
+    try {
+      const authKeys = Object.keys(localStorage).filter(key => key.includes('firebase:authUser'));
+      if (authKeys.length > 0) {
+        const firebaseUser = JSON.parse(localStorage.getItem(authKeys[0]) || 'null');
+        if (firebaseUser && firebaseUser.uid) {
+          return firebaseUser.uid;
+        }
+      }
+    } catch (error) {
+      // Silently handle Firebase user ID retrieval errors
     }
     
     // Fallback to local user ID
@@ -31,7 +38,7 @@ class ProgressService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Dashboard fetch error:', error);
+      // Silently handle dashboard fetch errors
       return null;
     }
   }
@@ -58,7 +65,7 @@ class ProgressService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Event recording error:', error);
+      // Silently handle event recording errors
       return null;
     }
   }
@@ -74,7 +81,7 @@ class ProgressService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Leaderboard fetch error:', error);
+      // Silently handle leaderboard fetch errors
       return [];
     }
   }
@@ -91,7 +98,7 @@ class ProgressService {
       const result = await response.json();
       return result.data;
     } catch (error) {
-      console.error('Export error:', error);
+      // Silently handle export errors
       return null;
     }
   }

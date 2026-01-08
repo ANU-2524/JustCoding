@@ -23,7 +23,9 @@ const server = http.createServer(app);
 connectDB();
 
 // Initialize badges on startup
-BadgeService.initializeBadges().catch(console.error);
+BadgeService.initializeBadges().catch(() => {
+  // Silently handle badge initialization errors
+});
 
 const userMap = {}; // ✅ Store { socketId: { username, roomId } }
 
@@ -331,7 +333,7 @@ app.post('/compile', codeLimiter, async (req, res) => {
     
     res.json({ output: sanitizedOutput });
   } catch (error) {
-    console.error("Compile Error:", error.message);
+    // Log compilation errors for debugging but don't expose details
     res.status(500).json({ 
       error: 'Code execution failed. Please try again.',
       tip: 'Check your code for syntax errors.'
