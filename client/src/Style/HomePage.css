@@ -155,14 +155,50 @@ body {
 .btn-primary:hover { transform: scale(1.05); }
 
 .btn-secondary {
-  border: 2px solid white;
-  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #161b22;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .btn-secondary {
+  background: #ffffff;
+  color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-gradient);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s ease;
 }
 
 .btn-secondary:hover {
-  background: white;
-  color: #3b82f6;
-  transform: scale(1.05);
+  transform: translateY(-8px) scale(1.03);
+  border-color: var(--accent-primary, #7c3aed);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 0 20px 0 var(--accent-glow);
+}
+
+.btn-secondary:hover::after {
+  opacity: 0.1;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+  background: #ffffff;
+  box-shadow: 
+    0 20px 25px -5px rgba(124, 58, 237, 0.1),
+    0 0 15px 0 rgba(124, 58, 237, 0.1);
 }
 
 /* Floating shapes */

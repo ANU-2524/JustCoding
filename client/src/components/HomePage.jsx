@@ -1,12 +1,31 @@
 // src/components/HomePage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
+
+  const scrollToFeatures = (e) => {
+    e.preventDefault();
+    const featuresSection = document.getElementById("features");
+    if (featuresSection) {
+      // Scroll exactly to the start of the section to hide the hero background
+      const targetPosition = featuresSection.offsetTop; 
+      
+      animate(window.scrollY, targetPosition, {
+        type: "spring",
+        stiffness: 70,
+        damping: 20,
+        restDelta: 0.5,
+        onUpdate: (latest) => {
+          window.scrollTo(0, latest);
+        }
+      });
+    }
+  };
 
   return (
     <div className="homepage home-page">
@@ -53,8 +72,13 @@ const HomePage = () => {
             <motion.a
               href="#features"
               className="btn-secondary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              onClick={scrollToFeatures}
+              whileHover={{ 
+                y: -8,
+                scale: 1.03,
+                transition: { duration: 0.4, ease: [0.19, 1, 0.22, 1] }
+              }}
+              whileTap={{ scale: 0.98 }}
             >
               Explore Features
             </motion.a>
