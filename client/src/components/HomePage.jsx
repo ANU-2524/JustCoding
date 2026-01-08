@@ -12,7 +12,8 @@ const HomePage = () => {
     e.preventDefault();
     const featuresSection = document.getElementById("features");
     if (featuresSection) {
-      const targetPosition = featuresSection.offsetTop - 80; // Offset for navbar
+      // Scroll exactly to the start of the section to hide the hero background
+      const targetPosition = featuresSection.offsetTop; 
       
       animate(window.scrollY, targetPosition, {
         type: "spring",
