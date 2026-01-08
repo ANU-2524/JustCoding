@@ -156,13 +156,19 @@ body {
 
 .btn-secondary {
   border: 2px solid white;
-  color: white;
+  background: #000000;
+  color: #ffffff;
+}
+
+[data-theme="light"] .btn-secondary {
+  background: #ffffff;
+  color: #7c3aed;
+  border-color: #7c3aed;
 }
 
 .btn-secondary:hover {
-  background: white;
-  color: #3b82f6;
   transform: scale(1.05);
+  opacity: 0.9;
 }
 
 /* Floating shapes */
