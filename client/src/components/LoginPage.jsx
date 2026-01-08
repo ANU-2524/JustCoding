@@ -58,58 +58,85 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container login-page">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>{isLogin ? "Login to JustCoding" : "Register for JustCoding"}</h2>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+    <div className="login-container">
+      <div className="login-page">
+        <div className="login-left">
+          <div className="login-content-wrapper">
+            <div className="login-header">
+              <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+              <p className="subtitle">{isLogin ? "Sign in to continue to JustCoding" : "Join us to start coding"}</p>
+            </div>
+            
+            <form className="login-form" onSubmit={handleSubmit}>
+              <div className="input-group">
+                <label htmlFor="email">Email Address</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="input-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-        {isLogin && (
-          <p
-            className="forgot-password"
-            onClick={handleResetPassword}
-            style={{
-              textAlign: 'right',
-              cursor: 'pointer',
-              color: '#007bff',
-              fontSize: '0.9rem',
-              marginTop: '-10px',
-              marginBottom: '15px'
-            }}
-          >
-            Forgot Password?
-          </p>
-        )}
+              {isLogin && (
+                <div className="form-footer">
+                  <p
+                    className="forgot-password"
+                    onClick={handleResetPassword}
+                  >
+                    Forgot Password?
+                  </p>
+                </div>
+              )}
 
-        <button type="submit">
-          {isLogin ? "Login" : "Sign Up"}
-        </button>
+              <button type="submit" className="auth-button">
+                {isLogin ? "Login" : "Create Account"}
+              </button>
 
-        <p className="toggle-mode">
-          {isLogin ? "Don't have an account?" : "Already registered?"}
-          <span onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? " Sign Up" : " Login"}
-          </span>
-        </p>
-      </form>
+              <div className="divider">
+                <span>or</span>
+              </div>
+            </form>
 
-      <div className="google-signin-container">
-        <button className="google-button" onClick={handleGoogleSignIn}>
-          <FcGoogle size={20} style={{ marginRight: "8px" }} />
-          Sign in with Google
-        </button>
+            <div className="google-signin-container">
+              <button className="google-button" onClick={handleGoogleSignIn}>
+                <FcGoogle size={20} style={{ marginRight: "8px" }} />
+                {isLogin ? "Sign in with Google" : "Sign up with Google"}
+              </button>
+            </div>
+            
+            <div className="switch-mode">
+              <p>
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <span onClick={() => setIsLogin(!isLogin)}>
+                  {isLogin ? " Sign Up" : " Login"}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="login-right">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&h=800&q=80" alt="Coding" className="login-right-image" />
+          <div className="login-right-content">
+            <h3>JustCoding</h3>
+            <p>Experience seamless collaborative coding with our powerful editor. Connect with developers worldwide and enhance your skills.</p>
+          </div>
+        </div>
       </div>
     </div>
   );

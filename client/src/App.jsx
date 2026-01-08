@@ -6,11 +6,11 @@ const LoginPage = lazy(() => import("./components/LoginPage"));
 const MainEditor = lazy(() => import("./components/MainEditor"));
 const Profile = lazy(() => import("./components/Profile"));
 import ScrollToTop from "./components/ScrollToTop";
-// Note: Auth remains available, but core app is usable without login.
+import ProtectedRoute from "./components/ProtectedRoute";
 
-const HomePage = lazy(() => import("./components/HomePage")); // Optional
-const JoinRoom = lazy(() => import("./components/JoinRoom")); // 👈 added
-const LiveRoom = lazy(() => import("./components/LiveRoom")); // 👈 added
+const HomePage = lazy(() => import("./components/HomePage"));
+const JoinRoom = lazy(() => import("./components/JoinRoom")); 
+const LiveRoom = lazy(() => import("./components/LiveRoom")); 
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -39,7 +39,9 @@ function App() {
             <Route
               path="/editor"
               element={
-                <MainEditor />
+                <ProtectedRoute>
+                  <MainEditor />
+                </ProtectedRoute>
               }
             />
             
@@ -47,7 +49,9 @@ function App() {
             <Route
               path="/profile"
               element={
-                <Profile />
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
               }
             />
 
