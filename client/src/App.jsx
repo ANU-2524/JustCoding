@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const HomePage = lazy(() => import("./components/HomePage"));
 const JoinRoom = lazy(() => import("./components/JoinRoom")); 
 const LiveRoom = lazy(() => import("./components/LiveRoom")); 
+const UserDashboard = lazy(() => import("./components/UserDashboard")); 
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -51,6 +52,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* User Dashboard route */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboard />
                 </ProtectedRoute>
               }
             />

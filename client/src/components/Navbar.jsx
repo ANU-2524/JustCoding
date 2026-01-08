@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun } from 'react-icons/fa';
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -58,6 +58,10 @@ const Navbar = () => {
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/profile', label: 'Profile', icon: <FaUser /> },
   ];
+  
+  const authenticatedNavItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine /> },
+  ];
 
   return (
     <motion.nav 
@@ -80,6 +84,23 @@ const Navbar = () => {
         {/* Desktop Navigation Links (center) */}
         <div className="nav-menu-desktop desktop-only">
           {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+            >
+              <span className="nav-link-icon">{item.icon}</span>
+              <span>{item.label}</span>
+              {location.pathname === item.path && (
+                <motion.div 
+                  className="active-indicator"
+                  layoutId="activeTab"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </Link>
+          ))}
+          {currentUser && authenticatedNavItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -190,6 +211,23 @@ const Navbar = () => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 * index }}
+                  >
+                    <Link
+                      to={item.path}
+                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  </motion.div>
+                ))}
+                {currentUser && authenticatedNavItems.map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * (index + navItems.length) }}
                   >
                     <Link
                       to={item.path}
