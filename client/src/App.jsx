@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/ThemeContext";
 import LoginPage from "./components/LoginPage";
 import MainEditor from "./components/MainEditor";
 import Profile from "./components/Profile";
+import Dashboard from "./components/Dashboard";
 import ScrollToTop from "./components/ScrollToTop";
 // Note: Auth remains available, but core app is usable without login.
 
@@ -45,6 +46,14 @@ function App() {
               path="/profile"
               element={
                 <Profile />
+              }
+            />
+
+            {/* Dashboard route */}
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard />
               }
             />
 

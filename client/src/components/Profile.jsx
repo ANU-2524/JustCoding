@@ -1,7 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaChartLine } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import '../Style/Profile.css';
+import ProgressService from '../services/progressService';
 import {
   addSnippet,
   deleteSnippet,
@@ -15,6 +17,7 @@ import {
 
 const Profile = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     displayName: '',
     email: '',
@@ -30,6 +33,7 @@ const Profile = () => {
   const [snippets, setSnippets] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState(null);
+  const [progressData, setProgressData] = useState(null);
 
   const [newTitle, setNewTitle] = useState('');
   const [newLanguage, setNewLanguage] = useState('javascript');
@@ -56,6 +60,14 @@ const Profile = () => {
     setSnippets(listSnippets());
     setSessions(listSessions());
     setStats(getStats());
+    loadProgressData();
+  };
+
+  const loadProgressData = async () => {
+    const data = await ProgressService.getDashboard();
+    if (data) {
+      setProgressData(data);
+    }
   };
 
   useEffect(() => {
@@ -340,6 +352,12 @@ const Profile = () => {
               >
                 Stats
               </button>
+              <button
+                className={`dash-tab ${activeTab === 'progress' ? 'active' : ''}`}
+                onClick={() => setActiveTab('progress')}
+              >
+                <FaChartLine /> Progress
+              </button>
             </div>
 
             {activeTab === 'snippets' && (
@@ -460,6 +478,56 @@ const Profile = () => {
                     <div className="stat-card"><div className="stat-value">{stats.snippetsCreated || 0}</div><div className="stat-label">Snippets Created</div></div>
                     <div className="stat-card"><div className="stat-value">{stats.sessionsJoined || 0}</div><div className="stat-label">Sessions Joined</div></div>
                     <div className="stat-card wide"><div className="stat-value">{stats.lastActiveAt ? formatDate(stats.lastActiveAt) : '—'}</div><div className="stat-label">Last Active</div></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'progress' && (
+              <div className="dash-panel">
+                <div className="dash-panel-header">
+                  <h3>Learning Progress</h3>
+                  <div className="progress-actions">
+                    <button className="dash-btn" onClick={refreshData}>Refresh</button>
+                    <button className="dash-btn primary" onClick={() => navigate('/dashboard')}>Full Dashboard</button>
+                  </div>
+                </div>
+                {!progressData ? (
+                  <div className="progress-preview">
+                    <p>Connect to see detailed progress tracking, achievements, and analytics.</p>
+                    <button className="dash-btn primary" onClick={() => navigate('/dashboard')}>View Dashboard</button>
+                  </div>
+                ) : (
+                  <div className="progress-summary">
+                    <div className="progress-stats">
+                      <div className="progress-stat">
+                        <span className="stat-value">{progressData.user.totalPoints}</span>
+                        <span className="stat-label">Total Points</span>
+                      </div>
+                      <div className="progress-stat">
+                        <span className="stat-value">{progressData.user.level}</span>
+                        <span className="stat-label">Level</span>
+                      </div>
+                      <div className="progress-stat">
+                        <span className="stat-value">{progressData.badges.length}</span>
+                        <span className="stat-label">Badges</span>
+                      </div>
+                      <div className="progress-stat">
+                        <span className="stat-value">{progressData.dailyStreak}</span>
+                        <span className="stat-label">Day Streak</span>
+                      </div>
+                    </div>
+                    <div className="recent-badges">
+                      <h4>Recent Badges</h4>
+                      {progressData.badges.slice(0, 3).map(badge => (
+                        <div key={badge.badgeId} className="mini-badge">
+                          <span className="badge-icon">{badge.icon}</span>
+                          <span className="badge-name">{badge.name}</span>
+                        </div>
+                      ))}
+                      {progressData.badges.length === 0 && <p className="dash-empty">No badges earned yet</p>}
+                    </div>
+                    <button className="dash-btn primary" onClick={() => navigate('/dashboard')}>View Full Dashboard</button>
                   </div>
                 )}
               </div>

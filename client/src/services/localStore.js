@@ -1,3 +1,5 @@
+import ProgressService from './progressService';
+
 const STORAGE_KEY = "justcoding:v1";
 
 const defaultState = {
@@ -171,6 +173,21 @@ export function incrementStat(name, amount = 1) {
   state.stats[name] = (state.stats[name] || 0) + amount;
   state.stats.lastActiveAt = getNowIso();
   saveState(state);
+  
+  // Record event in progress tracking system
+  const eventTypeMap = {
+    runs: 'code_run',
+    visualizes: 'visualize',
+    aiExplains: 'ai_explain',
+    aiDebugs: 'ai_debug',
+    snippetsCreated: 'snippet_create',
+    sessionsJoined: 'session_join'
+  };
+  
+  const eventType = eventTypeMap[name];
+  if (eventType) {
+    ProgressService.recordEvent(eventType, { amount }).catch(console.error);
+  }
 }
 
 export function getStats() {

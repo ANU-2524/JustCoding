@@ -584,3 +584,74 @@
     margin-bottom: var(--space-sm);
   }
 }
+
+.progress-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.progress-preview {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.progress-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.progress-stat {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+}
+
+.progress-stat .stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4f46e5;
+  margin-bottom: 0.25rem;
+}
+
+.progress-stat .stat-label {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recent-badges h4 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.mini-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(79, 70, 229, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.mini-badge .badge-icon {
+  font-size: 1.2rem;
+}
+
+.mini-badge .badge-name {
+  color: #4f46e5;
+  font-weight: 500;
+}
