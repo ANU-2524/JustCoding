@@ -376,3 +376,8 @@ body {
 
 
 
+/* Hover effect for Open Code Editor button*/
+.btn-editor:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.45);
+}
