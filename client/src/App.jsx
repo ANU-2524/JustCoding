@@ -1,18 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Suspense, lazy } from "react";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
-import LoginPage from "./components/LoginPage";
-import MainEditor from "./components/MainEditor";
-import Profile from "./components/Profile";
+const LoginPage = lazy(() => import("./components/LoginPage"));
+const MainEditor = lazy(() => import("./components/MainEditor"));
+const Profile = lazy(() => import("./components/Profile"));
 import ScrollToTop from "./components/ScrollToTop";
 // Note: Auth remains available, but core app is usable without login.
 
-import HomePage from "./components/HomePage"; // Optional
-import JoinRoom from "./components/JoinRoom"; // 👈 added
-import LiveRoom from "./components/LiveRoom"; // 👈 added
+const HomePage = lazy(() => import("./components/HomePage")); // Optional
+const JoinRoom = lazy(() => import("./components/JoinRoom")); // 👈 added
+const LiveRoom = lazy(() => import("./components/LiveRoom")); // 👈 added
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
+import Loader from "./components/Loader";
 
 // function App() {
 //   return (
@@ -28,6 +30,7 @@ function App() {
           <div className="app-container">
           <Cursor />
           <Navbar />
+          <Suspense fallback={<Loader />}> 
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -62,6 +65,7 @@ function App() {
               }
             />
           </Routes>
+          </Suspense>
           <ScrollToTop />
         </div>
       </Router>

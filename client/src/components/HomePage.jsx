@@ -1,133 +1,404 @@
 // src/components/HomePage.jsx
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
 
-  // IntersectionObserver for scroll animations
-  useEffect(() => {
-    const sections = document.querySelectorAll(".animate-on-scroll");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("show");
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    sections.forEach((sec) => observer.observe(sec));
-  }, []);
-
   return (
     <div className="homepage home-page">
 
       {/* Hero Section */}
-      <section className="hero-section">
+      <motion.section
+        className="hero-section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
         <div className="hero-content">
-          <h1>
+          <motion.h1
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             Just<span className="highlight">Coding</span>
-          </h1>
-          <p className="animate-on-scroll">
+          </motion.h1>
+          <motion.p
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             AI-powered code editor & collaboration platform for developers.
-          </p>
+          </motion.p>
 
           {/* Buttons */}
-          <div className="hero-buttons animate-on-scroll">
-            <button
+          <motion.div
+            className="hero-buttons"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <motion.button
               className="btn-primary"
               onClick={() => navigate("/login")}
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0,0,0,0.3)" }}
+              whileTap={{ scale: 0.95 }}
             >
               Start Coding
-            </button>
+            </motion.button>
 
-            <a href="#features" className="btn-secondary">Explore Features</a>
+            <motion.a
+              href="#features"
+              className="btn-secondary"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Explore Features
+            </motion.a>
 
-            <button
+            <motion.button
               className="btn-editor"
-              onClick={() => navigate("/editor")} // navigate to CodeEditor.jsx
+              onClick={() => navigate("/editor")}
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.5)" }}
+              whileTap={{ scale: 0.95 }}
             >
               Open Code Editor
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </div>
 
         {/* Floating shapes */}
-        <div className="floating-shape shape1"></div>
-        <div className="floating-shape shape2"></div>
-        <div className="floating-shape shape3"></div>
-      </section>
+        <motion.div
+          className="floating-shape shape1"
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, 5, 0]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        ></motion.div>
+        <motion.div
+          className="floating-shape shape2"
+          animate={{
+            y: [0, -15, 0],
+            rotate: [0, -5, 0]
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        ></motion.div>
+        <motion.div
+          className="floating-shape shape3"
+          animate={{
+            y: [0, -25, 0],
+            rotate: [0, 3, 0]
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        ></motion.div>
+      </motion.section>
 
       {/* Features Section */}
-      <section id="features" className="features-section">
-        <h2 className="animate-on-scroll">Features</h2>
-        <div className="features-grid">
-          <div className="feature-card animate-on-scroll">
-            <FaRobot className="feature-icon" />
+      <motion.section
+        id="features"
+        className="features-section"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          Features
+        </motion.h2>
+        <motion.div
+          className="features-grid"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.2
+              }
+            }
+          }}
+        >
+          <motion.div
+            className="feature-card"
+            variants={{
+              hidden: { opacity: 0, y: 50, scale: 0.9 },
+              visible: { opacity: 1, y: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -10,
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
+            }}
+          >
+            <motion.div
+              whileHover={{ rotate: 10, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <FaRobot className="feature-icon" />
+            </motion.div>
             <h3 className="feature-title">AI Code Explanation</h3>
             <p className="feature-text">Understand and debug code with AI-powered insights.</p>
-          </div>
-          <div className="feature-card animate-on-scroll">
-            <FaCode className="feature-icon" />
+          </motion.div>
+          <motion.div
+            className="feature-card"
+            variants={{
+              hidden: { opacity: 0, y: 50, scale: 0.9 },
+              visible: { opacity: 1, y: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -10,
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
+            }}
+          >
+            <motion.div
+              whileHover={{ rotate: -10, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <FaCode className="feature-icon" />
+            </motion.div>
             <h3 className="feature-title">Multi-language Support</h3>
             <p className="feature-text">Write code in multiple languages with ease.</p>
-          </div>
-          <div className="feature-card animate-on-scroll">
-            <FaUsers className="feature-icon" />
+          </motion.div>
+          <motion.div
+            className="feature-card"
+            variants={{
+              hidden: { opacity: 0, y: 50, scale: 0.9 },
+              visible: { opacity: 1, y: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -10,
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
+            }}
+          >
+            <motion.div
+              whileHover={{ rotate: 10, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <FaUsers className="feature-icon" />
+            </motion.div>
             <h3 className="feature-title">Real-time Collaboration</h3>
             <p className="feature-text">Work together with teammates in DevZone.</p>
-          </div>
-          <div className="feature-card animate-on-scroll">
-            <FaFilePdf className="feature-icon" />
+          </motion.div>
+          <motion.div
+            className="feature-card"
+            variants={{
+              hidden: { opacity: 0, y: 50, scale: 0.9 },
+              visible: { opacity: 1, y: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -10,
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.15)"
+            }}
+          >
+            <motion.div
+              whileHover={{ rotate: -10, scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <FaFilePdf className="feature-icon" />
+            </motion.div>
             <h3 className="feature-title">Export & Share</h3>
             <p className="feature-text">Export your code to PDF or share instantly.</p>
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* How It Works Section */}
-      <section className="how-section">
-        <h2 className="animate-on-scroll">How It Works</h2>
-        <div className="how-steps">
-          <div className="how-step animate-on-scroll">
+      <motion.section
+        className="how-section"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          How It Works
+        </motion.h2>
+        <motion.div
+          className="how-steps"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.3
+              }
+            }
+          }}
+        >
+          <motion.div
+            className="how-step"
+            variants={{
+              hidden: { opacity: 0, x: -50, scale: 0.9 },
+              visible: { opacity: 1, x: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -8,
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
+            }}
+          >
             <h3 className="step-title">1. Sign Up</h3>
             <p className="step-text">Create an account and access your AI-powered workspace.</p>
-          </div>
-          <div className="how-step animate-on-scroll">
+          </motion.div>
+          <motion.div
+            className="how-step"
+            variants={{
+              hidden: { opacity: 0, y: 50, scale: 0.9 },
+              visible: { opacity: 1, y: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -8,
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
+            }}
+          >
             <h3 className="step-title">2. Start Coding</h3>
             <p className="step-text">Use our editor to write code in multiple languages with AI suggestions.</p>
-          </div>
-          <div className="how-step animate-on-scroll">
+          </motion.div>
+          <motion.div
+            className="how-step"
+            variants={{
+              hidden: { opacity: 0, x: 50, scale: 0.9 },
+              visible: { opacity: 1, x: 0, scale: 1 }
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{
+              scale: 1.05,
+              y: -8,
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
+            }}
+          >
             <h3 className="step-title">3. Collaborate & Share</h3>
             <p className="step-text">Invite teammates to collaborate or export your work seamlessly.</p>
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* CTA Section */}
-      <section className="cta-section animate-on-scroll">
-        <h2>Ready to Start Coding?</h2>
-        <button
+      <motion.section
+        className="cta-section"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          Ready to Start Coding?
+        </motion.h2>
+        <motion.button
           className="btn-primary"
           onClick={() => navigate("/login")}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0,0,0,0.3)" }}
+          whileTap={{ scale: 0.95 }}
         >
           Get Started
-        </button>
-      </section>
+        </motion.button>
+      </motion.section>
 
       {/* Footer */}
-      <footer className="footer animate-on-scroll">
-        <p>&copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.</p>
-        <div className="social-icons">
-          <a href="https://x.com/_Anuuu_Soniii_" aria-label="Twitter" target="_blank" rel="noopener noreferrer"><FaTwitter /> Twitter</a>
-          <a href="https://github.com/ANU-2524/" aria-label="GitHub" target="_blank" rel="noopener noreferrer"><FaGithub /> GitHub</a>
-          <a href="https://www.linkedin.com/in/anu--soni/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><FaLinkedin /> LinkedIn</a>
-        </div>
-      </footer>
+      <motion.footer
+        className="footer"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          &copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.
+        </motion.p>
+        <motion.div
+          className="social-icons"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <motion.a
+            href="https://x.com/_Anuuu_Soniii_"
+            aria-label="Twitter"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.2, y: -5 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaTwitter />
+          </motion.a>
+          <motion.a
+            href="https://github.com/ANU-2524/"
+            aria-label="GitHub"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.2, y: -5 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaGithub />
+          </motion.a>
+          <motion.a
+            href="https://www.linkedin.com/in/anu--soni/"
+            aria-label="LinkedIn"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.2, y: -5 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaLinkedin />
+          </motion.a>
+        </motion.div>
+      </motion.footer>
     </div>
   );
 };
