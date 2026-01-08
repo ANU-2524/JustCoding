@@ -9,6 +9,14 @@ router.get('/dashboard/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     
+    // Check if MongoDB is available
+    if (!require('mongoose').connection.readyState) {
+      return res.status(503).json({ 
+        error: 'Database not available',
+        fallback: true 
+      });
+    }
+    
     const [progress, badges, newBadges] = await Promise.all([
       AnalyticsService.getUserProgress(userId),
       BadgeService.getUserBadges(userId),
@@ -29,7 +37,10 @@ router.get('/dashboard/:userId', async (req, res) => {
     });
   } catch (error) {
     console.error('Dashboard error:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    res.status(503).json({ 
+      error: 'Database not available',
+      fallback: true 
+    });
   }
 });
 
@@ -40,6 +51,18 @@ router.post('/event', async (req, res) => {
     
     if (!userId || !eventType) {
       return res.status(400).json({ error: 'userId and eventType required' });
+    }
+
+    // Check if MongoDB is available
+    if (!require('mongoose').connection.readyState) {
+      return res.json({
+        success: true,
+        data: {
+          event: null,
+          newBadges: []
+        },
+        fallback: true
+      });
     }
 
     const event = await AnalyticsService.recordEvent(userId, eventType, metadata);
@@ -54,7 +77,14 @@ router.post('/event', async (req, res) => {
     });
   } catch (error) {
     console.error('Event recording error:', error);
-    res.status(500).json({ error: 'Failed to record event' });
+    res.json({
+      success: true,
+      data: {
+        event: null,
+        newBadges: []
+      },
+      fallback: true
+    });
   }
 });
 
