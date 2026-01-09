@@ -16,7 +16,7 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
-
+const FAQPage = lazy(() => import("./components/FAQPage"));
 // function App() {
 //   return (
 //     <AuthProvider>
@@ -35,7 +35,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-
+<Route path="/faq" element={<FAQPage />} />
             {/* Main personal editor */}
             <Route
               path="/editor"
