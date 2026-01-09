@@ -2,6 +2,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { python } from '@codemirror/lang-python';
+import { java } from '@codemirror/lang-java';
+import { cpp } from '@codemirror/lang-cpp';
+import { go } from '@codemirror/lang-go';
+import { php } from '@codemirror/lang-php';
+import { rust } from '@codemirror/lang-rust';
 import { eclipse } from '@uiw/codemirror-theme-eclipse';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
@@ -12,16 +18,48 @@ import { endSession, incrementStat, startSession, touchLastActive } from '../ser
 // ✅ Language starter code
 const languages = {
   python: { name: 'Python', starter: `print("Hello World")` },
-  cpp: { name: 'C++', starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
-  java: { name: 'Java', starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
+  cpp: { name: 'C++', starter: `#include <iostream>
+using namespace std;
+int main() {
+  return 0;
+}` },
+  java: { name: 'Java', starter: `public class Main {
+  public static void main(String[] args) {
+    
+  }
+}` },
   javascript: { name: 'JavaScript', starter: `console.log("Hello World");` },
   typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
-  c: { name: 'C', starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go: { name: 'Go', starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
+  c: { name: 'C', starter: `#include <stdio.h>
+int main() {
+  printf("Hello, World!");
+  return 0;
+}` },
+  go: { name: 'Go', starter: `package main
+import "fmt"
+func main() {
+  fmt.Println("Hello Go")
+}` },
   ruby: { name: 'Ruby', starter: `puts "Hello Ruby"` },
-  php: { name: 'PHP', starter: `<?php\necho "Hello PHP";` },
-  swift: { name: 'Swift', starter: `print("Hello Swift")` },
-  rust: { name: 'Rust', starter: `fn main() {\n  println!("Hello Rust");\n}` }
+  php: { name: 'PHP', starter: `<?php
+echo "Hello PHP";` },
+  rust: { name: 'Rust', starter: `fn main() {
+  println!("Hello Rust");
+}` }
+};
+
+// Map internal language keys to backend identifiers
+const languageMap = {
+  javascript: 'javascript',
+  typescript: 'javascript', // Backend treats TS same as JS
+  python: 'python',
+  java: 'java',
+  cpp: 'cpp', // Backend identifies C++ as cpp
+  c: 'c', // Backend identifies C as c
+  go: 'go',
+  ruby: 'ruby',
+  php: 'php',
+  rust: 'rust'
 };
 
 const LiveRoom = () => {
@@ -32,8 +70,8 @@ const LiveRoom = () => {
   const socket = useRef(null);
   const sessionIdRef = useRef(null);
 
-  const [code, setCode] = useState(languages.javascript.starter);
-  const [language, setLanguage] = useState("javascript");
+  const [code, setCode] = useState(languages.c.starter); // Changed to C starter code
+  const [language, setLanguage] = useState("c"); // Changed to C as default
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [typingNotification, setTypingNotification] = useState('');
@@ -53,7 +91,9 @@ const LiveRoom = () => {
     sessionIdRef.current = startSession({ roomId, username });
     touchLastActive();
 
-    socket.current = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:4334");
+    // Use a default backend URL if environment variable is not set
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
+    socket.current = io(backendUrl);
     socket.current.emit("join-room", { roomId, username });
 
     socket.current.on("code-update", setCode);
@@ -103,20 +143,38 @@ const LiveRoom = () => {
 
   const leaveRoom = () => {
     socket.current.disconnect();
-    navigate("/editor");
+    navigate("/devzone");
   };
 
   const runCode = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:4334"}/compile`, {
+      // Map the internal language to backend language identifier
+      const backendLanguage = languageMap[language] || language;
+      
+      // Use the same backend URL as the socket connection
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
+      
+      // Set initial output to show that compilation is in progress
+      setOutput("Compiling and running your code...");
+      
+      const res = await fetch(`${backendUrl}/compile`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language, code, stdin: userInput }),
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({ language: backendLanguage, code, stdin: userInput }),
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+      }
+      
       const result = await res.json();
       setOutput(result.output || "No output");
     } catch (err) {
-      setOutput("Error running code.");
+      console.error("Error running code:", err);
+      setOutput(`Error running code: ${err.message}\n\nMake sure the backend server is running on the correct port.`);
     }
   };
 
@@ -138,10 +196,37 @@ const debugCode = async () => {
   setDebugLoading(false);
 };
 
+  // Get the appropriate language extension
+  const getLanguageExtension = (lang) => {
+    switch(lang) {
+      case 'javascript':
+      case 'typescript':
+        return javascript();
+      case 'python':
+        return python();
+      case 'java':
+        return java();
+      case 'cpp':
+      case 'c':
+        return cpp(); // Use C++ parser for both C and C++
+      case 'go':
+        return go();
+      case 'php':
+        return php();
+      case 'rust':
+        return rust();
+      case 'ruby':
+        // For Ruby, we'll use a basic extension since there's no official one
+        return javascript(); // Fallback to javascript for Ruby syntax highlighting
+      default:
+        return javascript();
+    }
+  };
+
   return (
     <div className="live-room-container">
       <div className="top-bar">
-        <h2 className="room-title">👩‍💻🧑‍💻 DevZone ID: <span>{roomId}</span></h2>
+        <h2 className="room-title">👨‍💻 DevZone Room: <span>{roomId}</span></h2>
         <button className="leave-btn" onClick={() => setShowModal(true)}>🚪 Leave Room</button>
       </div>
 
@@ -159,52 +244,59 @@ const debugCode = async () => {
                 <option key={key} value={key}>{val.name}</option>
               ))}
             </select>
-            <button onClick={runCode}>▶️ Run</button>
+            <button onClick={runCode}>▶️ Run Code</button>
           </div>
 
           <CodeMirror
             value={code}
-            height="300px"
-            extensions={[javascript()]}
+            extensions={[getLanguageExtension(language)]}
             theme={eclipse}
             onChange={handleCodeChange}
+            height="300px" /* Fixed height for the editor */
           />
 
           <div className="ai-sections">
             <div className="ai-box">
-              <h4>❓ Any Ques ...</h4>
+              <h4>❓ Ask AI anything</h4>
               <textarea
-                placeholder="Paste question here..."
+                placeholder="Paste your question here..."
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
               />
-              <button onClick={explainQuestion}>{isExplaining ? "Explaining..." : "Ask AI"}</button>
+              <button onClick={explainQuestion} disabled={isExplaining}>
+                {isExplaining ? "Explaining..." : "Ask AI"}
+              </button>
               {explanation && <p className="ai-response">{explanation}</p>}
             </div>
 
             <div className="ai-box">
-              <h4>🐞 Debug it ...</h4>
-              <button onClick={debugCode}>{debugLoading ? "Debugging..." : "Debug"}</button>
+              <h4>🐞 Debug Assistant</h4>
+              <button onClick={debugCode} disabled={debugLoading}>
+                {debugLoading ? "Debugging..." : "Debug Code"}
+              </button>
               {debugResult && <pre className="ai-response">{debugResult}</pre>}
             </div>
 
             <div className="ai-box">
-              <h4>📤 Output !!</h4>
+              <h4>📤 Code Output</h4>
               <textarea
-                placeholder="Enter input..."
+                placeholder="Enter input for your program..."
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
               />
-              <pre>{output}</pre>
+              <pre className="ai-response">{output}</pre>
             </div>
           </div>
         </div>
 
         <div className="chat-panel">
-          <h3 className="chat-heading">Discussion Zone 🤝</h3>
+          <h3 className="chat-heading">Team Discussion 💬</h3>
           <div className="chat-messages">
+            {systemMsg && <div className="system-message"><strong>System:</strong> {systemMsg}</div>}
             {messages.map((msg, i) => (
-              <div key={i}><strong>{msg.username}:</strong> {msg.message}</div>
+              <div key={i} className="message">
+                <strong>{msg.username}:</strong> {msg.message}
+              </div>
             ))}
             <div ref={messagesEndRef} />
           </div>
@@ -217,9 +309,9 @@ const debugCode = async () => {
               socket.current.emit("typing", { roomId, username });
             }}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            placeholder="Drop code or jokes... your call 😄"
+            placeholder="Chat with your team... 🚀"
           />
-          <button onClick={handleSendMessage}>Send</button>
+          <button onClick={handleSendMessage}>Send Message</button>
         </div>
       </div>
 
@@ -227,10 +319,10 @@ const debugCode = async () => {
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Leaving already? 😢</h3>
-            <p>Are you sure you want to leave this joyful room?</p>
+            <p>Are you sure you want to leave this awesome collaboration session?</p>
             <div className="modal-actions">
-              <button onClick={leaveRoom} className="modal-btn leave">Yes, I must leave...</button>
-              <button onClick={() => setShowModal(false)} className="modal-btn cancel">No, Stay !</button>
+              <button onClick={leaveRoom} className="modal-btn leave">Yes, I must go</button>
+              <button onClick={() => setShowModal(false)} className="modal-btn cancel">No, stay!</button>
             </div>
           </div>
         </div>
