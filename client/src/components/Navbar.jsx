@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle } from 'react-icons/fa'; // Added FaQuestionCircle
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper } from 'react-icons/fa'; // Added FaQuestionCircle and FaNewspaper
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -56,8 +56,9 @@ const Navbar = () => {
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
+    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
+    { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
     { path: '/profile', label: 'Profile', icon: <FaUser /> },
-    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> }, // Added FAQ
   ];
   
   const authenticatedNavItems = [

@@ -7,7 +7,7 @@ const MainEditor = lazy(() => import("./components/MainEditor"));
 const Profile = lazy(() => import("./components/Profile"));
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+const BlogPage = lazy(() => import("./components/BlogPage"));
 const HomePage = lazy(() => import("./components/HomePage"));
 const JoinRoom = lazy(() => import("./components/JoinRoom")); 
 const LiveRoom = lazy(() => import("./components/LiveRoom")); 
@@ -35,6 +35,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/blog" element={<BlogPage />} />
 <Route path="/faq" element={<FAQPage />} />
             {/* Main personal editor */}
             <Route
