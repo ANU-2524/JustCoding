@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown } from 'react-icons/fa';
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper } from 'react-icons/fa'; // Added FaQuestionCircle and FaNewspaper
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -53,14 +56,30 @@ const Navbar = () => {
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
+    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
+    { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
     { path: '/profile', label: 'Profile', icon: <FaUser /> },
+  ];
+  
+  const authenticatedNavItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine /> },
   ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''} ${location.pathname === '/' ? 'hero-navbar' : ''}`}>
+    <motion.nav 
+      className={`navbar ${scrolled ? 'scrolled' : ''} ${location.pathname === '/' ? 'hero-navbar' : ''}`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          <FaCode className="logo-icon" />
+          <motion.div
+            whileHover={{ rotate: 180 }}
+            transition={{ duration: 0.5 }}
+          >
+            <FaCode className="logo-icon" />
+          </motion.div>
           <span className="logo-text">Just<span className="highlight">Coding</span></span>
         </Link>
 
@@ -72,13 +91,48 @@ const Navbar = () => {
               to={item.path}
               className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
             >
-              {item.icon}
+              <span className="nav-link-icon">{item.icon}</span>
               <span>{item.label}</span>
+              {location.pathname === item.path && (
+                <motion.div 
+                  className="active-indicator"
+                  layoutId="activeTab"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </Link>
+          ))}
+          {currentUser && authenticatedNavItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+            >
+              <span className="nav-link-icon">{item.icon}</span>
+              <span>{item.label}</span>
+              {location.pathname === item.path && (
+                <motion.div 
+                  className="active-indicator"
+                  layoutId="activeTab"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
             </Link>
           ))}
         </div>
 
         <div className="nav-actions">
+          {/* Theme Toggle */}
+          <motion.button 
+            className="theme-toggle-nav" 
+            onClick={toggleTheme}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Toggle theme"
+          >
+            {isDark ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
+          </motion.button>
+
           {/* Desktop Profile Dropdown */}
           {currentUser && (
             <div className="profile-dropdown desktop-only" ref={profileRef}>
@@ -99,101 +153,160 @@ const Navbar = () => {
                     <FaUser />
                   )}
                 </div>
-                <FaCaretDown className="dropdown-arrow" />
+                <FaCaretDown className={`dropdown-arrow ${isProfileOpen ? 'rotated' : ''}`} />
               </button>
               
-              {isProfileOpen && (
-                <div className="profile-dropdown-menu">
-                  <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                    <FaUser /> Profile
-                  </Link>
-                  <button className="dropdown-item" onClick={handleLogout}>
-                    <FaSignOutAlt /> Logout
-                  </button>
-                </div>
-              )}
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div 
+                    className="profile-dropdown-menu"
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
+                      <FaUser /> Profile
+                    </Link>
+                    <button className="dropdown-item" onClick={handleLogout}>
+                      <FaSignOutAlt /> Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
 
           {/* Desktop Login Button */}
           {!currentUser && (
             <Link to="/login" className="login-btn desktop-only">
-              Login
+              <span>Login</span>
             </Link>
           )}
           
           {/* Mobile Hamburger Toggle */}
-          <button className="nav-toggle" onClick={toggleMenu} aria-label="Toggle menu">
+          <motion.button 
+            className="nav-toggle" 
+            onClick={toggleMenu} 
+            aria-label="Toggle menu"
+            whileTap={{ scale: 0.9 }}
+          >
             {isMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
+          </motion.button>
         </div>
         
         {/* Mobile Menu */}
-        <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          {/* Navigation Links */}
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={() => setIsMenuOpen(false)}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="nav-menu active"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
             >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          ))}
-          
-          {/* Mobile Profile Section (when logged in) */}
-          {currentUser ? (
-            <div className="mobile-profile-section">
-              <div className="mobile-profile-header">
-                <div className="mobile-avatar">
-                  {currentUser.photoURL ? (
-                    <img 
-                      src={currentUser.photoURL} 
-                      alt="Profile" 
-                      className="avatar-img"
-                    />
-                  ) : (
-                    <FaUser />
-                  )}
-                </div>
-                <span className="mobile-user-email">
-                  {currentUser.email?.split('@')[0] || 'User'}
-                </span>
+              {/* Navigation Links */}
+              <div className="mobile-nav-links">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <Link
+                      to={item.path}
+                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  </motion.div>
+                ))}
+                {currentUser && authenticatedNavItems.map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * (index + navItems.length) }}
+                  >
+                    <Link
+                      to={item.path}
+                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
               
-              <Link 
-                to="/profile" 
-                className="mobile-profile-link"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <FaUser /> <span>Profile</span>
-              </Link>
-              
-              <button 
-                className="mobile-logout-btn"
-                onClick={() => {
-                  handleLogout();
-                  setIsMenuOpen(false);
-                }}
-              >
-                <FaSignOutAlt /> <span>Logout</span>
-              </button>
-            </div>
-          ) : (
-            /* Mobile Login Button (when not logged in) */
-            <Link 
-              to="/login" 
-              className="mobile-login-btn"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Login
-            </Link>
+              {/* Mobile Profile Section (when logged in) */}
+              {currentUser ? (
+                <motion.div 
+                  className="mobile-profile-section"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <div className="mobile-profile-header">
+                    <div className="mobile-avatar">
+                      {currentUser.photoURL ? (
+                        <img 
+                          src={currentUser.photoURL} 
+                          alt="Profile" 
+                          className="avatar-img"
+                        />
+                      ) : (
+                        <FaUser />
+                      )}
+                    </div>
+                    <span className="mobile-user-email">
+                      {currentUser.email?.split('@')[0] || 'User'}
+                    </span>
+                  </div>
+                  
+                  <Link 
+                    to="/profile" 
+                    className="mobile-profile-link"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <FaUser /> <span>Profile</span>
+                  </Link>
+                  
+                  <button 
+                    className="mobile-logout-btn"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <FaSignOutAlt /> <span>Logout</span>
+                  </button>
+                </motion.div>
+              ) : (
+                /* Mobile Login Button (when not logged in) */
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Link 
+                    to="/login" 
+                    className="mobile-login-btn"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </motion.div>
+              )}
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

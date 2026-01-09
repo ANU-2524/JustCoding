@@ -1,19 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Suspense, lazy } from "react";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
-import LoginPage from "./components/LoginPage";
-import MainEditor from "./components/MainEditor";
-import Profile from "./components/Profile";
+const LoginPage = lazy(() => import("./components/LoginPage"));
+const MainEditor = lazy(() => import("./components/MainEditor"));
+const Profile = lazy(() => import("./components/Profile"));
 import ScrollToTop from "./components/ScrollToTop";
-// Note: Auth remains available, but core app is usable without login.
-
-import HomePage from "./components/HomePage"; // Optional
-import JoinRoom from "./components/JoinRoom"; // 👈 added
-import LiveRoom from "./components/LiveRoom"; // 👈 added
+import ProtectedRoute from "./components/ProtectedRoute";
+const BlogPage = lazy(() => import("./components/BlogPage"));
+const HomePage = lazy(() => import("./components/HomePage"));
+const JoinRoom = lazy(() => import("./components/JoinRoom")); 
+const LiveRoom = lazy(() => import("./components/LiveRoom")); 
+const UserDashboard = lazy(() => import("./components/UserDashboard")); 
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
-
+import Loader from "./components/Loader";
+const FAQPage = lazy(() => import("./components/FAQPage"));
 // function App() {
 //   return (
 //     <AuthProvider>
@@ -28,15 +31,19 @@ function App() {
           <div className="app-container">
           <Cursor />
           <Navbar />
+          <Suspense fallback={<Loader />}> 
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-
+            <Route path="/blog" element={<BlogPage />} />
+<Route path="/faq" element={<FAQPage />} />
             {/* Main personal editor */}
             <Route
               path="/editor"
               element={
-                <MainEditor />
+                <ProtectedRoute>
+                  <MainEditor />
+                </ProtectedRoute>
               }
             />
             
@@ -44,7 +51,19 @@ function App() {
             <Route
               path="/profile"
               element={
-                <Profile />
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* User Dashboard route */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboard />
+                </ProtectedRoute>
               }
             />
 
@@ -62,6 +81,7 @@ function App() {
               }
             />
           </Routes>
+          </Suspense>
           <ScrollToTop />
         </div>
       </Router>

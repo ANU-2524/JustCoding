@@ -1196,24 +1196,295 @@
 }
 
 /* ========================================
-   Code Editor Responsive Styles
+   Enhanced Mobile Responsiveness
    ======================================== */
-.code-editor-container {
-  height: 70vh;
-  min-height: 300px;
-  width: 100%;
-}
 
-@media (max-width: 768px) {
-  .code-editor-container {
-    height: 50vh;
-    min-height: 250px;
+/* Mobile-first approach - Base styles for mobile */
+@media (max-width: 480px) {
+  .workspace {
+    padding-top: 50px;
+  }
+
+  .workspace-main {
+    padding: 0.5rem;
+    gap: 0.75rem;
+  }
+
+  .toolbar {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .toolbar-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .btn-run,
+  .btn-visualize {
+    grid-column: 1 / -1;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-secondary {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-secondary span {
+    display: none;
+  }
+
+  .language-select {
+    width: 100%;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Editor improvements */
+  .editor-section {
+    gap: 0.5rem;
+  }
+
+  .editor-container {
+    min-height: 200px;
+  }
+
+  .input-panel,
+  .output-panel {
+    min-height: 100px;
+  }
+
+  .io-textarea,
+  .output-content {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* AI section mobile */
+  .ai-section-content {
+    padding: 0 0.5rem 0.5rem;
+  }
+
+  .ai-card {
+    padding: 0.75rem;
+  }
+
+  .ai-card .input-field {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Visualizer mobile */
+  .visualizer-controls-top {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .playback-controls {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .control-btn {
+    min-width: 35px;
+    min-height: 35px;
+    padding: 6px 8px;
+  }
+
+  .speed-control {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .speed-control input[type="range"] {
+    width: 100px;
+  }
+
+  .code-display {
+    padding: 0.5rem;
+    max-height: 250px;
+  }
+
+  .code-line {
+    padding: 2px 4px;
+  }
+
+  .line-number {
+    min-width: 25px;
+    margin-right: 8px;
+  }
+
+  .state-info {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .variables-panel,
+  .execution-details {
+    padding: 0.5rem;
+  }
+
+  .variable-item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  .step-details p {
+    font-size: 0.75rem;
   }
 }
 
-@media (max-width: 480px) {
-  .code-editor-container {
-    height: 40vh;
-    min-height: 200px;
+/* Tablet responsiveness */
+@media (min-width: 481px) and (max-width: 768px) {
+  .workspace-main {
+    padding: 1rem;
+  }
+
+  .toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .btn-run,
+  .btn-visualize {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .editor-container {
+    min-height: 300px;
+  }
+
+  .visualizer-controls-top {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .playback-controls {
+    order: 1;
+  }
+
+  .speed-control {
+    order: 2;
+  }
+
+  .step-info {
+    order: 3;
+  }
+
+  .btn-close-visualizer {
+    order: 4;
+  }
+}
+
+/* Large mobile landscape */
+@media (min-width: 481px) and (max-width: 640px) and (orientation: landscape) {
+  .editor-section {
+    grid-template-columns: 1.5fr 1fr;
+  }
+
+  .io-panel {
+    flex-direction: column;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .control-btn,
+  .btn-run,
+  .btn-visualize,
+  .btn-secondary {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .language-select {
+    min-height: 44px;
+  }
+
+  .ai-tab {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  .theme-toggle-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .workspace {
+    overflow-x: hidden;
+  }
+
+  .editor-section,
+  .toolbar,
+  .ai-section-content {
+    width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .code-lines {
+    font-size: 13px;
+  }
+
+  .line-number {
+    font-size: 12px;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  .btn-run:focus,
+  .btn-visualize:focus,
+  .btn-secondary:focus,
+  .control-btn:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+
+  .language-select:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 1px;
+  }
+}
+
+/* Improved scrolling on mobile */
+@media (max-width: 768px) {
+  .code-display,
+  .output-content,
+  .io-textarea {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .code-display::-webkit-scrollbar,
+  .output-content::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .code-display::-webkit-scrollbar-thumb,
+  .output-content::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 3px;
   }
 }
