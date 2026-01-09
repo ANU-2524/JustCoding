@@ -5,6 +5,7 @@ import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
 import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
 import CardSwap, { Card } from './CardSwap';
+import HowItWorks from './HowItWorks';
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
@@ -270,85 +271,7 @@ const HomePage = () => {
       </motion.section>
 
       {/* How It Works Section */}
-      <motion.section
-        className="how-section"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          How It Works
-        </motion.h2>
-        <motion.div
-          className="how-steps"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.3
-              }
-            }
-          }}
-        >
-          <motion.div
-            className="how-step"
-            variants={{
-              hidden: { opacity: 0, x: -50, scale: 0.9 },
-              visible: { opacity: 1, x: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -8,
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
-            }}
-          >
-            <h3 className="step-title">1. Sign Up</h3>
-            <p className="step-text">Create an account and access your AI-powered workspace.</p>
-          </motion.div>
-          <motion.div
-            className="how-step"
-            variants={{
-              hidden: { opacity: 0, y: 50, scale: 0.9 },
-              visible: { opacity: 1, y: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -8,
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
-            }}
-          >
-            <h3 className="step-title">2. Start Coding</h3>
-            <p className="step-text">Use our editor to write code in multiple languages with AI suggestions.</p>
-          </motion.div>
-          <motion.div
-            className="how-step"
-            variants={{
-              hidden: { opacity: 0, x: 50, scale: 0.9 },
-              visible: { opacity: 1, x: 0, scale: 1 }
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{
-              scale: 1.05,
-              y: -8,
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.12)"
-            }}
-          >
-            <h3 className="step-title">3. Collaborate & Share</h3>
-            <p className="step-text">Invite teammates to collaborate or export your work seamlessly.</p>
-          </motion.div>
-        </motion.div>
-      </motion.section>
+      <HowItWorks />
 
       {/* CTA Section */}
       <motion.section
