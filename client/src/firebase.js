@@ -5,15 +5,15 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 let app, auth, provider;
 
 try {
-  const firebaseConfig = {
-    apiKey: "AIzaSyA8_lGVxfA_O7kW25MmlUID1EWGH1QGXFU",
-  authDomain: "justcoding-c34ba.firebaseapp.com",
-  projectId: "justcoding-c34ba",
-  storageBucket: "justcoding-c34ba.firebasestorage.app",
-  messagingSenderId: "243844798756",
-  appId: "1:243844798756:web:78fcbe38d579d3615b3bb1",
-  measurementId: "G-NMVN0TPD8V"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyALzAZ3bWIdhlbMom29FMwweREqMg2SW_Y",
+  authDomain: "justcoding-46f9f.firebaseapp.com",
+  projectId: "justcoding-46f9f",
+  storageBucket: "justcoding-46f9f.firebasestorage.app",
+  messagingSenderId: "1024753498583",
+  appId: "1:1024753498583:web:5d50f979b7f9952c3a7392",
+  measurementId: "G-05MFX441MV"
+};
 
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
