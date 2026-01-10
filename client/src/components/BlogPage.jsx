@@ -22,6 +22,16 @@ const BlogPage = React.memo(() => {
 
   const cardRefs = useRef([]);
 
+  const handleMouseMove = (e, index) => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty("--mouse-x", `${x}px`);
+    card.style.setProperty("--mouse-y", `${y}px`);
+  };
+
   const toggleBookmark = (articleTitle) => {
     setBookmarks(prev => 
       prev.includes(articleTitle) 
@@ -360,42 +370,53 @@ const SlowComponent = () => {
         </div>
       </section>
 
-      {/* Masonry Grid */}
+      {/* Articles Grid */}
       <section className="blog-list-section" aria-label="Articles Grid">
         <div className="blog-masonry-grid" role="list">
-          <AnimatePresence>
-            {displayArticles.map((article, index) => (
-              <motion.div
-                key={article.title}
-                ref={el => cardRefs.current[index] = el}
-                layoutId={`card-${article.title}`}
-                className={`blog-card ${keyboardNavIndex === index ? "kb-active" : ""}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => openArticle(article)}
-                role="listitem"
-                tabIndex="0"
-                aria-label={`Read article: ${article.title}`}
-                whileHover={{ y: -5 }}
-              >
-                {index === 0 && <div className="card-new-tag">New</div>}
-                <div className={`card-category-badge category-${article.category}`}>
-                  {article.category}
-                </div>
-                <h3 className="card-title">{article.title}</h3>
-                <p className="card-excerpt">{article.excerpt}</p>
-                <div className="card-footer">
-                  <span className="reading-time">
-                    <FaClock aria-hidden="true" /> {article.readTime}
-                  </span>
-                  <div className="author-meta">
-                    <span className="author-name">{article.author}</span>
+          <AnimatePresence mode="popLayout">
+            {displayArticles.length > 0 ? (
+              displayArticles.map((article, index) => (
+                <motion.div
+                  key={article.title}
+                  ref={el => cardRefs.current[index] = el}
+                  layoutId={`card-${article.title}`}
+                  className={`blog-card ${keyboardNavIndex === index ? "kb-active" : ""}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  onClick={() => openArticle(article)}
+                  onMouseMove={(e) => handleMouseMove(e, index)}
+                  role="listitem"
+                  tabIndex="0"
+                  aria-label={`Read article: ${article.title}`}
+                  whileHover={{ y: -8 }}
+                >
+                  {index === 0 && <div className="card-new-tag">New</div>}
+                  <div className={`card-category-badge category-${article.category}`}>
+                    {article.category}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <h3 className="card-title">{article.title}</h3>
+                  <p className="card-excerpt">{article.excerpt}</p>
+                  <div className="card-footer">
+                    <span className="reading-time">
+                      <FaClock aria-hidden="true" /> {article.readTime}
+                    </span>
+                    <div className="author-meta">
+                      <span className="author-name">{article.author}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+                <motion.div 
+                  className="no-results-container"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <div className="no-results-text">No articles found matching your criteria.</div>
+                </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </section>
