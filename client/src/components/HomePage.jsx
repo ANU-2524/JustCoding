@@ -270,6 +270,85 @@ const HomePage = () => {
         </div>
       </motion.section>
 
+
+{/* Use Cases Section */}
+<motion.section
+  className="use-cases-section"
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8 }}
+  viewport={{ once: true }}
+>
+  <motion.h2
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: 0.2 }}
+    viewport={{ once: true }}
+  >
+    Who Is JustCoding For?
+  </motion.h2>
+
+  <motion.p
+    className="use-cases-subtitle"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: 0.3 }}
+    viewport={{ once: true }}
+  >
+    JustCoding is built to support different learning and development needs.
+  </motion.p>
+
+  <div className="use-cases-grid">
+    {[
+      {
+        icon: <FaCode />,
+        title: "Students",
+        text: "Practice coding, understand concepts, and learn faster with AI assistance."
+      },
+      {
+        icon: <FaUsers />,
+        title: "Teams",
+        text: "Collaborate in real time and build projects together seamlessly."
+      },
+      {
+        icon: <FaRobot />,
+        title: "Learners",
+        text: "Get instant explanations, debugging help, and coding guidance."
+      },
+      {
+        icon: <FaFilePdf />,
+        title: "Educators",
+        text: "Demonstrate code live and share examples with students easily."
+      },
+      {
+        icon: <FaChartLine />,
+        title: "Interview Prep",
+        text: "Practice coding problems and improve performance with insights."
+      },
+      {
+        icon: <FaCodeBranch />,
+        title: "Developers",
+        text: "Experiment, test ideas, and manage code efficiently."
+      }
+    ].map((item, index) => (
+      <motion.div
+        key={index}
+        className="use-case-card"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+        viewport={{ once: true }}
+        whileHover={{ scale: 1.05, y: -10 }}
+      >
+        <div className="use-case-icon">{item.icon}</div>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </motion.div>
+    ))}
+  </div>
+</motion.section>
+
+
       {/* How It Works Section */}
       <HowItWorks />
 
