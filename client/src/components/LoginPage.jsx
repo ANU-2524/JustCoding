@@ -31,17 +31,28 @@ const LoginPage = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!email) {
-      alert("Please enter your email address to reset your password.");
-      return;
+  if (!email) {
+    alert("Enter your email first");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset link sent. Check your email.");
+  } catch (error) {
+    switch (error.code) {
+      case "auth/user-not-found":
+        alert("No account found with this email");
+        break;
+      case "auth/invalid-email":
+        alert("Invalid email address");
+        break;
+      default:
+        alert(error.message);
     }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      alert("Password reset email sent! Check your inbox.");
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
