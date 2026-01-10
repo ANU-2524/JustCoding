@@ -35,7 +35,7 @@
   color: var(--blog-text-main);
   font-family: 'Inter', sans-serif;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
@@ -657,10 +657,11 @@
 /* Newsletter Section */
 .blog-newsletter {
   text-align: center;
-  padding: 3rem 2rem;
-  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+  padding: 4rem 2rem 2rem;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
   border-top: 1px solid var(--glass-border);
   position: relative;
+  margin-top: 2rem;
 }
 
 .newsletter-title {
