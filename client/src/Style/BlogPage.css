@@ -1,28 +1,28 @@
 /* client/src/Style/BlogPage.css */
 
-/* Theme-aware blog variables */
-:root {
+/* Scoped blog variables */
+.blog-container {
   --blog-primary: #6366f1;
   --blog-secondary: #8b5cf6;
   --blog-bg-dark: #0f172a;
   --blog-card-bg: rgba(30, 41, 59, 0.7);
   --blog-text-main: #f8fafc;
   --blog-text-muted: #94a3b8;
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --accent-glow: rgba(99, 102, 241, 0.3);
+  --blog-glass-border: rgba(255, 255, 255, 0.1);
+  --blog-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --blog-accent-glow: rgba(99, 102, 241, 0.3);
 }
 
-[data-theme='light'] {
+[data-theme='light'] .blog-container {
   --blog-primary: #4f46e5;
   --blog-secondary: #7c3aed;
   --blog-bg-dark: #f8fafc;
   --blog-card-bg: rgba(255, 255, 255, 0.8);
   --blog-text-main: #1e293b;
   --blog-text-muted: #64748b;
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  --accent-glow: rgba(79, 70, 229, 0.1);
+  --blog-glass-border: rgba(0, 0, 0, 0.1);
+  --blog-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --blog-accent-glow: rgba(79, 70, 229, 0.1);
 }
 
 .blog-container {
@@ -73,7 +73,7 @@
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  background: radial-gradient(circle, var(--blog-accent-glow) 0%, transparent 60%);
   filter: blur(60px);
   z-index: 0;
   pointer-events: none;
@@ -377,7 +377,7 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--blog-glass-border);
   margin-top: auto;
 }
 
@@ -485,7 +485,7 @@
 
 .action-btn {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--blog-glass-border);
   color: white;
   padding: 0.75rem 1.25rem;
   border-radius: 12px;
@@ -507,7 +507,7 @@
   top: 2rem;
   right: 2rem;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--blog-glass-border);
   color: white;
   width: 44px;
   height: 44px;
@@ -578,7 +578,7 @@
   margin: 2rem 0;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--blog-glass-border);
 }
 
 /* Search and Filter updates */

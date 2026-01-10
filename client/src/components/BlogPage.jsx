@@ -88,15 +88,197 @@ const BlogPage = React.memo(() => {
 1. Code Completion - Get intelligent suggestions as you type
 2. Debugging Help - AI identifies and explains errors
 3. Code Explanation - Understand complex code snippets
+4. Best Practices - Learn industry-standard coding patterns
 
-## Productivity Wins:
-Using AI reduces debugging time by up to 40%. It's like having a senior developer pair-programming with you 24/7.`,
-      author: "GitHub Copilot",
-      date: "Feb 28, 2025",
+## Pro Tips:
+- Use comments to ask specific questions
+- Press Ctrl+Space for AI suggestions
+- Click the robot icon for instant help`,
+      author: "Anu Soni",
+      date: "Mar 15, 2025",
       readTime: "5 min",
-      tags: ["AI", "Productivity", "Guide"],
+      tags: ["AI", "Tutorial", "Beginners"],
       category: "tutorial",
       featured: true
+    },
+    {
+      title: "Collaborative Coding Best Practices",
+      excerpt: "Master real-time collaboration with your team using JustCoding's powerful collaboration features.",
+      content: `Real-time collaboration is at the heart of JustCoding. Here are best practices: 
+
+## Session Management:
+1. Create named sessions for different projects
+2. Set permissions (view/edit) appropriately
+3. Use session templates for recurring meetings
+
+## Collaboration Tips:
+- Assign different colors to team members
+- Use @mentions to get attention
+- Enable notifications for changes
+- Regularly save shared sessions`,
+      author: "Team JustCoding",
+      date: "Mar 10, 2025",
+      readTime: "4 min",
+      tags: ["Collaboration", "Teams", "Productivity"],
+      category: "tutorial",
+      featured: true
+    },
+    {
+      title: "10 VS Code Extensions You Can Use in JustCoding",
+      excerpt: "Discover how JustCoding integrates with popular VS Code extensions to enhance your coding experience.",
+      content: `JustCoding supports many VS Code-like extensions:
+
+## Essential Extensions:
+1. ES7+ React/Redux Snippets - React development
+2. Prettier - Code formatting
+3. GitLens - Git integration
+4. Live Share - Enhanced collaboration
+5. Material Icon Theme - Better file icons
+
+## How to Enable:
+1. Go to Settings → Extensions
+2. Search for your favorite extensions
+3. Click Install and restart editor`,
+      author: "Anu Soni",
+      date: "Mar 5, 2025",
+      readTime: "6 min",
+      tags: ["VS Code", "Extensions", "Tools"],
+      category: "tools"
+    },
+    {
+      title: "JavaScript Tips & Tricks for Beginners",
+      excerpt: "Level up your JavaScript skills with these essential tips and hidden features.",
+      content: `## Modern JavaScript Features:
+
+### 1. Optional Chaining
+\`\`\`javascript
+// Safe property access
+const name = user?.profile?.name;
+\`\`\`
+
+### 2. Nullish Coalescing
+\`\`\`javascript
+// Default values
+const count = input ?? 0;
+\`\`\`
+
+### 3. Array Methods
+- Use map() for transformations
+- Use filter() for selections
+- Use reduce() for aggregations`,
+      author: "JustCoding Team",
+      date: "Feb 28, 2025",
+      readTime: "8 min",
+      tags: ["JavaScript", "Tips", "Programming"],
+      category: "tutorial"
+    },
+    {
+      title: "New Feature: Real-time Collaboration",
+      excerpt: "We've launched real-time collaboration! Work with your team simultaneously on the same code.",
+      content: `## What's New:
+
+### 🎯 Real-time Features:
+- Multi-user editing - See teammates' cursors
+- Live chat - Discuss code in real-time
+- Version history - Track all changes
+- Export options - Save to multiple formats
+
+### 🚀 How to Use:
+1. Click "Collaborate" button
+2. Share the room link
+3. Start coding together
+4. Save your session`,
+      author: "JustCoding Team",
+      date: "Feb 25, 2025",
+      readTime: "3 min",
+      tags: ["Update", "Collaboration", "New"],
+      category: "update"
+    },
+    {
+      title: "JustCoding Now Supports Python 3.11",
+      excerpt: "We've added support for Python 3.11 with all its new features and improvements.",
+      content: `## Python 3.11 Features Now Available:
+
+### Performance Improvements:
+- Faster execution - Up to 60% faster
+- Better error messages - More informative
+- New typing features - Enhanced type hints
+
+### New Syntax Features:
+\`\`\`python
+# Exception groups
+try:
+    ...
+except* ValueError as e:
+    # Handle ValueError group
+    pass
+\`\`\`
+
+### Updated Libraries:
+- All standard libraries updated
+- Popular packages pre-installed`,
+      author: "Anu Soni",
+      date: "Feb 20, 2025",
+      readTime: "4 min",
+      tags: ["Python", "Update", "Languages"],
+      category: "update"
+    },
+    {
+      title: "Clean Code Principles for JavaScript",
+      excerpt: "Write maintainable, readable JavaScript code using these clean code principles.",
+      content: `## Clean JavaScript Guidelines:
+
+### Naming Conventions:
+- Use camelCase for variables/functions
+- Use PascalCase for classes/components
+- Use UPPER_CASE for constants
+
+### Function Rules:
+- Keep functions small (max 20 lines)
+- One responsibility per function
+- Use descriptive names
+- Limit parameters (max 3)
+
+### Code Structure:
+- Group related functions
+- Use consistent formatting
+- Add meaningful comments
+- Remove dead code`,
+      author: "JustCoding Team",
+      date: "Feb 15, 2025",
+      readTime: "7 min",
+      tags: ["JavaScript", "Best Practices", "Clean Code"],
+      category: "tutorial"
+    },
+    {
+      title: "Debugging Like a Pro in JustCoding",
+      excerpt: "Master the debugging tools in JustCoding to find and fix bugs faster.",
+      content: `## Debugging Tools:
+
+### 1. Breakpoints
+- Set breakpoints by clicking line numbers
+- Use conditional breakpoints
+- View variable values on hover
+
+### 2. Console
+- Interactive JavaScript console
+- Log messages with console.log()
+- View errors and warnings
+
+### 3. Step Debugging
+- Step Into functions
+- Step Over lines
+- Step Out of functions
+
+## Pro Tips:
+- Use console.table() for arrays
+- Utilize debugger statement
+- Check browser console for errors`,
+      author: "Anu Soni",
+      date: "Feb 10, 2025",
+      readTime: "5 min",
+      tags: ["Debugging", "Tools", "Tips"],
+      category: "tutorial"
     },
     {
       title: "Modern UI Trends in Developer Tools",
