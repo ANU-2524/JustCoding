@@ -304,60 +304,65 @@ const HomePage = () => {
       </motion.section>
 
       {/* Footer */}
-      <motion.footer
-        className="footer"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+<footer className="footer animate-on-scroll">
+  <div className="footer-container">
+
+    {/* Brand */}
+    <div className="footer-brand">
+      <p>
+        &copy; {new Date().getFullYear()} JustCoding. Built with love, learning,
+        and late nights by Anu 💌🌸.
+      </p>
+    </div>
+
+    {/* Quick Links */}
+    <div className="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li onClick={() => navigate("/")}>Home</li>
+        <li onClick={() => navigate("/editor")}>Editor</li>
+        <li onClick={() => navigate("/live")}>Collaborate</li>
+        <li onClick={() => navigate("/profile")}>Profile</li>
+      </ul>
+    </div>
+
+    {/* Feedback & Rating */}
+    <div className="footer-feedback">
+      <h4>Feedback</h4>
+
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSeVYOjh-QcmfOkOHtprYlMoKiKG_Tl6bZuA9c1A8JVdUhHbKA/viewform?usp=publish-editor"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="feedback-btn"
+        title="Help us improve JustCoding 💛"
       >
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          &copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.
-        </motion.p>
-        <motion.div
-          className="social-icons"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <motion.a
-            href="https://x.com/_Anuuu_Soniii_"
-            aria-label="Twitter"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaTwitter />
-          </motion.a>
-          <motion.a
-            href="https://github.com/ANU-2524/"
-            aria-label="GitHub"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaGithub />
-          </motion.a>
-          <motion.a
-            href="https://www.linkedin.com/in/anu--soni/"
-            aria-label="LinkedIn"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaLinkedin />
-          </motion.a>
-        </motion.div>
-      </motion.footer>
+        Give Feedback
+      </a>
+
+      <div className="rating">
+        <span>Rate Us:</span>
+        <div className="stars">★ ★ ★ ★ ★</div>
+      </div>
+    </div>
+
+    {/* Social Links */}
+    <div className="footer-social">
+      <h4>Connect</h4>
+      <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
+        <FaTwitter /> Twitter
+      </a>
+      <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
+        <FaGithub /> GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin /> LinkedIn
+      </a>
+    </div>
+
+  </div>
+</footer>
+
     </div>
   );
 };
