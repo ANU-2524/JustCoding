@@ -24,6 +24,7 @@
     "editor": "^1.0.0",
     "firebase": "^11.9.1",
     "framer-motion": "^12.18.1",
+    "gsap": "^3.14.2",
     "jspdf": "^3.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

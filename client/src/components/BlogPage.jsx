@@ -1,20 +1,74 @@
 // src/components/BlogPage.jsx
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaCalendar, FaUser, FaClock, FaTags, FaArrowRight, FaSearch, FaFilter } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { FaClock, FaSearch, FaTimes, FaShareAlt, FaBookmark, FaArrowLeft, FaRocket } from "react-icons/fa";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import "../Style/BlogPage.css";
 
-const BlogPage = () => {
+const BlogPage = React.memo(() => {
   const [activeArticle, setActiveArticle] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
+  const [bookmarks, setBookmarks] = useState([]);
+  const [keyboardNavIndex, setKeyboardNavIndex] = useState(-1);
+  
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
-  const openArticle = (index) => {
-    setActiveArticle(activeArticle === index ? null : index);
+  const cardRefs = useRef([]);
+
+  const toggleBookmark = (articleTitle) => {
+    setBookmarks(prev => 
+      prev.includes(articleTitle) 
+        ? prev.filter(t => t !== articleTitle) 
+        : [...prev, articleTitle]
+    );
   };
 
-  const blogArticles = [
+  const getTOC = (content) => {
+    const lines = content.split("\n");
+    return lines
+      .filter(line => line.startsWith("## "))
+      .map(line => line.replace("## ", ""));
+  };
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const openArticle = (article) => {
+    setActiveArticle(article);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeArticle = () => {
+    setActiveArticle(null);
+    document.body.style.overflow = "auto";
+    setKeyboardNavIndex(-1);
+  };
+
+  const shareArticle = (article) => {
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.excerpt,
+        url: window.location.href,
+      }).catch(console.error);
+    } else {
+      alert("Sharing is not supported in this browser. Link copied to clipboard!");
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const blogArticles = useMemo(() => [
     {
       title: "Getting Started with JustCoding AI Assistant",
       excerpt: "Learn how to use our AI assistant to write better code, debug faster, and learn programming concepts in minutes.",
@@ -24,140 +78,59 @@ const BlogPage = () => {
 1. Code Completion - Get intelligent suggestions as you type
 2. Debugging Help - AI identifies and explains errors
 3. Code Explanation - Understand complex code snippets
-4. Best Practices - Learn industry-standard coding patterns
 
-## Pro Tips:
-- Use comments to ask specific questions
-- Press Ctrl+Space for AI suggestions
-- Click the robot icon for instant help`,
-      author: "Anu Soni",
-      date: "Mar 15, 2025",
-      readTime: "5 min",
-      tags: ["AI", "Tutorial", "Beginners"],
-      category: "tutorial",
-      featured: true
-    },
-    {
-      title: "Collaborative Coding Best Practices",
-      excerpt: "Master real-time collaboration with your team using JustCoding's powerful collaboration features.",
-      content: `Real-time collaboration is at the heart of JustCoding. Here are best practices:
-
-## Session Management:
-1. Create named sessions for different projects
-2. Set permissions (view/edit) appropriately
-3. Use session templates for recurring meetings
-
-## Collaboration Tips:
-- Assign different colors to team members
-- Use @mentions to get attention
-- Enable notifications for changes
-- Regularly save shared sessions`,
-      author: "Team JustCoding",
-      date: "Mar 10, 2025",
-      readTime: "4 min",
-      tags: ["Collaboration", "Teams", "Productivity"],
-      category: "tutorial",
-      featured: true
-    },
-    {
-      title: "10 VS Code Extensions You Can Use in JustCoding",
-      excerpt: "Discover how JustCoding integrates with popular VS Code extensions to enhance your coding experience.",
-      content: `JustCoding supports many VS Code-like extensions:
-
-## Essential Extensions:
-1. ES7+ React/Redux Snippets - React development
-2. Prettier - Code formatting
-3. GitLens - Git integration
-4. Live Share - Enhanced collaboration
-5. Material Icon Theme - Better file icons
-
-## How to Enable:
-1. Go to Settings → Extensions
-2. Search for your favorite extensions
-3. Click Install and restart editor`,
-      author: "Anu Soni",
-      date: "Mar 5, 2025",
-      readTime: "6 min",
-      tags: ["VS Code", "Extensions", "Tools"],
-      category: "tools"
-    },
-    {
-      title: "JavaScript Tips & Tricks for Beginners",
-      excerpt: "Level up your JavaScript skills with these essential tips and hidden features.",
-      content: `## Modern JavaScript Features:
-
-### 1. Optional Chaining
-\`\`\`javascript
-// Safe property access
-const name = user?.profile?.name;
-\`\`\`
-
-### 2. Nullish Coalescing
-\`\`\`javascript
-// Default values
-const count = input ?? 0;
-\`\`\`
-
-### 3. Array Methods
-- Use map() for transformations
-- Use filter() for selections
-- Use reduce() for aggregations`,
-      author: "JustCoding Team",
+## Productivity Wins:
+Using AI reduces debugging time by up to 40%. It's like having a senior developer pair-programming with you 24/7.`,
+      author: "GitHub Copilot",
       date: "Feb 28, 2025",
-      readTime: "8 min",
-      tags: ["JavaScript", "Tips", "Programming"],
-      category: "tutorial"
+      readTime: "5 min",
+      tags: ["AI", "Productivity", "Guide"],
+      category: "tutorial",
+      featured: true
     },
     {
-      title: "New Feature: Real-time Collaboration",
-      excerpt: "We've launched real-time collaboration! Work with your team simultaneously on the same code.",
-      content: `## What's New:
+      title: "Modern UI Trends in Developer Tools",
+      excerpt: "Exploring the rise of glassmorphism and minimal design in 2025 code editors.",
+      content: `The developer experience (DX) has never been more visual. Let's explore why:
 
-### 🎯 Real-time Features:
-- Multi-user editing - See teammates' cursors
-- Live chat - Discuss code in real-time
-- Version history - Track all changes
-- Export options - Save to multiple formats
+## Glassmorphism 2.0:
+Modern tools use sophisticated backdrop filters and subtle borders to create depth without clutter.
 
-### 🚀 How to Use:
-1. Click "Collaborate" button
-2. Share the room link
-3. Start coding together
-4. Save your session`,
-      author: "JustCoding Team",
+## Typography Matters:
+High-performance fonts like Fira Code or JetBrains Mono improve readability and reduce eye strain.
+
+### Why Design Matters for Devs:
+- Better focus
+- Reduced cognitive load
+- Just looks cooler!`,
+      author: "Design Lead",
       date: "Feb 25, 2025",
-      readTime: "3 min",
-      tags: ["Update", "Collaboration", "New"],
+      readTime: "4 min",
+      tags: ["UI/UX", "Design", "Frontend"],
       category: "update"
     },
     {
-      title: "JustCoding Now Supports Python 3.11",
-      excerpt: "We've added support for Python 3.11 with all its new features and improvements.",
-      content: `## Python 3.11 Features Now Available:
+      title: "Optimizing React Performance in 2025",
+      excerpt: "Master the latest React features to build blazing fast web applications.",
+      content: `React continues to evolve. Here's how to keep your apps fast:
 
-### Performance Improvements:
-- Faster execution - Up to 60% faster
-- Better error messages - More informative
-- New typing features - Enhanced type hints
+## Key Techniques:
+- Use Server Components for initial load
+- Leverage the 'use' hook for data fetching
+- Optimize re-renders with automatic memoization
 
-### New Syntax Features:
-\`\`\`python
-# Exception groups
-try:
-    ...
-except* ValueError as e:
-    # Handle ValueError group
-    pass
-\`\`\`
-
-### Updated Libraries:
-- All standard libraries updated
-- Popular packages pre-installed`,
-      author: "Anu Soni",
+### Example Code:
+\`\`\`javascript
+const SlowComponent = () => {
+  const data = use(fetchData());
+  return <div>{data.title}</div>;
+};
+\`\`\``,
+      author: "React Expert",
       date: "Feb 20, 2025",
-      readTime: "4 min",
-      tags: ["Python", "Update", "Languages"],
-      category: "update"
+      readTime: "8 min",
+      tags: ["React", "Performance", "Frontend"],
+      category: "tools"
     },
     {
       title: "Clean Code Principles for JavaScript",
@@ -216,71 +189,155 @@ except* ValueError as e:
       tags: ["Debugging", "Tools", "Tips"],
       category: "tutorial"
     }
-  ];
+  ], []);
 
-  const filteredArticles = activeFilter === "all" 
-    ? blogArticles 
-    : blogArticles.filter(article => article.category === activeFilter);
+  const filteredArticles = useMemo(() => (
+    activeFilter === "all" 
+      ? blogArticles 
+      : blogArticles.filter(article => article.category === activeFilter)
+  ), [activeFilter, blogArticles]);
 
-  const searchedArticles = searchQuery 
-    ? filteredArticles.filter(article => 
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : filteredArticles;
+  const searchedArticles = useMemo(() => (
+    searchQuery 
+      ? filteredArticles.filter(article => 
+          article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
+      : filteredArticles
+  ), [searchQuery, filteredArticles]);
+
+  const featuredArticle = useMemo(() => (
+    blogArticles.find(a => a.featured) || blogArticles[0]
+  ), [blogArticles]);
+
+  const displayArticles = useMemo(() => (
+    searchedArticles.filter(a => a !== (searchQuery ? null : (activeFilter === "all" ? featuredArticle : null)))
+  ), [searchedArticles, searchQuery, activeFilter, featuredArticle]);
+
+  // Keyboard navigation logic
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activeArticle) return; // Don't navigate while reading
+
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          setKeyboardNavIndex(prev => Math.min(prev + 1, displayArticles.length - 1));
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          setKeyboardNavIndex(prev => Math.max(prev - 1, 0));
+          break;
+        case 'Enter':
+          if (keyboardNavIndex >= 0) {
+            openArticle(displayArticles[keyboardNavIndex]);
+          }
+          break;
+        case 'Escape':
+          setKeyboardNavIndex(-1);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [displayArticles, activeArticle, keyboardNavIndex]);
+
+  useEffect(() => {
+    if (keyboardNavIndex >= 0 && cardRefs.current[keyboardNavIndex]) {
+        cardRefs.current[keyboardNavIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [keyboardNavIndex]);
 
   return (
-        <motion.div 
-        className="faq-container blog-container"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        style={{ 
-            paddingTop: '80px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-        }}
-        >
-      <header className="faq-header blog-header">
+    <div className="blog-container">
+      {/* Visual Enhancements: Particles */}
+      <div className="particles-container">
+        {[...Array(3)].map((_, i) => (
+          <div 
+            key={i} 
+            className="particle" 
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${Math.random() * 15 + 10}px`,
+              height: `${Math.random() * 15 + 10}px`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 10 + 10}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Background Blobs */}
+      <div className="blob blob-1"></div>
+      <div className="blob blob-2"></div>
+
+      {/* Floating Progress Bar */}
+      <div className="progress-bar-container">
+        <motion.div className="progress-bar" style={{ scaleX }} />
+      </div>
+
+      <header className="blog-header">
         <motion.h1
+          className="blog-title"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="faq-title blog-title"
-          style={{ 
-           
-            textAlign: 'center',
-           
-        }}
         >
-          Just<span className="highlight">Coding</span> Blog
+          Developer <span style={{ color: "var(--blog-primary)" }}>Hub</span>
         </motion.h1>
-        <motion.p
-          initial={{ y: -20, opacity: 0 }}
+        <motion.p 
+          className="blog-subtitle"
+          initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="faq-subtitle blog-subtitle"
+          transition={{ delay: 0.2 }}
         >
-          Tutorials, updates, and coding tips from the JustCoding team
+          Your ultimate destination for tech updates, coding tutorials, and industry insights.
         </motion.p>
       </header>
 
+      {/* Featured Entry */}
+      {featuredArticle && !searchQuery && activeFilter === "all" && (
+        <section className="blog-hero-section" aria-labelledby="featured-post-title">
+          <motion.div 
+            className="hero-card"
+            whileHover={{ y: -10 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            onClick={() => openArticle(featuredArticle)}
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => e.key === 'Enter' && openArticle(featuredArticle)}
+          >
+            <div className="hero-image-wrapper">
+              <FaRocket aria-hidden="true" />
+            </div>
+            <div className="hero-content">
+              <span className="hero-badge">Featured Post</span>
+              <h2 id="featured-post-title" className="hero-title">{featuredArticle.title}</h2>
+              <p className="hero-excerpt">{featuredArticle.excerpt}</p>
+              <div className="card-footer">
+                <div className="author-meta">
+                  <div className="author-avatar">{featuredArticle.author.charAt(0)}</div>
+                  <span className="author-name">{featuredArticle.author}</span>
+                </div>
+                <span className="reading-time">
+                  <FaClock /> {featuredArticle.readTime}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      )}
+
       {/* Search and Filter */}
-      <motion.section 
-        className="blog-search-section"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
+      <section className="blog-search-section">
         <div className="blog-search-container">
           <div className="blog-search-box">
             <FaSearch />
             <input
               type="text"
-              placeholder="Search articles..."
+              placeholder="Search the hub..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="blog-search-input"
@@ -288,609 +345,217 @@ except* ValueError as e:
           </div>
           
           <div className="blog-filter-container">
-            <FaFilter />
             {["all", "tutorial", "update", "tools"].map((filter) => (
               <motion.button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`blog-filter-btn ${activeFilter === filter ? 'active' : ''}`}
+                className={`blog-filter-btn ${activeFilter === filter ? "active" : ""}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                style={{
+                    background: activeFilter === filter ? "linear-gradient(90deg, #6366f1, #8b5cf6)" : "rgba(255, 255, 255, 0.05)",
+                    color: "#fff",
+                    padding: "0.5rem 1.5rem",
+                    borderRadius: "50px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    cursor: "pointer"
+                }}
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </motion.button>
             ))}
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Blog Articles List */}
-      <section className="blog-list-section">
-        <h2 className="blog-section-title">
-          {searchedArticles.length} Articles Found
-          {searchQuery && ` for "${searchQuery}"`}
-        </h2>
-        
-        <div className="blog-list">
+      {/* Masonry Grid */}
+      <section className="blog-list-section" aria-label="Articles Grid">
+        <div className="blog-masonry-grid" role="list">
           <AnimatePresence>
-            {searchedArticles.map((article, index) => (
+            {displayArticles.map((article, index) => (
               <motion.div
-                key={index}
-                className="blog-item-card"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                whileHover={{ scale: 1.01 }}
+                key={article.title}
+                ref={el => cardRefs.current[index] = el}
+                layoutId={`card-${article.title}`}
+                className={`blog-card ${keyboardNavIndex === index ? "kb-active" : ""}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                onClick={() => openArticle(article)}
+                role="listitem"
+                tabIndex="0"
+                aria-label={`Read article: ${article.title}`}
+                whileHover={{ y: -5 }}
               >
-                <button
-                  onClick={() => openArticle(index)}
-                  className="blog-question-btn"
-                >
-                  <div className="blog-question-content">
-                    <div className="blog-article-header">
-                      <h3 className="blog-article-title">{article.title}</h3>
-                      <div className="blog-meta">
-                        <span><FaUser /> {article.author}</span>
-                        <span><FaCalendar /> {article.date}</span>
-                        <span><FaClock /> {article.readTime} read</span>
-                      </div>
-                    </div>
-                    <p className="blog-excerpt">{article.excerpt}</p>
-                    <div className="blog-tags">
-                      {article.tags.map(tag => (
-                        <span key={tag} className="blog-tag">#{tag}</span>
-                      ))}
-                    </div>
+                {index === 0 && <div className="card-new-tag">New</div>}
+                <div className={`card-category-badge category-${article.category}`}>
+                  {article.category}
+                </div>
+                <h3 className="card-title">{article.title}</h3>
+                <p className="card-excerpt">{article.excerpt}</p>
+                <div className="card-footer">
+                  <span className="reading-time">
+                    <FaClock aria-hidden="true" /> {article.readTime}
+                  </span>
+                  <div className="author-meta">
+                    <span className="author-name">{article.author}</span>
                   </div>
-                  <motion.div
-                    className="faq-chevron"
-                    animate={{ rotate: activeArticle === index ? 180 : 0 }}
-                  >
-                    <FaChevronDown />
-                  </motion.div>
-                </button>
-                
-                <AnimatePresence>
-                  {activeArticle === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="blog-answer-container"
-                    >
-                      <div className="blog-answer-content">
-                        <div className="blog-full-meta">
-                          <div className="blog-author-info">
-                            <div className="blog-author-avatar">
-                              {article.author.charAt(0)}
-                            </div>
-                            <div>
-                              <h4>{article.author}</h4>
-                              <p>{article.date} • {article.readTime} min read</p>
-                            </div>
-                          </div>
-                          <div className="blog-article-tags">
-                            <FaTags />
-                            {article.tags.map(tag => (
-                              <span key={tag} className="blog-full-tag">#{tag}</span>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div className="blog-full-content">
-                          {article.content.split('\n').map((line, idx) => {
-                            if (line.startsWith('## ')) {
-                              return <h3 key={idx}>{line.replace('## ', '')}</h3>;
-                            } else if (line.startsWith('### ')) {
-                              return <h4 key={idx}>{line.replace('### ', '')}</h4>;
-                            } else if (line.startsWith('- ')) {
-                              return <li key={idx}>{line.replace('- ', '')}</li>;
-                            } else if (line.startsWith('```')) {
-                              return null; // Skip code block markers
-                            } else if (line.trim() === '') {
-                              return <br key={idx} />;
-                            } else {
-                              return <p key={idx}>{line}</p>;
-                            }
-                          })}
-                        </div>
-                        
-                        <div className="blog-article-footer">
-                          <button 
-                            className="blog-back-btn"
-                            onClick={() => setActiveArticle(null)}
-                          >
-                            Back to Articles
-                          </button>
-                          <div className="blog-share-options">
-                            <button className="blog-share-btn">Share</button>
-                            <button className="blog-save-btn">Save</button>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
       </section>
 
-      {/* Newsletter CTA */}
-      <motion.section 
-        className="faq-contact-section blog-newsletter"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
-      >
-        <h2 className="faq-contact-title">Stay Updated</h2>
-        <p className="faq-contact-text">
-          Get the latest tutorials, updates, and coding tips delivered to your inbox.
-        </p>
-        <div className="blog-newsletter-form">
-          <input type="email" placeholder="Your email address" className="blog-newsletter-input" />
-          <motion.button
-            className="faq-contact-button blog-subscribe-btn"
-            whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.3)" }}
-            whileTap={{ scale: 0.95 }}
+      {/* Advanced Reading Mode Overlay */}
+      <AnimatePresence>
+        {activeArticle && (
+          <motion.div 
+            className="article-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            Subscribe
-          </motion.button>
-        </div>
-        <p className="faq-contact-footer">
-          No spam ever. Unsubscribe anytime.
-        </p>
-      </motion.section>
+            <button className="close-article" onClick={closeArticle}>
+              <FaTimes />
+            </button>
 
-      {/* Add Blog-specific CSS */}
-      <style jsx>{`
-        .blog-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 2rem 1rem;
-        }
-        
-        .blog-title {
-          font-size: 3.5rem;
-        }
-        
-        .blog-subtitle {
-          font-size: 1.2rem;
-          color: #94a3b8;
-          max-width: 600px;
-          margin: 0 auto 2rem;
-        }
-        
-        .blog-featured-section {
-          margin: 4rem 0;
-        }
-        
-        .blog-section-title {
-          font-size: 2rem;
-          margin-bottom: 2rem;
-          color: #fff;
-          border-left: 4px solid #6366f1;
-          padding-left: 1rem;
-        }
-        
-        .blog-featured-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
-          margin-bottom: 4rem;
-        }
-        
-        .blog-featured-card {
-          background: rgba(30, 41, 59, 0.5);
-          border-radius: 20px;
-          padding: 2rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          cursor: pointer;
-          position: relative;
-          transition: all 0.3s ease;
-        }
-        
-        .featured-badge {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          background: linear-gradient(90deg, #6366f1, #8b5cf6);
-          color: white;
-          padding: 0.25rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-        }
-        
-        .blog-featured-content h3 {
-          font-size: 1.5rem;
-          margin-bottom: 1rem;
-          color: #fff;
-        }
-        
-        .blog-featured-content p {
-          color: #cbd5e1;
-          margin-bottom: 1.5rem;
-          line-height: 1.6;
-        }
-        
-        .blog-meta {
-          display: flex;
-          gap: 1rem;
-          color: #94a3b8;
-          font-size: 0.9rem;
-          margin-bottom: 1rem;
-          flex-wrap: wrap;
-        }
-        
-        .blog-meta span {
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-        
-        .blog-tags {
-          display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-          margin-bottom: 1.5rem;
-        }
-        
-        .blog-tag {
-          background: rgba(99, 102, 241, 0.1);
-          color: #6366f1;
-          padding: 0.25rem 0.75rem;
-          border-radius: 15px;
-          font-size: 0.85rem;
-        }
-        
-        .blog-read-btn {
-          background: linear-gradient(90deg, #6366f1, #8b5cf6);
-          color: white;
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        
-        .blog-read-btn:hover {
-          transform: translateX(5px);
-        }
-        
-        .blog-search-section {
-          margin-bottom: 3rem;
-        }
-        
-        .blog-search-container {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        
-        .blog-search-box {
-          display: flex;
-          align-items: center;
-          background: rgba(30, 41, 59, 0.5);
-          border-radius: 50px;
-          padding: 0.75rem 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-        }
-        
-        .blog-search-box svg {
-          color: #94a3b8;
-          margin-right: 0.75rem;
-        }
-        
-        .blog-search-input {
-          background: none;
-          border: none;
-          color: white;
-          flex: 1;
-          font-size: 1rem;
-          outline: none;
-        }
-        
-        .blog-filter-container {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-        
-        .blog-filter-container svg {
-          color: #94a3b8;
-        }
-        
-        .blog-filter-btn {
-          padding: 0.5rem 1.5rem;
-          border-radius: 50px;
-          border: none;
-          background: rgba(255, 255, 255, 0.1);
-          color: #cbd5e1;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        
-        .blog-filter-btn.active {
-          background: linear-gradient(90deg, #6366f1, #8b5cf6);
-          color: #fff;
-        }
-        
-        .blog-list-section {
-          margin-bottom: 4rem;
-        }
-        
-        .blog-list {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        
-        .blog-item-card {
-          background: rgba(30, 41, 59, 0.5);
-          border-radius: 20px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          transition: all 0.3s ease;
-        }
-        
-        .blog-question-btn {
-          width: 100%;
-          padding: 1.5rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: none;
-          border: none;
-          color: #fff;
-          cursor: pointer;
-          text-align: left;
-        }
-        
-        .blog-question-content {
-          flex: 1;
-        }
-        
-        .blog-article-header {
-          margin-bottom: 1rem;
-        }
-        
-        .blog-article-title {
-          font-size: 1.3rem;
-          margin-bottom: 0.5rem;
-          color: #fff;
-        }
-        
-        .blog-excerpt {
-          color: #cbd5e1;
-          line-height: 1.6;
-          margin-bottom: 1rem;
-        }
-        
-        .blog-answer-container {
-          overflow: hidden;
-        }
-        
-        .blog-answer-content {
-          padding: 0 1.5rem 1.5rem;
-          color: #cbd5e1;
-          line-height: 1.6;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          margin-top: 1rem;
-          padding-top: 1.5rem;
-        }
-        
-        .blog-full-meta {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .blog-author-info {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-        
-        .blog-author-avatar {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-          font-weight: bold;
-          color: white;
-        }
-        
-        .blog-author-info h4 {
-          margin: 0;
-          color: #fff;
-        }
-        
-        .blog-author-info p {
-          margin: 0;
-          color: #94a3b8;
-          font-size: 0.9rem;
-        }
-        
-        .blog-article-tags {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-        
-        .blog-article-tags svg {
-          color: #94a3b8;
-        }
-        
-        .blog-full-tag {
-          background: rgba(99, 102, 241, 0.1);
-          color: #6366f1;
-          padding: 0.25rem 0.75rem;
-          border-radius: 15px;
-          font-size: 0.85rem;
-        }
-        
-        .blog-full-content {
-          margin-bottom: 2rem;
-        }
-        
-        .blog-full-content h3 {
-          color: #fff;
-          margin: 2rem 0 1rem;
-          font-size: 1.5rem;
-        }
-        
-        .blog-full-content h4 {
-          color: #cbd5e1;
-          margin: 1.5rem 0 1rem;
-          font-size: 1.2rem;
-        }
-        
-        .blog-full-content p {
-          margin-bottom: 1rem;
-          line-height: 1.7;
-        }
-        
-        .blog-full-content li {
-          margin-bottom: 0.5rem;
-          margin-left: 1.5rem;
-        }
-        
-        .blog-article-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-top: 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .blog-back-btn {
-          background: rgba(255, 255, 255, 0.1);
-          color: #fff;
-          border: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        
-        .blog-back-btn:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .blog-share-options {
-          display: flex;
-          gap: 0.5rem;
-        }
-        
-        .blog-share-btn, .blog-save-btn {
-          padding: 0.75rem 1.5rem;
-          border-radius: 10px;
-          border: none;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        
-        .blog-share-btn {
-          background: linear-gradient(90deg, #6366f1, #8b5cf6);
-          color: white;
-        }
-        
-        .blog-save-btn {
-          background: rgba(255, 255, 255, 0.1);
-          color: #fff;
-        }
-        
-        .blog-newsletter {
-          text-align: center;
-        }
-        
-        .blog-newsletter-form {
-          display: flex;
-          gap: 1rem;
-          max-width: 500px;
-          margin: 2rem auto;
-        }
-        
-        .blog-newsletter-input {
-          flex: 1;
-          padding: 1rem;
-          border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(30, 41, 59, 0.5);
-          color: white;
-          font-size: 1rem;
-          outline: none;
-        }
-        
-        .blog-subscribe-btn {
-          padding: 1rem 2rem;
-        }
-        
-        @media (max-width: 768px) {
-          .blog-title {
-            font-size: 2.5rem;
-          }
-          
-          .blog-featured-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .blog-full-meta {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1.5rem;
-          }
-          
-          .blog-article-footer {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-          }
-          
-          .blog-newsletter-form {
-            flex-direction: column;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .blog-title {
-            font-size: 2rem;
-          }
-          
-          .blog-question-btn {
-            padding: 1rem;
-          }
-          
-          .blog-meta {
-            flex-direction: column;
-            gap: 0.5rem;
-          }
-        }
-      `}</style>
-    </motion.div>
+            <div className="article-layout">
+              <aside className="article-sidebar">
+                <button className="action-btn" onClick={closeArticle} style={{ marginBottom: "2rem" }}>
+                  <FaArrowLeft /> Back to Hub
+                </button>
+                
+                <div className="sidebar-section">
+                  <h4 className="sidebar-title">Table of Contents</h4>
+                  <ul className="toc-list">
+                    {getTOC(activeArticle.content).map((item, i) => (
+                      <li 
+                        key={i} 
+                        className="toc-item"
+                        onClick={() => scrollToSection(`section-${i}`)}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="sidebar-section">
+                  <h4 className="sidebar-title">Actions</h4>
+                  <div className="article-actions">
+                    <button 
+                      className="action-btn" 
+                      onClick={() => toggleBookmark(activeArticle.title)}
+                      style={{ color: bookmarks.includes(activeArticle.title) ? "#8b5cf6" : "white" }}
+                    >
+                      <FaBookmark /> {bookmarks.includes(activeArticle.title) ? "Saved" : "Save"}
+                    </button>
+                    <button className="action-btn" onClick={() => shareArticle(activeArticle)}>
+                      <FaShareAlt /> Share
+                    </button>
+                  </div>
+                </div>
+              </aside>
+
+              <motion.div 
+                className="article-container"
+                layoutId={`card-${activeArticle.title}`}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              >
+                <header className="article-header">
+                  <div className={`card-category-badge category-${activeArticle.category}`}>
+                    {activeArticle.category}
+                  </div>
+                  <h1 className="article-full-title">{activeArticle.title}</h1>
+                  <div className="author-meta" style={{ marginBottom: "2rem" }}>
+                    <div className="author-avatar" style={{ width: "48px", height: "48px", fontSize: "1.2rem" }}>
+                      {activeArticle.author.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="author-name" style={{ fontSize: "1.1rem" }}>{activeArticle.author}</div>
+                      <div className="reading-time">{activeArticle.date} • {activeArticle.readTime} read</div>
+                    </div>
+                  </div>
+                </header>
+
+                <div className="article-content">
+                  {activeArticle.content.split("\n\n").map((block, idx) => {
+                    if (block.startsWith("## ")) {
+                      const sectionId = `section-${getTOC(activeArticle.content).indexOf(block.replace("## ", ""))}`;
+                      return <h2 key={idx} id={sectionId}>{block.replace("## ", "")}</h2>;
+                    } else if (block.startsWith("### ")) {
+                      return <h3 key={idx}>{block.replace("### ", "")}</h3>;
+                    } else if (block.startsWith("```")) {
+                      const lines = block.split("\n");
+                      const language = lines[0].replace("```", "") || "javascript";
+                      const code = lines.slice(1, -1).join("\n");
+                      return (
+                        <div key={idx} className="code-block-container">
+                          <SyntaxHighlighter 
+                            language={language} 
+                            style={atomDark}
+                            customStyle={{ margin: 0, padding: "1.5rem" }}
+                          >
+                            {code}
+                          </SyntaxHighlighter>
+                        </div>
+                      );
+                    } else if (block.startsWith("- ")) {
+                      return (
+                          <ul key={idx}>
+                              {block.split("\n").map((li, i) => (
+                                  <li key={i}>{li.replace("- ", "")}</li>
+                              ))}
+                          </ul>
+                    );
+                  } else {
+                    return <p key={idx}>{block}</p>;
+                  }
+                })}
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {/* Newsletter CTA */}
+    <motion.section 
+      className="blog-newsletter"
+      initial={{ y: 20, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
+      <h2 className="newsletter-title">Stay Ahead of the Curve</h2>
+      <p className="newsletter-text">
+        Join 10,000+ developers receiving our weekly newsletter on performance, AI, and the future of coding.
+      </p>
+      <div className="blog-newsletter-form">
+        <input type="email" placeholder="Your email address" className="blog-newsletter-input" />
+        <motion.button
+          className="blog-subscribe-btn"
+          whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.3)" }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+              background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
+              color: "white",
+              border: "none",
+              padding: "1rem 2rem",
+              borderRadius: "12px",
+              fontWeight: "600",
+              cursor: "pointer"
+          }}
+        >
+          Subscribe
+        </motion.button>
+      </div>
+    </motion.section>
+
+    </div>
   );
-};
+});
 
 export default BlogPage;
