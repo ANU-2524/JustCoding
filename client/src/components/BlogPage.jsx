@@ -352,14 +352,6 @@ const SlowComponent = () => {
                 className={`blog-filter-btn ${activeFilter === filter ? "active" : ""}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                    background: activeFilter === filter ? "linear-gradient(90deg, #6366f1, #8b5cf6)" : "rgba(255, 255, 255, 0.05)",
-                    color: "#fff",
-                    padding: "0.5rem 1.5rem",
-                    borderRadius: "50px",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    cursor: "pointer"
-                }}
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </motion.button>
@@ -539,15 +531,6 @@ const SlowComponent = () => {
           className="blog-subscribe-btn"
           whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.3)" }}
           whileTap={{ scale: 0.95 }}
-          style={{
-              background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
-              color: "white",
-              border: "none",
-              padding: "1rem 2rem",
-              borderRadius: "12px",
-              fontWeight: "600",
-              cursor: "pointer"
-          }}
         >
           Subscribe
         </motion.button>
