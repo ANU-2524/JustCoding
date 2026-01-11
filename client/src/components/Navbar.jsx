@@ -229,6 +229,11 @@ const Navbar = () => {
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
             >
+              <div className="mobile-menu-header">
+                <span className="mobile-menu-title">Navigation</span>
+                <div className="mobile-menu-divider" />
+              </div>
+
               {/* Navigation Links */}
               <div className="mobile-nav-links">
                 {navItems.map((item, index) => (
