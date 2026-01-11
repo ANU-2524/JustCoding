@@ -6,7 +6,6 @@
     <meta name="description" content="JustCode - Real-time code editor, AI helper, and collaboration platform for students and developers." />
     <meta name="theme-color" content="#ff6600" />
 
-
     <link href="./src/output.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Poppins:wght@400;600&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet" />
 
@@ -26,14 +25,86 @@
         background: #0d1117;
         z-index: 9999;
       }
-      .spinner {
-        width: 40px; height: 40px;
-        border-radius: 50%;
-        border: 3px solid rgba(124,58,237,0.25);
-        border-top-color: #7c3aed;
-        animation: spin 0.9s linear infinite;
+      
+      /* New loader animation - more visible */
+      .loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
       }
-      @keyframes spin { to { transform: rotate(360deg); } }
+      
+      .loader-text {
+        color: #7c3aed;
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      
+      .loader-pulse {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      
+      .loader-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #7c3aed;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      
+      .loader-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      
+      .loader-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      .loader-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.7;
+          background-color: #7c3aed;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 1;
+          background-color: #8b5cf6;
+          box-shadow: 0 0 15px #8b5cf6;
+        }
+      }
+      
+      /* Add a simple progress bar that lasts for 6 seconds */
+      .loader-progress {
+        width: 200px;
+        height: 4px;
+        background: rgba(124, 58, 237, 0.2);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 15px;
+      }
+      
+      .loader-progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+        border-radius: 2px;
+        animation: progress 6s linear forwards;
+      }
+      
+      @keyframes progress {
+        0% { width: 0%; }
+        100% { width: 100%; }
+      }
     </style>
 
     <script type="text/javascript">
@@ -106,6 +177,19 @@
             window.addEventListener('focus', function() {
               setTimeout(initVoiceflow, 300);
             });
+            
+            // Force loader to stay for at least 5-6 seconds
+            setTimeout(function() {
+              const preloader = document.getElementById('app-preloader');
+              if (preloader && preloader.style.display !== 'none') {
+                // Add a transition before hiding
+                preloader.style.opacity = '0';
+                preloader.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                  preloader.style.display = 'none';
+                }, 500);
+              }
+            }, 6000); // Show for 6 seconds minimum
           }
           
           v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
@@ -113,7 +197,19 @@
     </script>
   </head>
   <body>
-    <div id="app-preloader"><div class="spinner"></div></div>
+    <div id="app-preloader">
+      <div class="loader-container">
+        <div class="loader-text">Loading JustCode...</div>
+        <div class="loader-pulse">
+          <div class="loader-dot"></div>
+          <div class="loader-dot"></div>
+          <div class="loader-dot"></div>
+        </div>
+        <div class="loader-progress">
+          <div class="loader-progress-bar"></div>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
