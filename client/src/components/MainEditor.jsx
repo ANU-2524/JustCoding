@@ -13,7 +13,6 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const languages = {
-
   python:     { name: 'Python',     starter: `print("Hello World")` },
   cpp:        { name: 'C++',        starter: `#include <iostream>
 using namespace std;
@@ -78,9 +77,18 @@ if (isAdult) {
   const [output, setOutput] = useState("");
   const [showAISection, setShowAISection] = useState(false);
   const [activeAITab, setActiveAITab] = useState("explain");
-  useEffect(() => {
-    localStorage.setItem("aiTab", activeAITab);
-  }, [activeAITab]);
+  
+  // Editor settings states
+  const [editorSettings, setEditorSettings] = useState(() => {
+    const saved = localStorage.getItem("editorSettings");
+    return saved ? JSON.parse(saved) : {
+      intellisense: true,
+      autoClosing: true,
+      formatOnType: true,
+      suggestOnTriggerCharacters: true,
+      wordBasedSuggestions: true
+    };
+  });
 
   // Visualizer states
   const [showVisualizer, setShowVisualizer] = useState(false);
@@ -92,6 +100,15 @@ if (isAdult) {
 
   const { theme, toggleTheme, isDark } = useTheme();
   const { logout, currentUser } = useAuth();
+
+  useEffect(() => {
+    localStorage.setItem("aiTab", activeAITab);
+  }, [activeAITab]);
+
+  useEffect(() => {
+    localStorage.setItem("editorSettings", JSON.stringify(editorSettings));
+  }, [editorSettings]);
+
   // Keep server alive
   useEffect(() => {
     const keepAlive = async () => {
@@ -177,7 +194,7 @@ if (isAdult) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, errorMessage: output }),
       }, 60000);
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) throw new Error(`Server.error: ${res.status}`);
       const data = await res.json();
       setDebugResult(data.debugHelp);
       localStorage.setItem("debugHelp", data.debugHelp);
@@ -422,6 +439,27 @@ if (isAdult) {
     return () => clearInterval(interval);
   }, [isPlaying, currentStep, execution.length, speed]);
 
+  const toggleIntellisense = () => {
+    setEditorSettings(prev => ({
+      ...prev,
+      intellisense: !prev.intellisense
+    }));
+  };
+
+  const toggleAutoClosing = () => {
+    setEditorSettings(prev => ({
+      ...prev,
+      autoClosing: !prev.autoClosing
+    }));
+  };
+
+  const toggleFormatOnType = () => {
+    setEditorSettings(prev => ({
+      ...prev,
+      formatOnType: !prev.formatOnType
+    }));
+  };
+
   const currentState = execution[currentStep];
 
   return (
@@ -571,6 +609,61 @@ if (isAdult) {
                 <option key={key} value={key}>{val.name}</option>
               ))}
             </select>
+            
+            {/* Editor Settings Dropdown */}
+            <div className="editor-settings-dropdown">
+              <button className="btn-settings">
+                <span>⚙️ Editor Settings</span>
+                <FaChevronDown className="dropdown-arrow" />
+              </button>
+              <div className="settings-dropdown-content">
+                <div className="settings-item">
+                  <label className="settings-toggle">
+                    <input
+                      type="checkbox"
+                      checked={editorSettings.intellisense}
+                      onChange={toggleIntellisense}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="settings-label">IntelliSense Autocomplete</span>
+                  </label>
+                  <span className="settings-hint">Smart code suggestions</span>
+                </div>
+                
+                <div className="settings-item">
+                  <label className="settings-toggle">
+                    <input
+                      type="checkbox"
+                      checked={editorSettings.autoClosing}
+                      onChange={toggleAutoClosing}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="settings-label">Auto Closing Brackets</span>
+                  </label>
+                  <span className="settings-hint">Automatically close brackets and quotes</span>
+                </div>
+                
+                <div className="settings-item">
+                  <label className="settings-toggle">
+                    <input
+                      type="checkbox"
+                      checked={editorSettings.formatOnType}
+                      onChange={toggleFormatOnType}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="settings-label">Format on Type</span>
+                  </label>
+                  <span className="settings-hint">Auto-format code as you type</span>
+                </div>
+                
+                <div className="settings-status">
+                  <span className={`status-indicator ${editorSettings.intellisense ? 'active' : 'inactive'}`}>
+                    ●
+                  </span>
+                  <span>IntelliSense: {editorSettings.intellisense ? 'ON' : 'OFF'}</span>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="toolbar-right">
             {/* Copy Button - Added to the left of Run button */}
@@ -654,7 +747,14 @@ if (isAdult) {
         <section className="editor-section">
           <div className={`editor-panel glass-card ${showVisualizer ? 'visualizer-mode' : ''}`}>
             <div className="panel-header">
-              <span className="panel-title">{showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}</span>
+              <span className="panel-title">
+                {showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}
+                {!showVisualizer && editorSettings.intellisense && (
+                  <span className="intellisense-badge" title="IntelliSense is active">
+                    💡 Smart Completion
+                  </span>
+                )}
+              </span>
               <span className="language-badge">{languages[language].name}</span>
             </div>
             <div className="editor-container">
@@ -763,6 +863,7 @@ if (isAdult) {
                   code={code}
                   setCode={setCode}
                   theme={isDark ? "vs-dark" : "light"}
+                  editorSettings={editorSettings}
                 />
               )}
             </div>
