@@ -464,3 +464,126 @@
 .join-room-main {
   animation: fadeInUp 0.6s ease-out;
 }
+
+
+/* ========== Join by Room Code Card ========== */
+.join-by-code-card {
+  background: linear-gradient(145deg, rgba(78, 205, 196, 0.1), rgba(13, 17, 23, 0.9));
+  border: 1px solid rgba(78, 205, 196, 0.4);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.join-by-code-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: #4ecdc4;
+  margin-bottom: 0.5rem;
+}
+
+.join-code-desc {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 1rem;
+}
+
+.join-by-code-card .form-group {
+  margin-bottom: 1rem;
+}
+
+.join-by-code-card input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  background: rgba(13, 17, 23, 0.8);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  color: #f0f0f0;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.join-by-code-card input:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+}
+
+.join-by-code-card input::placeholder {
+  color: #666;
+}
+
+.join-code-btn {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+  color: #0c141d;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.join-code-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+}
+
+.join-code-btn:active {
+  transform: translateY(0);
+}
+
+/* Share Room Code Display */
+.share-room-code {
+  background: rgba(212, 88, 31, 0.1);
+  border: 1px dashed rgba(212, 88, 31, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.share-room-code p {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.room-code-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.room-code-display code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  font-size: 1.1rem;
+  color: #00ffe0;
+  letter-spacing: 1px;
+}
+
+.copy-code-btn {
+  background: transparent;
+  border: 1px solid rgba(212, 88, 31, 0.5);
+  color: #d4581f;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-code-btn:hover {
+  background: rgba(212, 88, 31, 0.2);
+}

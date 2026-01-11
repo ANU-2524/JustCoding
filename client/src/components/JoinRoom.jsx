@@ -15,7 +15,7 @@ const JoinRoom = () => {
     { id: 'api-dev', name: 'API Development', language: 'Node.js', users: 5, isPublic: true, description: 'RESTful API design' },
     { id: 'db-design', name: 'Database Design', language: 'SQL', users: 2, isPublic: true, description: 'Schema optimization' },
   ]);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [username, setUsername] = useState('');
   const [newRoom, setNewRoom] = useState({
@@ -141,6 +141,25 @@ const JoinRoom = () => {
               
               <button className="create-room-btn" onClick={handleCreateRoom}>
                 <FaPlus /> Create Room
+              </button>
+            </div>
+
+            {/* Join by Room Code */}
+            <div className="join-by-code-card">
+              <h2>🔗 Join by Room Code</h2>
+              <p className="join-code-desc">Have a room code? Enter it below to join directly.</p>
+              <div className="form-group">
+                <label htmlFor="roomCode">Room Code</label>
+                <input
+                  type="text"
+                  id="roomCode"
+                  value={selectedRoom || ''}
+                  onChange={(e) => setSelectedRoom(e.target.value)}
+                  placeholder="Enter room code (e.g., abc123)"
+                />
+              </div>
+              <button className="join-code-btn" onClick={handleDirectJoin}>
+                <FaUsers /> Join Room
               </button>
             </div>
           </div>
