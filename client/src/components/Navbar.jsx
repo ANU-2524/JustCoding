@@ -191,19 +191,43 @@ const Navbar = () => {
             aria-label="Toggle menu"
             whileTap={{ scale: 0.9 }}
           >
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={isMenuOpen ? 'close' : 'open'}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+                style={{ display: 'flex' }}
+              >
+                {isMenuOpen ? <FaTimes /> : <FaBars />}
+              </motion.div>
+            </AnimatePresence>
           </motion.button>
         </div>
+        
+        {/* Mobile Menu Backdrop */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="nav-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+            />
+          )}
+        </AnimatePresence>
         
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
-              className="nav-menu active"
+              className="nav-menu"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
             >
               {/* Navigation Links */}
               <div className="mobile-nav-links">
@@ -298,7 +322,7 @@ const Navbar = () => {
                     className="mobile-login-btn"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login
+                    <FaUser /> <span>Login</span>
                   </Link>
                 </motion.div>
               )}
