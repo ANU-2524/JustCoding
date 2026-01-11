@@ -1,20 +1,13 @@
 // src/components/JoinRoom.jsx
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
-import { FaCode, FaUsers, FaComments, FaSearch, FaPlus, FaLock, FaGlobe } from 'react-icons/fa';
+import { FaUsers, FaSearch, FaPlus, FaLock, FaGlobe } from 'react-icons/fa';
 import '../Style/JoinRoom.css';
 
 const JoinRoom = () => {
-  const [activeTab, setActiveTab] = useState('create');
-  const [rooms, setRooms] = useState([
-    { id: 'js-project', name: 'JavaScript Project', language: 'JavaScript', users: 4, isPublic: true, description: 'Working on React components' },
-    { id: 'py-algo', name: 'Python Algorithms', language: 'Python', users: 2, isPublic: true, description: 'Solving LeetCode problems' },
-    { id: 'mobile-dev', name: 'Mobile App Dev', language: 'React Native', users: 3, isPublic: false, description: 'Building cross-platform app' },
-    { id: 'api-dev', name: 'API Development', language: 'Node.js', users: 5, isPublic: true, description: 'RESTful API design' },
-    { id: 'db-design', name: 'Database Design', language: 'SQL', users: 2, isPublic: true, description: 'Schema optimization' },
-  ]);
+  const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [username, setUsername] = useState('');

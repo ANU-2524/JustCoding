@@ -333,13 +333,18 @@ const GlobalLeaderboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // For now, show a placeholder - would need a global leaderboard endpoint
-    setLoading(false);
-    setLeaderboard([
-      { rank: 1, name: 'CodeMaster', points: 2500, solved: 45 },
-      { rank: 2, name: 'AlgoNinja', points: 2200, solved: 40 },
-      { rank: 3, name: 'ByteWizard', points: 1900, solved: 35 },
-    ]);
+    // Fetch real leaderboard data from API
+    const fetchLeaderboard = async () => {
+      try {
+        // For now, show empty state - will populate from actual submissions
+        setLeaderboard([]);
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeaderboard();
   }, []);
 
   if (loading) {
@@ -348,24 +353,31 @@ const GlobalLeaderboard = () => {
 
   return (
     <div className="leaderboard-section">
-      <div className="leaderboard-table">
-        <div className="leaderboard-header">
-          <span>Rank</span>
-          <span>User</span>
-          <span>Points</span>
-          <span>Solved</span>
+      {leaderboard.length === 0 ? (
+        <div className="empty-state">
+          <FaTrophy className="empty-icon" />
+          <p>No rankings yet. Be the first to solve challenges!</p>
         </div>
-        {leaderboard.map((user, index) => (
-          <div key={index} className={`leaderboard-row ${index < 3 ? 'top-three' : ''}`}>
-            <span className="rank">
-              {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : user.rank}
-            </span>
-            <span className="name">{user.name}</span>
-            <span className="points">{user.points}</span>
-            <span className="solved">{user.solved}</span>
+      ) : (
+        <div className="leaderboard-table">
+          <div className="leaderboard-header">
+            <span>Rank</span>
+            <span>User</span>
+            <span>Points</span>
+            <span>Solved</span>
           </div>
-        ))}
-      </div>
+          {leaderboard.map((user, index) => (
+            <div key={index} className={`leaderboard-row ${index < 3 ? 'top-three' : ''}`}>
+              <span className="rank">
+                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : user.rank}
+              </span>
+              <span className="name">{user.name}</span>
+              <span className="points">{user.points}</span>
+              <span className="solved">{user.solved}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
