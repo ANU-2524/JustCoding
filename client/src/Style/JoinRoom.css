@@ -476,21 +476,24 @@
   margin-top: 1.5rem;
   text-align: left;
   box-shadow: 0 12px 35px rgba(212, 88, 31, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.join-by-code-card:hover {
+  border-color: rgba(0, 255, 224, 0.6);
+  box-shadow: 0 16px 40px rgba(212, 88, 31, 0.2);
 }
 
 .join-by-code-card h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  color: #00ffe0;
+  color: #d4581f;
   margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .join-code-desc {
-  font-size: 0.9rem;
-  color: #aaa;
+  font-size: 0.95rem;
+  color: #ccc;
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -508,7 +511,7 @@
 
 .join-by-code-card input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   background: rgba(13, 17, 23, 0.7);
   border: 1px solid rgba(212, 88, 31, 0.4);
@@ -520,8 +523,8 @@
 
 .join-by-code-card input:focus {
   outline: none;
-  border-color: #00ffe0;
-  box-shadow: 0 0 0 3px rgba(0, 255, 224, 0.2);
+  border-color: #d4581f;
+  box-shadow: 0 0 0 3px rgba(212, 88, 31, 0.2);
 }
 
 .join-by-code-card input::placeholder {
@@ -531,8 +534,8 @@
 .join-code-btn {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #00ffe0, #00d4aa);
-  color: #0c141d;
+  background: linear-gradient(135deg, #d4581f, #ff7043);
+  color: white;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -543,12 +546,11 @@
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 255, 224, 0.3);
 }
 
 .join-code-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 255, 224, 0.4);
+  box-shadow: 0 8px 25px rgba(212, 88, 31, 0.3);
 }
 
 .join-code-btn:active {
