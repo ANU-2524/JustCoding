@@ -696,15 +696,13 @@ if (isAdult) {
 
 <div className="code-display">
   <SyntaxHighlighter
-    language={language}
-    style={isDark ? oneDark : undefined}
-    showLineNumbers
-    wrapLines
-    customStyle={{
-      margin: 0,
-      background: "transparent",
-      fontSize: "14px",
-    }}
+  language={language}
+  style={isDark ? oneDark : undefined} // Uses 'oneDark' only in dark mode
+  customStyle={{
+    margin: 0,
+    background: "transparent", // Allows the themed card background to show through
+    fontSize: "14px",
+  }}
     lineProps={(lineNumber) => ({
       className:
         lineNumber === currentState?.lineNumber

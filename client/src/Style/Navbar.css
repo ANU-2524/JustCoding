@@ -1,7 +1,12 @@
 html {
   scroll-behavior: smooth;
 }
-
+.app-container {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+}
 /* Navbar container */
 .navbar {
   position: fixed;

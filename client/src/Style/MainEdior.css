@@ -11,6 +11,7 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  background-color: var(--bg-primary);
   transition: background-color var(--transition-slow);
   padding-top: 70px; /* Space for fixed navbar */
 }
@@ -37,7 +38,11 @@
   z-index: 100;
   backdrop-filter: var(--glass-blur);
 }
-
+.glass-card {
+  background: var(--glass-bg); /* Use theme's glass effect */
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+}
 .header-left {
   display: flex;
   align-items: center;
@@ -555,8 +560,9 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
-  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-elevated) 100%);
-  border-bottom: 1px solid var(--accent-primary);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .panel-title {
@@ -949,7 +955,8 @@
   width: 100%;
   padding: var(--space-md);
   background: var(--bg-primary);
-  border: none;
+  border: 1px solid var(--border-primary);;
+  background-color: var(--bg-tertiary);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   color: var(--text-primary);
   font-family: var(--font-mono);

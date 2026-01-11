@@ -14,14 +14,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
 
 .login-container {
-  min-height: calc(100vh - 80px); /* Adjusted to account for navbar */
+  min-height: calc(100vh - 80px);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #000000;
+  /* CHANGE: Use theme background */
+  background: var(--bg-primary); 
   font-family: 'Manrope', sans-serif;
   padding: 20px;
-  margin-top: 80px; /* Add space for fixed navbar */
+  margin-top: 80px;
+  transition: background var(--transition-slow);
 }
 
 .login-page {
@@ -31,6 +33,7 @@
   min-height: 500px;
   border-radius: 2px;
   overflow: hidden;
+  background: var(--bg-secondary);
   border: 3px solid var(--elegant-orange);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
@@ -75,13 +78,14 @@
 
 .login-left {
   flex: 1;
-  background: #000000;
+  background: var(--bg-tertiary);
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   min-height: 500px;
+  transition: background var(--transition-normal);
 }
 
 .login-content-wrapper {
@@ -150,14 +154,14 @@
 }
 
 .login-header h2 {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .login-header .subtitle {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin: 0;
 }
@@ -169,7 +173,7 @@
 .input-group label {
   display: block;
   text-align: left;
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 500;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
@@ -184,7 +188,8 @@
   padding: 14px 15px;
   border: 2px solid #444;
   border-radius: 8px;
-  background-color: #333;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-primary);
   color: #fff;
   font-size: 15px;
   transition: all 0.3s ease;
@@ -193,7 +198,7 @@
 
 .login-form input:focus {
   outline: none;
-  border-color: #00ffe0;
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(0, 255, 224, 0.3);
 }
 
@@ -207,6 +212,7 @@
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
+  background: var(--accent-gradient);
   transition: all 0.3s ease;
   margin-bottom: 1.5rem;
 }
@@ -254,7 +260,8 @@
 }
 
 .divider span {
-  background: #000000;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
   position: relative;
   z-index: 2;
   padding: 0 15px;
@@ -267,7 +274,9 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #fff;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--accent-primary);
   color: #000;
   border: 2px solid var(--elegant-orange);
   padding: 14px 20px;
@@ -289,17 +298,18 @@
   text-align: left;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
+  color: var(--text-secondary);
   border-top: 1px solid #e1e5e9;
 }
 
 .switch-mode p {
   margin: 0;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
 .switch-mode span {
-  color: #00ffe0;
+  color: var(--accent-primary);
   cursor: pointer;
   font-weight: 700;
   margin-left: 5px;

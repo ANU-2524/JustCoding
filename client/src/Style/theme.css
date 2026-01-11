@@ -402,6 +402,13 @@ body {
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+/* Ensure the root container fills the screen and uses the theme background */
+.app-container {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+}
 /* ========================================
    Mobile-Specific Theme Enhancements
    ======================================== */

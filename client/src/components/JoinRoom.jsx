@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
+import { useTheme } from './ThemeContext';
 import { FaCode, FaUsers, FaComments, FaSearch, FaPlus, FaLock, FaGlobe } from 'react-icons/fa';
 import '../Style/JoinRoom.css';
 
 const JoinRoom = () => {
   const [activeTab, setActiveTab] = useState('create');
+  const { isDark } = useTheme();
   const [rooms, setRooms] = useState([
     { id: 'js-project', name: 'JavaScript Project', language: 'JavaScript', users: 4, isPublic: true, description: 'Working on React components' },
     { id: 'py-algo', name: 'Python Algorithms', language: 'Python', users: 2, isPublic: true, description: 'Solving LeetCode problems' },
