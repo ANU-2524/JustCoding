@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile, FaHistory, FaClock } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
@@ -50,6 +50,12 @@ func main() {
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
 const REQUEST_TIMEOUT = 45000;
 
+// Auto-save constants
+const AUTO_SAVE_INTERVAL = 3000; // 3 seconds
+const MAX_VERSION_HISTORY = 50; // Maximum number of versions to keep
+const AUTO_SAVE_KEY_PREFIX = 'autosave_';
+const VERSION_HISTORY_KEY_PREFIX = 'version_history_';
+
 const MainEditor = () => {
   const [debugResult, setDebugResult] = useState("");
   const [debugLoading, setDebugLoading] = useState(false);
@@ -80,6 +86,22 @@ if (isAdult) {
   const [showAISection, setShowAISection] = useState(false);
   const [activeAITab, setActiveAITab] = useState("explain");
   
+  // Auto-save states
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(() => {
+    const saved = localStorage.getItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`);
+    return saved ? new Date(saved) : new Date();
+  });
+  const [versionHistory, setVersionHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  
   // Editor settings states
   const [editorSettings, setEditorSettings] = useState(() => {
     const saved = localStorage.getItem("editorSettings");
@@ -88,7 +110,9 @@ if (isAdult) {
       autoClosing: true,
       formatOnType: true,
       suggestOnTriggerCharacters: true,
-      wordBasedSuggestions: true
+      wordBasedSuggestions: true,
+      autoSave: true, // New setting for auto-save
+      autoSaveInterval: AUTO_SAVE_INTERVAL
     };
   });
 
@@ -120,6 +144,162 @@ if (isAdult) {
 
   const { theme, toggleTheme, isDark } = useTheme();
   const { logout, currentUser } = useAuth();
+  const autoSaveTimeoutRef = useRef(null);
+  const lastSavedContentRef = useRef({});
+
+  // Initialize last saved content ref
+  useEffect(() => {
+    projectFiles.forEach(file => {
+      lastSavedContentRef.current[file.id] = file.content;
+    });
+  }, []);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!editorSettings.autoSave) return;
+
+    const saveIfChanged = () => {
+      const activeFile = projectFiles.find(f => f.id === activeFileId);
+      if (!activeFile) return;
+
+      const currentContent = activeFile.content;
+      const lastSavedContent = lastSavedContentRef.current[activeFileId];
+
+      // Only save if content has changed
+      if (currentContent !== lastSavedContent) {
+        setIsAutoSaving(true);
+        
+        // Save current version to history
+        saveToVersionHistory(activeFile.content);
+        
+        // Update last saved content
+        lastSavedContentRef.current[activeFileId] = currentContent;
+        
+        // Update project files in localStorage
+        localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
+        
+        // Update last saved timestamp
+        const now = new Date();
+        setLastSaved(now);
+        localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
+        
+        // Show auto-save indicator briefly
+        setTimeout(() => setIsAutoSaving(false), 1000);
+      }
+    };
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set new timeout
+    autoSaveTimeoutRef.current = setTimeout(saveIfChanged, editorSettings.autoSaveInterval);
+
+    // Cleanup on unmount
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [projectFiles, activeFileId, language, editorSettings.autoSave, editorSettings.autoSaveInterval]);
+
+  // Save on page unload
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (editorSettings.autoSave) {
+        const activeFile = projectFiles.find(f => f.id === activeFileId);
+        if (activeFile) {
+          saveToVersionHistory(activeFile.content);
+          localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [projectFiles, activeFileId, language, editorSettings.autoSave]);
+
+  // Save to version history function
+  const saveToVersionHistory = (content) => {
+    const now = new Date();
+    const version = {
+      id: Date.now(),
+      timestamp: now.toISOString(),
+      content: content,
+      fileId: activeFileId,
+      fileName: projectFiles.find(f => f.id === activeFileId)?.name || 'unknown',
+      language: language
+    };
+
+    setVersionHistory(prev => {
+      const newHistory = [version, ...prev].slice(0, MAX_VERSION_HISTORY);
+      localStorage.setItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`, JSON.stringify(newHistory));
+      return newHistory;
+    });
+  };
+
+  // Restore version from history
+  const restoreVersion = (version) => {
+    if (version.fileId === activeFileId) {
+      updateFileContent(activeFileId, version.content);
+      alert(`Restored version from ${new Date(version.timestamp).toLocaleString()}`);
+    } else {
+      // Switch to the file if it exists, otherwise create it
+      const fileExists = projectFiles.find(f => f.id === version.fileId);
+      if (fileExists) {
+        setActiveFileId(version.fileId);
+        setTimeout(() => {
+          updateFileContent(version.fileId, version.content);
+        }, 100);
+      } else {
+        // Create the file if it doesn't exist
+        const newFile = {
+          id: version.fileId,
+          name: version.fileName,
+          content: version.content,
+          isMain: false,
+          path: version.fileName
+        };
+        setProjectFiles(prev => [...prev, newFile]);
+        setActiveFileId(version.fileId);
+      }
+    }
+  };
+
+  // Clear version history
+  const clearVersionHistory = () => {
+    if (window.confirm('Are you sure you want to clear all version history?')) {
+      setVersionHistory([]);
+      localStorage.removeItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`);
+    }
+  };
+
+  // Manual save function
+  const manualSave = () => {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (activeFile) {
+      setIsAutoSaving(true);
+      saveToVersionHistory(activeFile.content);
+      localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
+      
+      const now = new Date();
+      setLastSaved(now);
+      localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
+      lastSavedContentRef.current[activeFileId] = activeFile.content;
+      
+      setTimeout(() => setIsAutoSaving(false), 1000);
+      alert('Changes saved!');
+    }
+  };
+
+  // Toggle auto-save setting
+  const toggleAutoSave = () => {
+    setEditorSettings(prev => ({
+      ...prev,
+      autoSave: !prev.autoSave
+    }));
+  };
 
   useEffect(() => {
     localStorage.setItem("aiTab", activeAITab);
@@ -672,6 +852,17 @@ Visit https://justcoding.onrender.com for more information.`;
           </h1>
         </div>
         <div className="header-right">
+          {/* Auto-save indicator */}
+          <div className="auto-save-indicator">
+            {isAutoSaving ? (
+              <span className="saving">Saving...</span>
+            ) : (
+              <span className="saved" title={`Last saved: ${lastSaved.toLocaleTimeString()}`}>
+                <FaClock /> Auto-saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+          
           <button
             onClick={toggleTheme}
             className="theme-toggle-btn"
@@ -889,16 +1080,51 @@ Visit https://justcoding.onrender.com for more information.`;
                   <span className="settings-hint">Auto-format code as you type</span>
                 </div>
                 
+                {/* Auto-save setting */}
+                <div className="settings-item">
+                  <label className="settings-toggle">
+                    <input
+                      type="checkbox"
+                      checked={editorSettings.autoSave}
+                      onChange={toggleAutoSave}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="settings-label">Auto-save</span>
+                  </label>
+                  <span className="settings-hint">Automatically save changes every {editorSettings.autoSaveInterval / 1000} seconds</span>
+                </div>
+                
                 <div className="settings-status">
-                  <span className={`status-indicator ${editorSettings.intellisense ? 'active' : 'inactive'}`}>
+                  <span className={`status-indicator ${editorSettings.autoSave ? 'active' : 'inactive'}`}>
                     ●
                   </span>
-                  <span>IntelliSense: {editorSettings.intellisense ? 'ON' : 'OFF'}</span>
+                  <span>Auto-save: {editorSettings.autoSave ? 'ON' : 'OFF'}</span>
                 </div>
               </div>
             </div>
           </div>
           <div className="toolbar-right">
+            {/* Version History Button */}
+            <button
+              onClick={() => setShowVersionHistory(!showVersionHistory)}
+              className="btn-history"
+              title="View version history"
+            >
+              <FaHistory />
+              <span>History ({versionHistory.length})</span>
+            </button>
+
+            {/* Manual Save Button */}
+            <button
+              onClick={manualSave}
+              className="btn-save"
+              disabled={isAutoSaving}
+              title="Save changes manually"
+            >
+              <FaSave />
+              <span>{isAutoSaving ? "Saving..." : "Save Now"}</span>
+            </button>
+
             {/* Copy Button */}
             <button
               onClick={() => {
@@ -975,6 +1201,81 @@ Visit https://justcoding.onrender.com for more information.`;
           </div>
         </section>
 
+        {/* Version History Panel */}
+        {showVersionHistory && (
+          <div className="version-history-panel glass-card">
+            <div className="version-history-header">
+              <h3>
+                <FaHistory />
+                <span>Version History</span>
+                <span className="version-count">{versionHistory.length} versions</span>
+              </h3>
+              <div className="version-history-actions">
+                <button
+                  onClick={manualSave}
+                  className="btn-save-version"
+                  disabled={isAutoSaving}
+                >
+                  <FaSave /> Save Current
+                </button>
+                <button
+                  onClick={clearVersionHistory}
+                  className="btn-clear-history"
+                  title="Clear all version history"
+                >
+                  Clear All
+                </button>
+                <button
+                  onClick={() => setShowVersionHistory(false)}
+                  className="btn-close-history"
+                  title="Close version history"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div className="version-list">
+              {versionHistory.length === 0 ? (
+                <div className="no-versions">No version history yet. Start coding!</div>
+              ) : (
+                versionHistory.map((version) => (
+                  <div
+                    key={version.id}
+                    className={`version-item ${version.fileId === activeFileId ? 'active-file' : ''}`}
+                    onClick={() => restoreVersion(version)}
+                  >
+                    <div className="version-info">
+                      <div className="version-time">
+                        {new Date(version.timestamp).toLocaleString()}
+                      </div>
+                      <div className="version-file">
+                        <FaFile />
+                        <span>{version.fileName}</span>
+                        {version.fileId === activeFileId && (
+                          <span className="current-file-badge">Current</span>
+                        )}
+                      </div>
+                      <div className="version-language">
+                        {languages[version.language]?.name || version.language}
+                      </div>
+                    </div>
+                    <div className="version-preview">
+                      <pre>{version.content.substring(0, 100)}...</pre>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="version-history-footer">
+              <div className="version-stats">
+                <span>Auto-save: {editorSettings.autoSave ? 'Enabled' : 'Disabled'}</span>
+                <span>Interval: {editorSettings.autoSaveInterval / 1000}s</span>
+                <span>Max history: {MAX_VERSION_HISTORY} versions</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* File Manager Sidebar */}
         {showFileManager && (
           <div className="file-manager-sidebar glass-card">
@@ -1024,42 +1325,42 @@ Visit https://justcoding.onrender.com for more information.`;
                       }}
                       className="btn-rename"
                       title="Rename file"
-                    >
-                      ✏️
-                    </button>
-                    {!file.isMain && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFile(file.id);
-                        }}
-                        className="btn-remove"
-                        title="Remove file"
                       >
-                        ×
+                        ✏️
                       </button>
-                    )}
+                      {!file.isMain && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(file.id);
+                          }}
+                          className="btn-remove"
+                          title="Remove file"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
                   </div>
+                ))}
+              </div>
+              <div className="file-manager-footer">
+                <button
+                  onClick={addNewFile}
+                  className="btn-add-file-full"
+                >
+                  <span>+ Add New File</span>
+                </button>
+                <div className="file-stats">
+                  <span>Total: {projectFiles.length} files</span>
+                  <span>Language: {languages[language].name}</span>
                 </div>
-              ))}
-            </div>
-            <div className="file-manager-footer">
-              <button
-                onClick={addNewFile}
-                className="btn-add-file-full"
-              >
-                <span>+ Add New File</span>
-              </button>
-              <div className="file-stats">
-                <span>Total: {projectFiles.length} files</span>
-                <span>Language: {languages[language].name}</span>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Editor & Output */}
-        <section className={`editor-section ${showFileManager ? 'with-file-manager' : ''}`}>
+        <section className={`editor-section ${showFileManager ? 'with-file-manager' : ''} ${showVersionHistory ? 'with-version-history' : ''}`}>
           <div className={`editor-panel glass-card ${showVisualizer ? 'visualizer-mode' : ''}`}>
             <div className="panel-header">
               <div className="panel-title-left">
@@ -1068,6 +1369,11 @@ Visit https://justcoding.onrender.com for more information.`;
                   {!showVisualizer && editorSettings.intellisense && (
                     <span className="intellisense-badge" title="IntelliSense is active">
                       💡 Smart Completion
+                    </span>
+                  )}
+                  {!showVisualizer && editorSettings.autoSave && (
+                    <span className="autosave-badge" title="Auto-save is enabled">
+                      {isAutoSaving ? '💾 Saving...' : '✓ Auto-save'}
                     </span>
                   )}
                 </span>
@@ -1084,6 +1390,11 @@ Visit https://justcoding.onrender.com for more information.`;
                 {!showVisualizer && (
                   <span className="file-size">
                     {activeFile.content.length} chars
+                    {lastSaved && (
+                      <span className="last-saved" title={`Last saved: ${lastSaved.toLocaleString()}`}>
+                        · Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
