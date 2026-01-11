@@ -59,3 +59,10 @@
   transform: translate(-50%, -50%) scale(0.5);
   opacity: 0;
 }
+
+/* Hide custom cursor on mobile/touch devices */
+@media (max-width: 768px), (pointer: coarse) {
+  .circle-container {
+    display: none !important;
+  }
+}
