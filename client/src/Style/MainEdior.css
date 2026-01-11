@@ -1766,3 +1766,427 @@
 .settings-toggle:hover input:checked + .toggle-slider {
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
 }
+
+/* ========================================
+   File Manager & Export Features
+   ======================================== */
+
+/* File Manager Sidebar */
+.file-manager-sidebar {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--border-primary);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.file-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.file-manager-header h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.file-count {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  background: var(--bg-primary);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.btn-add-file {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all var(--transition-normal);
+}
+
+.btn-add-file:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.1);
+}
+
+/* File List */
+.file-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: var(--space-md);
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-bottom: 2px;
+}
+
+.file-item:hover {
+  background: var(--bg-hover);
+}
+
+.file-item.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.file-item.active .file-name {
+  color: white;
+  font-weight: 600;
+}
+
+.file-item.active .main-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.file-icon {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.file-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.main-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.file-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.file-item:hover .file-actions {
+  opacity: 1;
+}
+
+.file-item.active .file-actions {
+  opacity: 1;
+}
+
+.btn-set-main,
+.btn-rename,
+.btn-remove {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all var(--transition-normal);
+}
+
+.file-item.active .btn-set-main,
+.file-item.active .btn-rename,
+.file-item.active .btn-remove {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-set-main:hover {
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.btn-rename:hover {
+  color: var(--accent-secondary);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.btn-remove:hover {
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.file-manager-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  border-top: 1px solid var(--border-primary);
+  padding-top: var(--space-sm);
+}
+
+.btn-add-file-full {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-add-file-full:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.file-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* Export Buttons */
+.btn-copy,
+.btn-export-single,
+.btn-export-zip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.btn-copy {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-copy:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.6);
+}
+
+.btn-export-single {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-export-single:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6);
+}
+
+.btn-export-zip {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  box-shadow: 0 2px 12px rgba(5, 150, 105, 0.4);
+}
+
+.btn-export-zip:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.6);
+}
+
+.file-count-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(45deg, #ff6b00, #e233ff);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
+.btn-copy:disabled,
+.btn-export-single:disabled,
+.btn-export-zip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* File Manager Toggle Button */
+.btn-file-manager {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-file-manager:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Editor with File Manager */
+.editor-section.with-file-manager {
+  display: grid;
+  grid-template-columns: auto 1.5fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 1024px) {
+  .editor-section.with-file-manager {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-manager-sidebar {
+    order: -1;
+  }
+}
+
+/* Panel Header Updates */
+.panel-title-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.file-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px 10px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.file-name-display {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.file-main-badge {
+  font-size: 0.7rem;
+  padding: 1px 5px;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.file-size {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Responsive adjustments for export buttons */
+@media (max-width: 768px) {
+  .btn-copy,
+  .btn-export-single,
+  .btn-export-zip {
+    padding: var(--space-sm);
+  }
+  
+  .btn-copy span,
+  .btn-export-single span,
+  .btn-export-zip span {
+    display: none;
+  }
+  
+  .file-count-badge {
+    top: -5px;
+    right: -5px;
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+}
+
+/* Loading animation for export */
+@keyframes exportPulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.btn-export-zip:disabled {
+  animation: exportPulse 1.5s infinite;
+}
