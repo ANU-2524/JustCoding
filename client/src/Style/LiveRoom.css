@@ -554,17 +554,19 @@ body {
 
 /* Participants Section */
 .participants-section {
-  background: rgba(13, 17, 23, 0.8);
-  border-radius: 8px;
-  padding: 12px;
+  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
+  border-radius: 12px;
+  padding: 16px;
   margin-bottom: 16px;
-  border: 1px solid rgba(212, 88, 31, 0.3);
+  border: 1px solid rgba(212, 88, 31, 0.4);
+  box-shadow: 0 8px 20px rgba(212, 88, 31, 0.1);
 }
 
 .participants-section h4 {
-  margin: 0 0 10px 0;
+  margin: 0 0 12px 0;
   color: #d4581f;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .participants-list {
@@ -747,18 +749,19 @@ body {
 
 /* Share Button */
 .share-btn {
-  background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+  background: linear-gradient(135deg, #00ffe0, #00d4aa);
   color: #0c141d;
   border: none;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 255, 224, 0.3);
 }
 
 .share-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 224, 0.4);
 }
