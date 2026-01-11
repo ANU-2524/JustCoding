@@ -1488,3 +1488,281 @@
     border-radius: 3px;
   }
 }
+
+/* ========================================
+   Editor Settings Dropdown - UPDATED WITH CORRECT COLORS
+   ======================================== */
+.editor-settings-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+.btn-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-settings:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  transition: transform var(--transition-normal);
+}
+
+.editor-settings-dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.settings-dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  min-width: 300px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  z-index: 1000;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-normal);
+}
+
+.editor-settings-dropdown:hover .settings-dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.settings-item {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.settings-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.settings-toggle input {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #4b5563; /* Gray background for OFF state */
+  border-radius: 12px;
+  transition: background-color var(--transition-normal);
+}
+
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 2px;
+  top: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-normal);
+}
+
+/* RED color for OFF state */
+.settings-toggle input:not(:checked) + .toggle-slider {
+  background: #dc2626; /* Red color for OFF */
+}
+
+/* GREEN color for ON state */
+.settings-toggle input:checked + .toggle-slider {
+  background: #10b981; /* Green color for ON */
+}
+
+.settings-toggle input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.settings-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.settings-hint {
+  display: block;
+  margin-left: 3.25rem;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.settings-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+  border: 1px solid var(--border-primary);
+}
+
+.settings-status .status-indicator {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Force the green color for active state */
+.settings-status .status-indicator.active {
+  color: #10b981 !important; /* Green */
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  animation: statusPulse 2s infinite;
+}
+
+/* Force the red color for inactive state */
+.settings-status .status-indicator.inactive {
+  color: #dc2626 !important; /* Red */
+  text-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+.settings-status span:not(.status-indicator) {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+@keyframes statusPulse {
+  0% {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+}
+
+@keyframes badgePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+/* ========================================
+   Intellisense Badge
+   ======================================== */
+.intellisense-badge {
+  margin-left: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: badgePulse 2s infinite;
+}
+
+/* ========================================
+   Enhanced Monaco Editor Styling
+   ======================================== */
+.monaco-editor .suggest-widget {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary) !important;
+}
+
+.monaco-editor .monaco-list-row {
+  border-radius: var(--radius-sm);
+}
+
+.monaco-editor .monaco-list-row:hover {
+  background: var(--bg-hover) !important;
+}
+
+.monaco-editor .parameter-hints-widget {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary) !important;
+}
+
+.monaco-editor .suggest-details {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary) !important;
+}
+
+/* ========================================
+   Fix for toggle colors in light/dark mode
+   ======================================== */
+[data-theme="light"] .toggle-slider:before,
+:root.light .toggle-slider:before {
+  background: #f9fafb; /* Light gray for light mode */
+}
+
+[data-theme="dark"] .toggle-slider:before,
+:root.dark .toggle-slider:before {
+  background: #f3f4f6; /* Slightly darker for dark mode */
+}
+
+/* Additional visual feedback for toggles */
+.settings-toggle input:not(:checked) + .toggle-slider {
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.3);
+}
+
+.settings-toggle input:checked + .toggle-slider {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+.settings-toggle:hover input:not(:checked) + .toggle-slider {
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.5);
+}
+
+.settings-toggle:hover input:checked + .toggle-slider {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5);
+}
