@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
@@ -573,6 +573,51 @@ if (isAdult) {
             </select>
           </div>
           <div className="toolbar-right">
+            {/* Copy Button - Added to the left of Run button */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(code)
+                  .then(() => {
+                    alert('Code copied to clipboard!');
+                  })
+                  .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy code to clipboard');
+                  });
+              }}
+              className="btn-copy"
+              disabled={loading}
+              title="Copy code to clipboard"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'var(--space-sm)',
+                padding: 'var(--space-sm) var(--space-lg)',
+                fontFamily: 'var(--font-primary)',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                color: 'white',
+                cursor: 'pointer',
+                transition: 'all var(--transition-normal)',
+                boxShadow: '0 2px 12px rgba(124, 58, 237, 0.4)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 12px rgba(124, 58, 237, 0.4)';
+              }}
+            >
+              <FaCopy />
+              <span>Copy Code</span>
+            </button>
+
             <button onClick={runCode} className="btn-run" disabled={loading}>
               <FaPlay />
               <span>{loading ? "Running..." : "Run"}</span>
