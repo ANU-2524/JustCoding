@@ -1,8 +1,11 @@
+# macOS system files
+.DS_Store
+
+# Environment variables
+.env
+
+# Secret stack folder
+.secret-stack/
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
-
-# Ignore .secret-stack folder
-.secret-stack
-
-.env
