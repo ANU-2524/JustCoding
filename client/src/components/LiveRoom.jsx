@@ -1,5 +1,5 @@
 // ✅ LiveRoom with Full Real-Time Collaboration Features
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
@@ -40,11 +40,12 @@ const USER_COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DD
 const LiveRoom = () => {
   const { roomId } = useParams();
   const [searchParams] = useSearchParams();
-  const username = searchParams.get("user") || `User-${Math.random().toString(36).substr(2, 4)}`;
+  const username = searchParams.get("user") || `User-${Math.random().toString(36).slice(2, 6)}`;
   const navigate = useNavigate();
   const socket = useRef(null);
   const sessionIdRef = useRef(null);
   const editorRef = useRef(null);
+  const isRemoteUpdate = useRef(false); // Flag to prevent echo
 
   // Basic state
   const [code, setCode] = useState(languages.javascript.starter);
@@ -69,11 +70,9 @@ const LiveRoom = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingId, setRecordingId] = useState(null);
   const [debugState, setDebugState] = useState(null);
-  const [documentVersion, setDocumentVersion] = useState(0);
   const [myColor, setMyColor] = useState(USER_COLORS[0]);
 
   const messagesEndRef = useRef(null);
-  const pendingOps = useRef([]);
 
 
   // Initialize socket and join room
@@ -95,23 +94,10 @@ const LiveRoom = () => {
       color: USER_COLORS[colorIndex]
     });
 
-    // Code sync
+    // Code sync - receive code from other users
     socket.current.on("code-update", (newCode) => {
+      isRemoteUpdate.current = true;
       setCode(newCode);
-      setDocumentVersion(v => v + 1);
-    });
-
-    // OT Operations
-    socket.current.on("operation", ({ operation, version, userId }) => {
-      if (userId !== socket.current.id) {
-        applyRemoteOperation(operation);
-        setDocumentVersion(version);
-      }
-    });
-
-    socket.current.on("operation-ack", ({ version }) => {
-      setDocumentVersion(version);
-      pendingOps.current.shift();
     });
 
     // Chat
@@ -125,7 +111,7 @@ const LiveRoom = () => {
     });
 
     // Participants
-    socket.current.on("user-joined", ({ username: newUser, color, isHost: hostStatus }) => {
+    socket.current.on("user-joined", ({ username: newUser, color }) => {
       setSystemMsg(`${newUser} joined the room`);
       setTimeout(() => setSystemMsg(''), 3000);
       setParticipants(prev => {
@@ -153,7 +139,7 @@ const LiveRoom = () => {
       setIsHost(hostStatus);
     });
 
-    // Cursor sharing
+    // Cursor sharing - receive cursor positions from other users
     socket.current.on("cursor-update", ({ username: cursorUser, position, selection, color }) => {
       if (cursorUser !== username) {
         setRemoteCursors(prev => ({
@@ -201,84 +187,52 @@ const LiveRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Send cursor position
+  const sendCursorPosition = useCallback((position, selection) => {
+    if (socket.current) {
+      socket.current.emit("cursor-move", {
+        roomId,
+        username,
+        position,
+        selection,
+        color: myColor
+      });
+    }
+  }, [roomId, username, myColor]);
 
-  // OT: Apply remote operation
-  const applyRemoteOperation = useCallback((operation) => {
-    setCode(prevCode => {
-      if (operation.type === 'insert') {
-        return prevCode.slice(0, operation.position) + operation.data + prevCode.slice(operation.position);
-      } else if (operation.type === 'delete') {
-        return prevCode.slice(0, operation.position) + prevCode.slice(operation.position + operation.length);
-      }
-      return prevCode;
-    });
-  }, []);
-
-  // OT: Send local operation
-  const sendOperation = useCallback((type, position, data) => {
-    const operation = { type, position, data, timestamp: Date.now() };
-    pendingOps.current.push(operation);
-    
-    socket.current.emit("operation", {
-      roomId,
-      operation,
-      version: documentVersion
-    });
-  }, [roomId, documentVersion]);
-
-  // Handle code changes with OT
+  // Handle code changes - simple broadcast
   const handleCodeChange = useCallback((value, viewUpdate) => {
-    const oldCode = code;
+    // Don't broadcast if this is a remote update
+    if (isRemoteUpdate.current) {
+      isRemoteUpdate.current = false;
+      return;
+    }
+    
     setCode(value);
     
-    // Detect changes and create operations
-    if (value.length > oldCode.length) {
-      // Insert operation
-      const pos = findDiffPosition(oldCode, value);
-      const inserted = value.slice(pos, pos + (value.length - oldCode.length));
-      sendOperation('insert', pos, inserted);
-    } else if (value.length < oldCode.length) {
-      // Delete operation
-      const pos = findDiffPosition(oldCode, value);
-      const length = oldCode.length - value.length;
-      sendOperation('delete', pos, length);
+    // Broadcast code to other users
+    if (socket.current) {
+      socket.current.emit("code-change", { roomId, code: value });
     }
-
-    // Broadcast full code for simple sync (fallback)
-    socket.current.emit("code-change", { roomId, code: value });
 
     // Send cursor position
     if (viewUpdate?.state) {
       const selection = viewUpdate.state.selection.main;
-      sendCursorPosition(selection.head, selection.from !== selection.to ? { from: selection.from, to: selection.to } : null);
+      sendCursorPosition(
+        selection.head, 
+        selection.from !== selection.to ? { from: selection.from, to: selection.to } : null
+      );
     }
-  }, [code, roomId, sendOperation]);
-
-  // Find position where strings differ
-  const findDiffPosition = (oldStr, newStr) => {
-    let i = 0;
-    while (i < oldStr.length && i < newStr.length && oldStr[i] === newStr[i]) {
-      i++;
-    }
-    return i;
-  };
-
-  // Send cursor position
-  const sendCursorPosition = useCallback((position, selection) => {
-    socket.current.emit("cursor-move", {
-      roomId,
-      username,
-      position,
-      selection,
-      color: myColor
-    });
-  }, [roomId, username, myColor]);
+  }, [roomId, sendCursorPosition]);
 
   // Handle selection/cursor changes
   const handleEditorUpdate = useCallback((viewUpdate) => {
     if (viewUpdate?.state && viewUpdate.selectionSet) {
       const selection = viewUpdate.state.selection.main;
-      sendCursorPosition(selection.head, selection.from !== selection.to ? { from: selection.from, to: selection.to } : null);
+      sendCursorPosition(
+        selection.head, 
+        selection.from !== selection.to ? { from: selection.from, to: selection.to } : null
+      );
     }
   }, [sendCursorPosition]);
 
@@ -377,12 +331,15 @@ const LiveRoom = () => {
 
   // Calculate cursor position in pixels (approximate)
   const getCursorPixelPosition = (charPosition) => {
-    const lines = code.slice(0, charPosition).split('\n');
+    const codeUpToPosition = code.slice(0, charPosition);
+    const lines = codeUpToPosition.split('\n');
     const lineNumber = lines.length - 1;
     const columnNumber = lines[lines.length - 1].length;
+    
+    // CodeMirror line height is typically ~19-20px, char width ~7.8px for monospace
     return {
-      top: lineNumber * 20, // ~20px per line
-      left: columnNumber * 8 // ~8px per character
+      top: lineNumber * 19 + 4, // +4 for padding
+      left: columnNumber * 7.8 + 4 // +4 for padding/gutter
     };
   };
 
