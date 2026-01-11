@@ -503,3 +503,265 @@ body {
     margin: 0 1rem;
   }
 }
+
+
+/* ========== Collaboration Features CSS ========== */
+
+/* Remote Cursors */
+.remote-cursors-overlay {
+  position: absolute;
+  top: 0;
+  left: 60px; /* Account for line numbers */
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.remote-cursor {
+  transition: all 0.1s ease-out;
+}
+
+.cursor-caret {
+  width: 2px;
+  height: 18px;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.6; }
+}
+
+.cursor-name-tag {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.cursor-selection {
+  position: absolute;
+  top: 0;
+  height: 18px;
+}
+
+/* Participants Section */
+.participants-section {
+  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(212, 88, 31, 0.4);
+  box-shadow: 0 8px 20px rgba(212, 88, 31, 0.1);
+}
+
+.participants-section h4 {
+  margin: 0 0 12px 0;
+  color: #d4581f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #f0f6fc;
+}
+
+.participant-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.host-badge {
+  background: #d4581f;
+  color: white;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+.status-dot.active {
+  background: #4caf50;
+  box-shadow: 0 0 6px #4caf50;
+}
+
+.status-dot.idle {
+  background: #ff9800;
+}
+
+/* Recording */
+.recording-badge {
+  background: #ff4444;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  animation: recording-pulse 1.5s infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.recording-active {
+  background: #ff4444 !important;
+  animation: recording-pulse 1.5s infinite;
+}
+
+.recording-info {
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #ff9999;
+}
+
+/* Top Bar Updates */
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.participant-count {
+  background: rgba(78, 205, 196, 0.2);
+  color: #4ecdc4;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Editor Wrapper */
+.editor-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 88, 31, 0.3);
+}
+
+/* Chat Updates */
+.chat-input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid rgba(212, 88, 31, 0.3);
+  border-radius: 8px;
+  background: rgba(13, 17, 23, 0.8);
+  color: #f0f6fc;
+  font-size: 13px;
+}
+
+.chat-input-area button {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #d4581f, #ff6b35);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.chat-input-area button:hover {
+  transform: scale(1.02);
+}
+
+.own-message {
+  background: rgba(212, 88, 31, 0.15);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.system-message {
+  text-align: center;
+  color: #4ecdc4;
+  font-size: 12px;
+  padding: 6px;
+  background: rgba(78, 205, 196, 0.1);
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+/* Shared Debug */
+.shared-debug {
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(78, 205, 196, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #4ecdc4;
+}
+
+.shared-debug small {
+  color: #4ecdc4;
+  font-size: 11px;
+}
+
+/* Output Box */
+.output-box {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: #00ffe0;
+}
+
+
+/* Share Button */
+.share-btn {
+  background: linear-gradient(135deg, #00ffe0, #00d4aa);
+  color: #0c141d;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 255, 224, 0.3);
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 255, 224, 0.4);
+}
