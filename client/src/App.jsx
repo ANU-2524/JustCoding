@@ -11,7 +11,9 @@ const BlogPage = lazy(() => import("./components/BlogPage"));
 const HomePage = lazy(() => import("./components/HomePage"));
 const JoinRoom = lazy(() => import("./components/JoinRoom")); 
 const LiveRoom = lazy(() => import("./components/LiveRoom")); 
-const UserDashboard = lazy(() => import("./components/UserDashboard")); 
+const UserDashboard = lazy(() => import("./components/UserDashboard"));
+const Challenges = lazy(() => import("./components/Challenges"));
+const ChallengeSolve = lazy(() => import("./components/ChallengeSolve"));
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -80,6 +82,10 @@ function App() {
                 <LiveRoom />
               }
             />
+
+            {/* Coding Challenges */}
+            <Route path="/challenges" element={<Challenges />} />
+            <Route path="/challenges/:slug" element={<ChallengeSolve />} />
           </Routes>
           </Suspense>
           <ScrollToTop />
