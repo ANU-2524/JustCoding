@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
@@ -11,6 +11,8 @@ import remarkGfm from "remark-gfm";
 import { addSnippet, incrementStat, touchLastActive } from '../services/localStore';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const languages = {
   python:     { name: 'Python',     starter: `print("Hello World")` },
@@ -90,6 +92,24 @@ if (isAdult) {
     };
   });
 
+  // Multi-file project states
+  const [projectFiles, setProjectFiles] = useState(() => {
+    const saved = localStorage.getItem(`project-files-${language}`);
+    return saved ? JSON.parse(saved) : [
+      { 
+        id: 'main', 
+        name: getDefaultFileName(language), 
+        content: code, 
+        isMain: true,
+        path: getDefaultFileName(language)
+      }
+    ];
+  });
+
+  const [activeFileId, setActiveFileId] = useState('main');
+  const [showFileManager, setShowFileManager] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
   // Visualizer states
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [execution, setExecution] = useState([]);
@@ -108,6 +128,11 @@ if (isAdult) {
   useEffect(() => {
     localStorage.setItem("editorSettings", JSON.stringify(editorSettings));
   }, [editorSettings]);
+
+  useEffect(() => {
+    // Save project files when they change
+    localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
+  }, [projectFiles, language]);
 
   // Keep server alive
   useEffect(() => {
@@ -136,6 +161,29 @@ if (isAdult) {
       }
     }
   }, []);
+
+  // Helper function to get default file name based on language
+  function getDefaultFileName(lang) {
+    const extensions = {
+      javascript: 'main.js',
+      typescript: 'main.ts',
+      python: 'main.py',
+      java: 'Main.java',
+      cpp: 'main.cpp',
+      c: 'main.c',
+      go: 'main.go',
+      ruby: 'main.rb',
+      php: 'index.php',
+      swift: 'main.swift',
+      rust: 'main.rs'
+    };
+    return extensions[lang] || 'code.txt';
+  }
+
+  // Helper function to get file extension
+  function getFileExtension(filename) {
+    return filename.split('.').pop();
+  }
 
   const fetchWithTimeout = async (url, options, timeout = REQUEST_TIMEOUT) => {
     const controller = new AbortController();
@@ -181,7 +229,8 @@ if (isAdult) {
   };
 
   const debugCode = async () => {
-    if (!code.trim()) {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile || !activeFile.content.trim()) {
       alert("Please write some code first.");
       return;
     }
@@ -192,9 +241,9 @@ if (isAdult) {
       const res = await fetchWithTimeout(`${API_BASE}/api/gpt/debug`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, errorMessage: output }),
+        body: JSON.stringify({ code: activeFile.content, errorMessage: output }),
       }, 60000);
-      if (!res.ok) throw new Error(`Server.error: ${res.status}`);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setDebugResult(data.debugHelp);
       localStorage.setItem("debugHelp", data.debugHelp);
@@ -211,7 +260,8 @@ if (isAdult) {
   }, [code, language]);
 
   const runCode = async () => {
-    if (!code.trim()) {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile || !activeFile.content.trim()) {
       setOutput("Please write some code first.");
       return;
     }
@@ -226,7 +276,11 @@ if (isAdult) {
       const res = await fetchWithTimeout(`${API_BASE}/compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language, code, stdin: userInput }),
+        body: JSON.stringify({ 
+          language, 
+          code: activeFile.content, 
+          stdin: userInput 
+        }),
       });
       clearTimeout(warningTimeout);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -253,7 +307,18 @@ if (isAdult) {
     const newCode = language === "javascript" ?
       `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
       languages[language].starter;
-    setCode(newCode);
+    
+    // Reset to single file project
+    setProjectFiles([
+      { 
+        id: 'main', 
+        name: getDefaultFileName(language), 
+        content: newCode, 
+        isMain: true,
+        path: getDefaultFileName(language)
+      }
+    ]);
+    setActiveFileId('main');
     setUserInput("");
     setOutput("");
     setExplanation("");
@@ -268,7 +333,7 @@ if (isAdult) {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-    const title = `JustCode - ${languages[language].name} Code`;
+    const title = `JustCode - ${languages[language].name} Project`;
     doc.setFontSize(16);
     doc.text(title, 10, 10);
     let y = 20;
@@ -302,15 +367,19 @@ if (isAdult) {
       y += 5;
     }
 
-    if (y > 250) { doc.addPage(); y = 10; }
-    doc.setFontSize(12);
-    doc.text("Code:", 10, y);
-    y += 8;
-    const codeLines = doc.splitTextToSize(code, 180);
-    codeLines.forEach(line => {
-      if (y > 280) { doc.addPage(); y = 10; }
-      doc.text(line, 10, y);
-      y += 7;
+    // Export all files in the project
+    projectFiles.forEach((file, index) => {
+      if (y > 250) { doc.addPage(); y = 10; }
+      doc.setFontSize(12);
+      doc.text(`File: ${file.name}`, 10, y);
+      y += 8;
+      const codeLines = doc.splitTextToSize(file.content, 180);
+      codeLines.forEach(line => {
+        if (y > 280) { doc.addPage(); y = 10; }
+        doc.text(line, 10, y);
+        y += 7;
+      });
+      y += 5;
     });
 
     if (userInput.trim()) {
@@ -353,7 +422,7 @@ if (isAdult) {
       });
     }
 
-    doc.save(`${languages[language].name}-JustCode-Session.pdf`);
+    doc.save(`${languages[language].name}-JustCode-Project.pdf`);
   };
 
   const handleLogout = async () => {
@@ -367,6 +436,9 @@ if (isAdult) {
 
   // Universal Visualizer - works with all languages
   const visualizeCode = async () => {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile) return;
+    
     setVisualizerLoading(true);
 
     try {
@@ -374,7 +446,7 @@ if (isAdult) {
       const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language })
+        body: JSON.stringify({ code: activeFile.content, language })
       });
 
       const data = await response.json();
@@ -394,12 +466,136 @@ if (isAdult) {
   };
 
   const saveCurrentAsSnippet = () => {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile) return;
+    
     const title = window.prompt('Snippet title');
     if (!title) return;
-    addSnippet({ title: title.trim(), language, code });
+    addSnippet({ title: title.trim(), language, code: activeFile.content });
     incrementStat('snippetsCreated', 1);
     touchLastActive();
     alert('Saved to Profile → Snippets');
+  };
+
+  // Multi-file project functions
+  const addNewFile = () => {
+    const fileName = window.prompt('Enter file name (with extension):', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
+    if (!fileName) return;
+    
+    const newFile = {
+      id: `file-${Date.now()}`,
+      name: fileName,
+      content: '',
+      isMain: false,
+      path: fileName
+    };
+    
+    setProjectFiles([...projectFiles, newFile]);
+    setActiveFileId(newFile.id);
+  };
+
+  const removeFile = (fileId) => {
+    if (projectFiles.length <= 1) {
+      alert("Cannot remove the last file!");
+      return;
+    }
+    
+    const fileToRemove = projectFiles.find(f => f.id === fileId);
+    if (fileToRemove.isMain) {
+      alert("Cannot remove the main file!");
+      return;
+    }
+    
+    const newFiles = projectFiles.filter(f => f.id !== fileId);
+    setProjectFiles(newFiles);
+    
+    if (activeFileId === fileId) {
+      setActiveFileId(newFiles[0].id);
+    }
+  };
+
+  const renameFile = (fileId) => {
+    const file = projectFiles.find(f => f.id === fileId);
+    const newName = window.prompt('Enter new file name:', file.name);
+    if (!newName || newName === file.name) return;
+    
+    setProjectFiles(projectFiles.map(f => 
+      f.id === fileId ? { ...f, name: newName, path: newName } : f
+    ));
+  };
+
+  const setAsMainFile = (fileId) => {
+    setProjectFiles(projectFiles.map(f => ({
+      ...f,
+      isMain: f.id === fileId
+    })));
+  };
+
+  const updateFileContent = (fileId, content) => {
+    setProjectFiles(projectFiles.map(f => 
+      f.id === fileId ? { ...f, content } : f
+    ));
+  };
+
+  // Export to ZIP function
+  const exportToZip = async () => {
+    if (projectFiles.length === 0) {
+      alert("No files to export!");
+      return;
+    }
+
+    setIsExporting(true);
+    
+    try {
+      const zip = new JSZip();
+      const projectName = `JustCode-${languages[language].name}-Project`;
+      
+      // Add all files to zip
+      projectFiles.forEach(file => {
+        zip.file(file.name, file.content);
+      });
+      
+      // Add README with project info
+      const readmeContent = `# ${languages[language].name} Project
+Generated by JustCode Editor
+Date: ${new Date().toLocaleDateString()}
+Time: ${new Date().toLocaleTimeString()}
+
+## Files:
+${projectFiles.map(f => `- ${f.name}${f.isMain ? ' (main)' : ''}`).join('\n')}
+
+## Project Settings:
+- Language: ${languages[language].name}
+- Total Files: ${projectFiles.length}
+- Main File: ${projectFiles.find(f => f.isMain)?.name}
+
+## Notes:
+This project was created using the JustCode Online Editor.
+Visit https://justcoding.onrender.com for more information.`;
+      
+      zip.file("README.md", readmeContent);
+      
+      // Generate and download the zip
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `${projectName}.zip`);
+      
+      incrementStat('exports', 1);
+      alert(`Project exported as ${projectName}.zip`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export project. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportSingleFile = () => {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile) return;
+    
+    const blob = new Blob([activeFile.content], { type: 'text/plain' });
+    saveAs(blob, activeFile.name);
+    incrementStat('singleExports', 1);
   };
 
   const nextStep = () => {
@@ -461,6 +657,7 @@ if (isAdult) {
   };
 
   const currentState = execution[currentStep];
+  const activeFile = projectFiles.find(f => f.id === activeFileId) || projectFiles[0];
 
   return (
     <div className="workspace">
@@ -595,12 +792,38 @@ if (isAdult) {
                 const lang = e.target.value;
                 setLanguage(lang);
                 const savedCode = localStorage.getItem(`code-${lang}`);
-                if (savedCode) {
-                  setCode(savedCode);
+                const savedProject = localStorage.getItem(`project-files-${lang}`);
+                
+                if (savedProject) {
+                  const project = JSON.parse(savedProject);
+                  setProjectFiles(project);
+                  setActiveFileId(project[0].id);
+                } else if (savedCode) {
+                  setProjectFiles([
+                    { 
+                      id: 'main', 
+                      name: getDefaultFileName(lang), 
+                      content: savedCode, 
+                      isMain: true,
+                      path: getDefaultFileName(lang)
+                    }
+                  ]);
+                  setActiveFileId('main');
                 } else {
-                  setCode(lang === "javascript" ?
+                  const defaultCode = lang === "javascript" ?
                     `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
-                    languages[lang].starter);
+                    languages[lang].starter;
+                  
+                  setProjectFiles([
+                    { 
+                      id: 'main', 
+                      name: getDefaultFileName(lang), 
+                      content: defaultCode, 
+                      isMain: true,
+                      path: getDefaultFileName(lang)
+                    }
+                  ]);
+                  setActiveFileId('main');
                 }
                 setShowVisualizer(false);
               }}
@@ -609,6 +832,16 @@ if (isAdult) {
                 <option key={key} value={key}>{val.name}</option>
               ))}
             </select>
+            
+            {/* File Manager Toggle */}
+            <button
+              onClick={() => setShowFileManager(!showFileManager)}
+              className="btn-file-manager"
+              title={showFileManager ? "Hide File Manager" : "Show File Manager"}
+            >
+              <FaFolder />
+              <span>Files ({projectFiles.length})</span>
+            </button>
             
             {/* Editor Settings Dropdown */}
             <div className="editor-settings-dropdown">
@@ -666,10 +899,10 @@ if (isAdult) {
             </div>
           </div>
           <div className="toolbar-right">
-            {/* Copy Button - Added to the left of Run button */}
+            {/* Copy Button */}
             <button
               onClick={() => {
-                navigator.clipboard.writeText(code)
+                navigator.clipboard.writeText(activeFile.content)
                   .then(() => {
                     alert('Code copied to clipboard!');
                   })
@@ -681,34 +914,34 @@ if (isAdult) {
               className="btn-copy"
               disabled={loading}
               title="Copy code to clipboard"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--space-sm)',
-                padding: 'var(--space-sm) var(--space-lg)',
-                fontFamily: 'var(--font-primary)',
-                fontWeight: '600',
-                fontSize: '0.9rem',
-                border: 'none',
-                borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                color: 'white',
-                cursor: 'pointer',
-                transition: 'all var(--transition-normal)',
-                boxShadow: '0 2px 12px rgba(124, 58, 237, 0.4)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 12px rgba(124, 58, 237, 0.4)';
-              }}
             >
               <FaCopy />
               <span>Copy Code</span>
+            </button>
+
+            {/* Export Single File Button */}
+            <button
+              onClick={exportSingleFile}
+              className="btn-export-single"
+              disabled={loading}
+              title="Download current file"
+            >
+              <FaFile />
+              <span>Export File</span>
+            </button>
+
+            {/* Export ZIP Button */}
+            <button
+              onClick={exportToZip}
+              className="btn-export-zip"
+              disabled={loading || isExporting}
+              title="Export entire project as ZIP"
+            >
+              <FaFileArchive />
+              <span>{isExporting ? "Exporting..." : "Export Project"}</span>
+              {projectFiles.length > 1 && (
+                <span className="file-count-badge">{projectFiles.length}</span>
+              )}
             </button>
 
             <button onClick={runCode} className="btn-run" disabled={loading}>
@@ -721,7 +954,6 @@ if (isAdult) {
               <span>Save Snippet</span>
             </button>
 
-            {/* Remove JavaScript-only restriction */}
             <button
               onClick={visualizeCode}
               className="btn-visualize"
@@ -743,19 +975,118 @@ if (isAdult) {
           </div>
         </section>
 
+        {/* File Manager Sidebar */}
+        {showFileManager && (
+          <div className="file-manager-sidebar glass-card">
+            <div className="file-manager-header">
+              <h3>
+                <FaFolder />
+                <span>Project Files</span>
+                <span className="file-count">{projectFiles.length} file(s)</span>
+              </h3>
+              <button
+                onClick={addNewFile}
+                className="btn-add-file"
+                title="Add new file"
+              >
+                <span>+</span>
+              </button>
+            </div>
+            <div className="file-list">
+              {projectFiles.map(file => (
+                <div 
+                  key={file.id} 
+                  className={`file-item ${activeFileId === file.id ? 'active' : ''}`}
+                  onClick={() => setActiveFileId(file.id)}
+                >
+                  <div className="file-info">
+                    <FaFile className="file-icon" />
+                    <span className="file-name">{file.name}</span>
+                    {file.isMain && <span className="main-badge">Main</span>}
+                  </div>
+                  <div className="file-actions">
+                    {!file.isMain && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAsMainFile(file.id);
+                        }}
+                        className="btn-set-main"
+                        title="Set as main file"
+                      >
+                        ⭐
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        renameFile(file.id);
+                      }}
+                      className="btn-rename"
+                      title="Rename file"
+                    >
+                      ✏️
+                    </button>
+                    {!file.isMain && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(file.id);
+                        }}
+                        className="btn-remove"
+                        title="Remove file"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="file-manager-footer">
+              <button
+                onClick={addNewFile}
+                className="btn-add-file-full"
+              >
+                <span>+ Add New File</span>
+              </button>
+              <div className="file-stats">
+                <span>Total: {projectFiles.length} files</span>
+                <span>Language: {languages[language].name}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Editor & Output */}
-        <section className="editor-section">
+        <section className={`editor-section ${showFileManager ? 'with-file-manager' : ''}`}>
           <div className={`editor-panel glass-card ${showVisualizer ? 'visualizer-mode' : ''}`}>
             <div className="panel-header">
-              <span className="panel-title">
-                {showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}
-                {!showVisualizer && editorSettings.intellisense && (
-                  <span className="intellisense-badge" title="IntelliSense is active">
-                    💡 Smart Completion
+              <div className="panel-title-left">
+                <span className="panel-title">
+                  {showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}
+                  {!showVisualizer && editorSettings.intellisense && (
+                    <span className="intellisense-badge" title="IntelliSense is active">
+                      💡 Smart Completion
+                    </span>
+                  )}
+                </span>
+                {!showVisualizer && (
+                  <div className="file-tab">
+                    <FaFile />
+                    <span className="file-name-display">{activeFile.name}</span>
+                    {activeFile.isMain && <span className="file-main-badge">Main</span>}
+                  </div>
+                )}
+              </div>
+              <div className="panel-header-right">
+                <span className="language-badge">{languages[language].name}</span>
+                {!showVisualizer && (
+                  <span className="file-size">
+                    {activeFile.content.length} chars
                   </span>
                 )}
-              </span>
-              <span className="language-badge">{languages[language].name}</span>
+              </div>
             </div>
             <div className="editor-container">
               {showVisualizer && execution.length > 0 ? (
@@ -794,28 +1125,27 @@ if (isAdult) {
                     </button>
                   </div>
 
-<div className="code-display">
-  <SyntaxHighlighter
-    language={language}
-    style={isDark ? oneDark : undefined}
-    showLineNumbers
-    wrapLines
-    customStyle={{
-      margin: 0,
-      background: "transparent",
-      fontSize: "14px",
-    }}
-    lineProps={(lineNumber) => ({
-      className:
-        lineNumber === currentState?.lineNumber
-          ? "active-line"
-          : "",
-    })}
-  >
-    {code}
-  </SyntaxHighlighter>
-</div>
-
+                  <div className="code-display">
+                    <SyntaxHighlighter
+                      language={language}
+                      style={isDark ? oneDark : undefined}
+                      showLineNumbers
+                      wrapLines
+                      customStyle={{
+                        margin: 0,
+                        background: "transparent",
+                        fontSize: "14px",
+                      }}
+                      lineProps={(lineNumber) => ({
+                        className:
+                          lineNumber === currentState?.lineNumber
+                            ? "active-line"
+                            : "",
+                      })}
+                    >
+                      {activeFile.content}
+                    </SyntaxHighlighter>
+                  </div>
 
                   {currentState && (
                     <div className="state-info">
@@ -860,8 +1190,8 @@ if (isAdult) {
               ) : (
                 <CodeEditor
                   language={language}
-                  code={code}
-                  setCode={setCode}
+                  code={activeFile.content}
+                  setCode={(content) => updateFileContent(activeFileId, content)}
                   theme={isDark ? "vs-dark" : "light"}
                   editorSettings={editorSettings}
                 />
