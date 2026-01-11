@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint ."
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -28,8 +25,6 @@
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^6.3.4"
+    "nodemon": "^3.1.10"
   }
 }
