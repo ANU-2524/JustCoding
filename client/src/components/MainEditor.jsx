@@ -34,7 +34,6 @@ console.log(name + " is " + age + " years old");
 if (isAdult) {
   console.log("Can vote!");
 }` },
-  typescript: { name: 'TypeScript', starter: `console.log("Hello TypeScript");` },
   c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
   go:         { name: 'Go',         starter: `package main
 import "fmt"
@@ -169,7 +168,6 @@ if (isAdult) {
   function getDefaultFileName(lang) {
     const extensions = {
       javascript: 'main.js',
-      typescript: 'main.ts',
       python: 'main.py',
       java: 'Main.java',
       cpp: 'main.cpp',

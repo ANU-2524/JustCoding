@@ -102,7 +102,6 @@ const languageMap = {
   php:        { ext: 'php', version: '8.2.3' },
   swift:      { ext: 'swift', version: '5.3.3' },
   rust:       { ext: 'rs', version: '1.68.2' },
-  typescript: { ext: 'ts', version: '5.0.3' },
 };
 
 // AI routes with security
