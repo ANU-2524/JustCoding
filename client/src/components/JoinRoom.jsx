@@ -3,12 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
-import { FaUsers, FaSearch, FaPlus, FaLock, FaGlobe } from 'react-icons/fa';
-import '../Style/JoinRoom.css';
 
-const JoinRoom = () => {
-  const [rooms, setRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [username, setUsername] = useState('');
   const [newRoom, setNewRoom] = useState({

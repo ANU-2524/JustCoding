@@ -1436,27 +1436,7 @@ Visit https://justcoding.onrender.com for more information.`;
                     </button>
                   </div>
 
-                  <div className="code-display">
-                    <SyntaxHighlighter
-                      language={language}
-                      style={isDark ? oneDark : undefined}
-                      showLineNumbers
-                      wrapLines
-                      customStyle={{
-                        margin: 0,
-                        background: "transparent",
-                        fontSize: "14px",
-                      }}
-                      lineProps={(lineNumber) => ({
-                        className:
-                          lineNumber === currentState?.lineNumber
-                            ? "active-line"
-                            : "",
-                      })}
-                    >
-                      {activeFile.content}
-                    </SyntaxHighlighter>
-                  </div>
+
 
                   {currentState && (
                     <div className="state-info">
