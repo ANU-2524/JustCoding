@@ -301,6 +301,9 @@ if (isAdult) {
     }));
   };
 
+  // Ref to track the warning timeout to prevent memory leaks
+  const warningTimeoutRef = useRef(null);
+
   useEffect(() => {
     localStorage.setItem("aiTab", activeAITab);
   }, [activeAITab]);
@@ -448,7 +451,7 @@ if (isAdult) {
     setLoading(true);
     setLoadingMessage("Connecting to server...");
     setOutput("");
-    const warningTimeout = setTimeout(() => {
+    warningTimeoutRef.current = setTimeout(() => {
       setLoadingMessage("Server is starting up (free tier)... Please wait 30-60s");
     }, 3000);
     try {
@@ -456,19 +459,21 @@ if (isAdult) {
       const res = await fetchWithTimeout(`${API_BASE}/compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          language, 
-          code: activeFile.content, 
-          stdin: userInput 
+        body: JSON.stringify({
+          language,
+          code: activeFile.content,
+          stdin: userInput
         }),
       });
-      clearTimeout(warningTimeout);
+      clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = null;
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       setLoadingMessage("Processing code...");
       const result = await res.json();
       setOutput(result.output || "No output");
     } catch (err) {
-      clearTimeout(warningTimeout);
+      clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = null;
       if (err.message.includes('timeout')) {
         setOutput("⏱️ Request timeout. The server took too long to respond.\\n\\nTips:\\n- Try again in a moment\\n- Check your internet connection\\n- Simplify your code if it's too complex");
       } else if (err.message.includes('Failed to fetch')) {
@@ -477,7 +482,8 @@ if (isAdult) {
         setOutput(`❌ Error: ${err.message}\\n\\nPlease try again.`);
       }
     } finally {
-      clearTimeout(warningTimeout);
+      clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = null;
       setLoading(false);
       setLoadingMessage("");
     }
