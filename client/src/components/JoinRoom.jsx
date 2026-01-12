@@ -1,7 +1,6 @@
 // src/components/JoinRoom.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
 import { FaUsers, FaSearch, FaPlus, FaLock, FaGlobe } from 'react-icons/fa';
 import '../Style/JoinRoom.css';
@@ -19,24 +18,47 @@ const JoinRoom = () => {
   });
   const navigate = useNavigate();
 
-  const filteredRooms = rooms.filter(room => 
+  const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     room.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
     room.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCreateRoom = () => {
-    if (newRoom.name.trim() && username.trim()) {
-      const roomId = uuidv4();
+  const handleCreateRoom = async () => {
+    if (!newRoom.name.trim() || !username.trim()) {
+      alert("Please enter your name and room name");
+      return;
+    }
+
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
+      const response = await fetch(`${backendUrl}/api/room/create-room`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create room');
+      }
+
+      const { roomId } = await response.json();
+
       const room = {
         id: roomId,
         ...newRoom,
         users: 1
       };
+
+      // Updated local rooms list
       setRooms([room, ...rooms]);
+
+      // Navigate to the new room
       navigate(`/live/${roomId}?user=${username}`);
-    } else {
-      alert("Please enter your name and room name");
+    } catch (error) {
+      console.error('Error creating room:', error);
+      alert("Failed to create room. Please check your connection and try again.");
     }
   };
 
@@ -87,17 +109,17 @@ const JoinRoom = () => {
                   type="text"
                   id="roomName"
                   value={newRoom.name}
-                  onChange={(e) => setNewRoom({...newRoom, name: e.target.value})}
+                  onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
                   placeholder="Enter room name"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="language">Programming Language</label>
                 <select
                   id="language"
                   value={newRoom.language}
-                  onChange={(e) => setNewRoom({...newRoom, language: e.target.value})}
+                  onChange={(e) => setNewRoom({ ...newRoom, language: e.target.value })}
                 >
                   <option value="JavaScript">JavaScript</option>
                   <option value="Python">Python</option>
@@ -108,30 +130,30 @@ const JoinRoom = () => {
                   <option value="HTML/CSS">HTML/CSS</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="description">Description</label>
                 <textarea
                   id="description"
                   value={newRoom.description}
-                  onChange={(e) => setNewRoom({...newRoom, description: e.target.value})}
+                  onChange={(e) => setNewRoom({ ...newRoom, description: e.target.value })}
                   placeholder="Brief description of the room's purpose"
                   rows="3"
                 ></textarea>
               </div>
-              
+
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
                     checked={newRoom.isPublic}
-                    onChange={(e) => setNewRoom({...newRoom, isPublic: e.target.checked})}
+                    onChange={(e) => setNewRoom({ ...newRoom, isPublic: e.target.checked })}
                   />
                   <span className="checkmark"></span>
                   Make this room public
                 </label>
               </div>
-              
+
               <button className="create-room-btn" onClick={handleCreateRoom}>
                 <FaPlus /> Create Room
               </button>
@@ -170,7 +192,7 @@ const JoinRoom = () => {
                 />
               </div>
             </div>
-            
+
             <div className="rooms-list">
               {filteredRooms.map((room) => (
                 <motion.div
