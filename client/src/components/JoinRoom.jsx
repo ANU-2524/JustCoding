@@ -224,6 +224,6 @@ import { motion } from 'framer-motion';
       </motion.div>
     </div>
   );
-};
+// };
 
 export default JoinRoom;
