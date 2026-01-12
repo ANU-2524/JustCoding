@@ -474,11 +474,10 @@ if (isAdult) {
   const saveCurrentAsSnippet = () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile) return;
-    
+
     const title = window.prompt('Snippet title');
     if (!title) return;
     addSnippet({ title: title.trim(), language, code: activeFile.content });
-    incrementStat('snippetsCreated', 1);
     touchLastActive();
     alert('Saved to Profile → Snippets');
   };
