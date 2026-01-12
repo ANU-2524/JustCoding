@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
 import '../Style/Profile.css';
+import { useTheme } from './ThemeContext';
 import {
   addSnippet,
   deleteSnippet,
@@ -14,6 +15,7 @@ import {
 } from '../services/localStore';
 
 const Profile = () => {
+  const { isDark, theme } = useTheme();
   const { currentUser } = useAuth();
   const [profile, setProfile] = useState({
     displayName: '',
