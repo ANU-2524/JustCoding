@@ -3,7 +3,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
-import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
+import { FaRobot, FaCode, FaUsers, FaFilePdf, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import CardSwap, { Card } from './CardSwap';
 import HowItWorks from './HowItWorks';
 
@@ -429,7 +430,7 @@ const HomePage = () => {
     <div className="footer-social">
       <h4>Connect</h4>
       <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
-        <FaTwitter /> Twitter
+        <FaXTwitter /> Twitter
       </a>
       <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
         <FaGithub /> GitHub
