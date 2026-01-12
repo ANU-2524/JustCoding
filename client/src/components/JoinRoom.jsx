@@ -2,9 +2,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FaPlus, FaUsers, FaSearch, FaGlobe, FaLock } from 'react-icons/fa';
+
+const JoinRoom = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [username, setUsername] = useState('');
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState('');
   const [newRoom, setNewRoom] = useState({
     name: '',
     language: 'JavaScript',
@@ -224,6 +229,6 @@ import { motion } from 'framer-motion';
       </motion.div>
     </div>
   );
-// };
+};
 
 export default JoinRoom;
