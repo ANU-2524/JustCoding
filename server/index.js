@@ -126,16 +126,15 @@ io.on("connection", (socket) => {
 // Language map for code execution - ALL LANGUAGES
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
-  python: { ext: 'py', version: '3.10.0' },
-  java: { ext: 'java', version: '15.0.2' },
-  cpp: { ext: 'cpp', version: '10.2.0' },
-  c: { ext: 'c', version: '10.2.0' },
-  go: { ext: 'go', version: '1.16.2' },
-  ruby: { ext: 'rb', version: '3.0.1' },
-  php: { ext: 'php', version: '8.2.3' },
-  swift: { ext: 'swift', version: '5.3.3' },
-  rust: { ext: 'rs', version: '1.68.2' },
-  typescript: { ext: 'ts', version: '5.0.3' },
+  python:     { ext: 'py', version: '3.10.0' },
+  java:       { ext: 'java', version: '15.0.2' },
+  cpp:        { ext: 'cpp', version: '10.2.0' },
+  c:          { ext: 'c', version: '10.2.0' },
+  go:         { ext: 'go', version: '1.16.2' },
+  ruby:       { ext: 'rb', version: '3.0.1' },
+  php:        { ext: 'php', version: '8.2.3' },
+  swift:      { ext: 'swift', version: '5.3.3' },
+  rust:       { ext: 'rs', version: '1.68.2' },
 };
 
 // AI routes with security
