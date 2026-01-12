@@ -444,11 +444,10 @@ if (isAdult) {
   const visualizeCode = async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile) return;
-    
+
     setVisualizerLoading(true);
 
     try {
-      incrementStat('visualizes', 1);
       const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -458,6 +457,7 @@ if (isAdult) {
       const data = await response.json();
 
       if (data.success) {
+        incrementStat('visualizes', 1);
         setExecution(data.execution);
         setCurrentStep(0);
         setShowVisualizer(true);
