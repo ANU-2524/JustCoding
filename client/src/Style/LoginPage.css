@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
+
 /* LoginPage.css – Black & White Theme */
 /* Define orange variables to match JoinRoom styling */
 :root {
@@ -10,8 +12,6 @@
   --warm-white: #f5f1ec;
   --text-light: #f0f0f0;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&display=swap');
 
 .login-container {
   min-height: calc(100vh - 80px);

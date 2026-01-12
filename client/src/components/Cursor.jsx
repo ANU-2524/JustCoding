@@ -7,6 +7,10 @@ const Cursor = () => {
   const circlesRef = useRef([]);
 
   useEffect(() => {
+    // Disable custom cursor on touch devices
+    const isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
+    if (isTouchDevice) return;
+
     const NUM_CIRCLES = 18; // Increased for a more fluid, energetic trail
     const container = containerRef.current;
     

@@ -1,0 +1,268 @@
+/* Collaborative Cursors Styles */
+
+.collaborative-cursors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.remote-cursor {
+  position: absolute;
+  transition: all 0.1s ease-out;
+}
+
+.cursor-caret {
+  width: 2px;
+  height: 20px;
+  background-color: var(--cursor-color, #ff6b6b);
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+.cursor-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  border-radius: 3px;
+  white-space: nowrap;
+  opacity: 0.9;
+  transform: translateY(-2px);
+  transition: opacity 0.2s;
+}
+
+.remote-cursor:hover .cursor-label {
+  opacity: 1;
+}
+
+.cursor-selection {
+  position: absolute;
+  top: 0;
+  height: 20px;
+  pointer-events: none;
+}
+
+/* Participant List */
+.participant-list {
+  background: var(--bg-secondary, #1e1e2e);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 200px;
+}
+
+.participant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.participant-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #ff4444;
+  font-weight: 600;
+}
+
+.recording-dot {
+  width: 8px;
+  height: 8px;
+  background: #ff4444;
+  border-radius: 50%;
+  animation: recording-pulse 1.5s infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.participant-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.participant-item:hover {
+  background: var(--bg-hover, #2a2a3e);
+}
+
+.participant-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.participant-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary, #fff);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.host-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--accent-color, #4ecdc4);
+  color: #000;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.participant-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+}
+
+.participant-status.active {
+  background: #4caf50;
+}
+
+.participant-status.idle {
+  background: #ff9800;
+}
+
+/* Session Controls */
+.session-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #333);
+}
+
+.session-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.session-btn.record {
+  background: #ff4444;
+  color: white;
+}
+
+.session-btn.record:hover {
+  background: #ff6666;
+}
+
+.session-btn.record.recording {
+  animation: recording-pulse 1.5s infinite;
+}
+
+.session-btn.leave {
+  background: #666;
+  color: white;
+}
+
+.session-btn.leave:hover {
+  background: #888;
+}
+
+/* Join/Create Session Modal */
+.session-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.session-modal-content {
+  background: var(--bg-primary, #1a1a2e);
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.session-modal h3 {
+  margin: 0 0 16px;
+  color: var(--text-primary, #fff);
+}
+
+.session-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  background: var(--bg-secondary, #1e1e2e);
+  color: var(--text-primary, #fff);
+  font-size: 14px;
+}
+
+.session-input:focus {
+  outline: none;
+  border-color: var(--accent-color, #4ecdc4);
+}
+
+.session-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.session-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.session-actions .primary {
+  background: var(--accent-color, #4ecdc4);
+  color: #000;
+}
+
+.session-actions .secondary {
+  background: var(--bg-secondary, #1e1e2e);
+  color: var(--text-primary, #fff);
+  border: 1px solid var(--border-color, #333);
+}

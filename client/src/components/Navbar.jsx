@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper } from 'react-icons/fa'; // Added FaQuestionCircle and FaNewspaper
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy } from 'react-icons/fa'; // Added FaTrophy
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -55,6 +55,7 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
+    { path: '/challenges', label: 'Challenges', icon: <FaTrophy /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
@@ -191,20 +192,49 @@ const Navbar = () => {
             aria-label="Toggle menu"
             whileTap={{ scale: 0.9 }}
           >
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={isMenuOpen ? 'close' : 'open'}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+                style={{ display: 'flex' }}
+              >
+                {isMenuOpen ? <FaTimes /> : <FaBars />}
+              </motion.div>
+            </AnimatePresence>
           </motion.button>
         </div>
+        
+        {/* Mobile Menu Backdrop */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="nav-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+            />
+          )}
+        </AnimatePresence>
         
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
-              className="nav-menu active"
+              className="nav-menu"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
             >
+              <div className="mobile-menu-header">
+                <span className="mobile-menu-title">Navigation</span>
+                <div className="mobile-menu-divider" />
+              </div>
+
               {/* Navigation Links */}
               <div className="mobile-nav-links">
                 {navItems.map((item, index) => (
@@ -298,7 +328,7 @@ const Navbar = () => {
                     className="mobile-login-btn"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login
+                    <FaUser /> <span>Login</span>
                   </Link>
                 </motion.div>
               )}
