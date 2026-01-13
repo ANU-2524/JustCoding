@@ -5,36 +5,62 @@ const Submission = require('../models/Submission');
 const Contest = require('../models/Contest');
 const ChallengeService = require('../services/ChallengeService');
 
+// Utility function to escape regex to prevent ReDoS
+function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Validation functions
+function validateSlug(slug) {
+  return typeof slug === 'string' && slug.length > 0 && /^[a-zA-Z0-9-]+$/.test(slug);
+}
+
+function validateOdId(odId) {
+  return typeof odId === 'string' && odId.length > 0;
+}
+
 // Get all challenges with filters
 router.get('/', async (req, res) => {
   try {
     const { difficulty, category, search, page = 1, limit = 20 } = req.query;
+
+    // Validate page and limit
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({ error: 'Invalid page number' });
+    }
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+      return res.status(400).json({ error: 'Invalid limit (1-100)' });
+    }
+
     const query = { isActive: true };
 
     if (difficulty) query.difficulty = difficulty;
     if (category) query.category = category;
     if (search) {
+      const escapedSearch = escapeRegex(search);
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search, 'i')] } }
+        { title: { $regex: escapedSearch, $options: 'i' } },
+        { tags: { $in: [new RegExp(escapedSearch, 'i')] } }
       ];
     }
 
     const challenges = await Challenge.find(query)
       .select('title slug difficulty category points solvedCount successRate tags')
       .sort({ difficulty: 1, points: 1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum);
 
     const total = await Challenge.countDocuments(query);
 
     res.json({
       challenges,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page: pageNum,
+        limit: limitNum,
         total,
-        pages: Math.ceil(total / limit)
+        pages: Math.ceil(total / limitNum)
       }
     });
   } catch (error) {
@@ -151,14 +177,22 @@ router.get('/:slug/leaderboard', async (req, res) => {
 // Get user submissions for a challenge
 router.get('/:slug/submissions/:odId', async (req, res) => {
   try {
-    const challenge = await Challenge.findOne({ slug: req.params.slug });
+    const { slug, odId } = req.params;
+    if (!validateSlug(slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+    if (!validateOdId(odId)) {
+      return res.status(400).json({ error: 'Invalid odId' });
+    }
+
+    const challenge = await Challenge.findOne({ slug });
     if (!challenge) {
       return res.status(404).json({ error: 'Challenge not found' });
     }
 
     const submissions = await Submission.find({
       challengeId: challenge._id,
-      odId: req.params.odId
+      odId
     })
     .sort({ submittedAt: -1 })
     .limit(20)
@@ -174,8 +208,12 @@ router.get('/:slug/submissions/:odId', async (req, res) => {
 router.get('/:slug/editorial', async (req, res) => {
   try {
     const { odId } = req.query;
+    if (!validateOdId(odId)) {
+      return res.status(400).json({ error: 'Invalid odId' });
+    }
+
     const challenge = await Challenge.findOne({ slug: req.params.slug });
-    
+
     if (!challenge) {
       return res.status(404).json({ error: 'Challenge not found' });
     }
@@ -200,7 +238,12 @@ router.get('/:slug/editorial', async (req, res) => {
 // Get user progress
 router.get('/user/:odId/progress', async (req, res) => {
   try {
-    const progress = await ChallengeService.getUserProgress(req.params.odId);
+    const { odId } = req.params;
+    if (!validateOdId(odId)) {
+      return res.status(400).json({ error: 'Invalid odId' });
+    }
+
+    const progress = await ChallengeService.getUserProgress(odId);
     res.json(progress);
   } catch (error) {
     res.status(500).json({ error: error.message });
