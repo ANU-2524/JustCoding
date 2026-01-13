@@ -303,6 +303,16 @@ if (isAdult) {
   // Ref to track the warning timeout to prevent memory leaks
   const warningTimeoutRef = useRef(null);
 
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (warningTimeoutRef.current) {
+        clearTimeout(warningTimeoutRef.current);
+        warningTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("aiTab", activeAITab);
   }, [activeAITab]);
