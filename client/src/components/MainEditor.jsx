@@ -321,13 +321,13 @@ if (isAdult) {
     const newCode = language === "javascript" ?
       `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
       languages[language].starter;
-    
+
     // Reset to single file project
-    setProjectFiles([
-      { 
-        id: 'main', 
-        name: getDefaultFileName(language), 
-        content: newCode, 
+    setProjectFiles(prev => [
+      {
+        id: 'main',
+        name: getDefaultFileName(language),
+        content: newCode,
         isMain: true,
         path: getDefaultFileName(language)
       }
@@ -494,7 +494,7 @@ if (isAdult) {
   const addNewFile = () => {
     const fileName = window.prompt('Enter file name (with extension):', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
     if (!fileName) return;
-    
+
     const newFile = {
       id: `file-${Date.now()}`,
       name: fileName,
@@ -502,50 +502,55 @@ if (isAdult) {
       isMain: false,
       path: fileName
     };
-    
-    setProjectFiles([...projectFiles, newFile]);
+
+    setProjectFiles(prev => [...prev, newFile]);
     setActiveFileId(newFile.id);
   };
 
   const removeFile = (fileId) => {
-    if (projectFiles.length <= 1) {
-      alert("Cannot remove the last file!");
-      return;
-    }
-    
-    const fileToRemove = projectFiles.find(f => f.id === fileId);
-    if (fileToRemove.isMain) {
-      alert("Cannot remove the main file!");
-      return;
-    }
-    
-    const newFiles = projectFiles.filter(f => f.id !== fileId);
-    setProjectFiles(newFiles);
-    
-    if (activeFileId === fileId) {
-      setActiveFileId(newFiles[0].id);
-    }
+    setProjectFiles(prev => {
+      if (prev.length <= 1) {
+        alert("Cannot remove the last file!");
+        return prev;
+      }
+
+      const fileToRemove = prev.find(f => f.id === fileId);
+      if (fileToRemove.isMain) {
+        alert("Cannot remove the main file!");
+        return prev;
+      }
+
+      const newFiles = prev.filter(f => f.id !== fileId);
+
+      if (activeFileId === fileId) {
+        setActiveFileId(newFiles[0].id);
+      }
+
+      return newFiles;
+    });
   };
 
   const renameFile = (fileId) => {
-    const file = projectFiles.find(f => f.id === fileId);
-    const newName = window.prompt('Enter new file name:', file.name);
-    if (!newName || newName === file.name) return;
-    
-    setProjectFiles(projectFiles.map(f => 
-      f.id === fileId ? { ...f, name: newName, path: newName } : f
-    ));
+    setProjectFiles(prev => {
+      const file = prev.find(f => f.id === fileId);
+      const newName = window.prompt('Enter new file name:', file.name);
+      if (!newName || newName === file.name) return prev;
+
+      return prev.map(f =>
+        f.id === fileId ? { ...f, name: newName, path: newName } : f
+      );
+    });
   };
 
   const setAsMainFile = (fileId) => {
-    setProjectFiles(projectFiles.map(f => ({
+    setProjectFiles(prev => prev.map(f => ({
       ...f,
       isMain: f.id === fileId
     })));
   };
 
   const updateFileContent = (fileId, content) => {
-    setProjectFiles(projectFiles.map(f => 
+    setProjectFiles(prev => prev.map(f =>
       f.id === fileId ? { ...f, content } : f
     ));
   };
@@ -809,17 +814,17 @@ Visit https://justcoding.onrender.com for more information.`;
                 setLanguage(lang);
                 const savedCode = localStorage.getItem(`code-${lang}`);
                 const savedProject = localStorage.getItem(`project-files-${lang}`);
-                
+
                 if (savedProject) {
                   const project = JSON.parse(savedProject);
-                  setProjectFiles(project);
+                  setProjectFiles(prev => project);
                   setActiveFileId(project[0].id);
                 } else if (savedCode) {
-                  setProjectFiles([
-                    { 
-                      id: 'main', 
-                      name: getDefaultFileName(lang), 
-                      content: savedCode, 
+                  setProjectFiles(prev => [
+                    {
+                      id: 'main',
+                      name: getDefaultFileName(lang),
+                      content: savedCode,
                       isMain: true,
                       path: getDefaultFileName(lang)
                     }
@@ -829,12 +834,12 @@ Visit https://justcoding.onrender.com for more information.`;
                   const defaultCode = lang === "javascript" ?
                     `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
                     languages[lang].starter;
-                  
-                  setProjectFiles([
-                    { 
-                      id: 'main', 
-                      name: getDefaultFileName(lang), 
-                      content: defaultCode, 
+
+                  setProjectFiles(prev => [
+                    {
+                      id: 'main',
+                      name: getDefaultFileName(lang),
+                      content: defaultCode,
                       isMain: true,
                       path: getDefaultFileName(lang)
                     }
