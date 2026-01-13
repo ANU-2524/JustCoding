@@ -14,6 +14,8 @@ const LiveRoom = lazy(() => import("./components/LiveRoom"));
 const UserDashboard = lazy(() => import("./components/UserDashboard"));
 const Challenges = lazy(() => import("./components/Challenges"));
 const ChallengeSolve = lazy(() => import("./components/ChallengeSolve"));
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy.jsx"));
+const TermsAndConditions = lazy(() => import("./components/TermsAndConditions.jsx"));
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -82,7 +84,9 @@ function App() {
                 <LiveRoom />
               }
             />
-
+                  {/* Legal */}
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsAndConditions />} />
             {/* Coding Challenges */}
             <Route path="/challenges" element={<Challenges />} />
             <Route path="/challenges/:slug" element={<ChallengeSolve />} />
