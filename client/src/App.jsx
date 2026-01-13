@@ -20,7 +20,8 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
-const FAQPage = lazy(() => import("./components/FAQPage"));
+import FAQPage from "./components/FAQPage"
+// const FAQPage = lazy(() => import("./components/FAQPage"));
 
 function App() {
   return (

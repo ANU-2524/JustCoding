@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaPlus, FaUsers, FaSearch, FaGlobe, FaLock } from 'react-icons/fa';
-
+import "../Style/JoinRoom.css"
 const JoinRoom = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
