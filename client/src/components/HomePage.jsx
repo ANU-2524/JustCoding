@@ -406,6 +406,15 @@ const HomePage = () => {
       </ul>
     </div>
 
+    {/* Legal */}
+    <div className="footer-links">
+      <h4>Legal</h4>
+      <ul>
+        <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
+        <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
+      </ul>
+    </div>
+
     {/* Feedback & Rating */}
     <div className="footer-feedback">
       <h4>Feedback</h4>
@@ -429,19 +438,32 @@ const HomePage = () => {
     {/* Social Links */}
     <div className="footer-social">
       <h4>Connect</h4>
-      <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://x.com/_Anuuu_Soniii_"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <FaXTwitter /> Twitter
       </a>
-      <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/ANU-2524/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <FaGithub /> GitHub
       </a>
-      <a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://www.linkedin.com/in/anu--soni/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <FaLinkedin /> LinkedIn
       </a>
     </div>
 
   </div>
 </footer>
+
 
     </div>
   );
