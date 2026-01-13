@@ -19,11 +19,6 @@ import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
 const FAQPage = lazy(() => import("./components/FAQPage"));
-// function App() {
-//   return (
-//     <AuthProvider>
-//       <Router>
-        
 
 function App() {
   return (
