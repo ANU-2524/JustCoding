@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt } from 'react-icons/fa';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
 import {
@@ -191,6 +191,16 @@ const Profile = () => {
               title="Go back"
             >
               ← Back
+            </button>
+          </div>
+          
+          <div className="edit-button-container">
+            <button 
+              className="edit-profile-btn"
+              onClick={() => setIsEditing(true)}
+              title="Edit profile"
+            >
+              <FaPencilAlt /> Edit
             </button>
           </div>
           
@@ -470,7 +480,7 @@ const Profile = () => {
         </div>
 
         <div className="profile-footer">
-          {isEditing ? (
+          {isEditing && (
             <div className="edit-actions">
               <button className="btn-save" onClick={handleSave}>
                 <FaSave /> Save Changes
@@ -479,13 +489,6 @@ const Profile = () => {
                 <FaTimes /> Cancel
               </button>
             </div>
-          ) : (
-            <button 
-              className="btn-edit" 
-              onClick={() => setIsEditing(true)}
-            >
-              <FaUser /> Edit Profile
-            </button>
           )}
         </div>
       </div>
