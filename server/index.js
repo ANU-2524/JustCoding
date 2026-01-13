@@ -17,6 +17,7 @@ const gptRoute = require("./routes/gptRoute.js");
 const codeQualityRoute = require("./routes/codeQuality.js");
 const progressRoute = require("./routes/progress.js");
 const roomRoute = require("./routes/room.js");
+const userRoute = require("./routes/user.js");
 const Room = require('./models/Room.js');
 
 // Multi-Language Visualizer Service
@@ -126,15 +127,15 @@ io.on("connection", (socket) => {
 // Language map for code execution - ALL LANGUAGES
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
-  python:     { ext: 'py', version: '3.10.0' },
-  java:       { ext: 'java', version: '15.0.2' },
-  cpp:        { ext: 'cpp', version: '10.2.0' },
-  c:          { ext: 'c', version: '10.2.0' },
-  go:         { ext: 'go', version: '1.16.2' },
-  ruby:       { ext: 'rb', version: '3.0.1' },
-  php:        { ext: 'php', version: '8.2.3' },
-  swift:      { ext: 'swift', version: '5.3.3' },
-  rust:       { ext: 'rs', version: '1.68.2' },
+  python: { ext: 'py', version: '3.10.0' },
+  java: { ext: 'java', version: '15.0.2' },
+  cpp: { ext: 'cpp', version: '10.2.0' },
+  c: { ext: 'c', version: '10.2.0' },
+  go: { ext: 'go', version: '1.16.2' },
+  ruby: { ext: 'rb', version: '3.0.1' },
+  php: { ext: 'php', version: '8.2.3' },
+  swift: { ext: 'swift', version: '5.3.3' },
+  rust: { ext: 'rs', version: '1.68.2' },
 };
 
 // AI routes with security
@@ -144,6 +145,9 @@ app.use("/api/progress", progressRoute);
 
 // Room routes 
 app.use("/api/room", roomRoute);
+
+// User data sync routes (profile + snippets)
+app.use("/api/user", userRoute);
 
 // Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
 app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
