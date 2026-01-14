@@ -402,7 +402,7 @@ const FAQPage = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <FaTwitter /> Twitter
+        <FaXTwitter /> Twitter
       </a>
       <a
         href="https://github.com/ANU-2524/"
