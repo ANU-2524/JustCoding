@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import CodeEditor from './CodeEditor';
-import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile, FaHistory, FaClock } from 'react-icons/fa';
+import { 
+  FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, 
+  FaEye, FaBug, FaFilePdf, FaLightbulb, FaCode, FaChevronRight, 
+  FaChevronLeft, FaSave, FaFileArchive, FaFolder, FaFile, 
+  FaHistory, FaCog, FaTerminal, FaDownload
+} from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
 import '../Style/MainEdior.css';
@@ -8,38 +13,17 @@ import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { addSnippet, incrementStat, touchLastActive } from '../services/localStore';
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { incrementStat } from '../services/localStore';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 const languages = {
   python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>
-using namespace std;
-int main() {
-  return 0;
-}` },
-  java:       { name: 'Java',       starter: `public class Main {
-  public static void main(String[] args) {
-    
-  }
-}` },
-  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
-let age = 25;
-let name = "Alice";
-let isAdult = age >= 18;
-console.log(name + " is " + age + " years old");
-if (isAdult) {
-  console.log("Can vote!");
-}` },
+  cpp:        { name: 'C++',        starter: `#include <iostream>\nusing namespace std;\nint main() {\n  return 0;\n}` },
+  java:       { name: 'Java',       starter: `public class Main {\n  public static void main(String[] args) {\n    \n  }\n}` },
+  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` },
   c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main
-import "fmt"
-func main() {
-  fmt.Println("Hello Go")
-}` },
+  go:         { name: 'Go',         starter: `package main\nimport "fmt"\nfunc main() {\n  fmt.Println("Hello Go")\n}` },
   ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
   php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
   swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
@@ -47,15 +31,15 @@ func main() {
 };
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
-const REQUEST_TIMEOUT = 45000;
-
-// Auto-save constants
-const AUTO_SAVE_INTERVAL = 3000; // 3 seconds
-const MAX_VERSION_HISTORY = 50; // Maximum number of versions to keep
+const AUTO_SAVE_INTERVAL = 3000;
+const MAX_VERSION_HISTORY = 50;
 const AUTO_SAVE_KEY_PREFIX = 'autosave_';
 const VERSION_HISTORY_KEY_PREFIX = 'version_history_';
 
 const MainEditor = () => {
+  const [activePanelTab, setActivePanelTab] = useState("output");
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+
   const [debugResult, setDebugResult] = useState("");
   const [debugLoading, setDebugLoading] = useState(false);
   const [questionText, setQuestionText] = useState("");
@@ -64,26 +48,16 @@ const MainEditor = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [language, setLanguage] = useState(() => localStorage.getItem("lang") || "javascript");
+  
   const [code, setCode] = useState(() => {
     const savedLang = localStorage.getItem("lang") || "javascript";
     const savedCode = localStorage.getItem(`code-${savedLang}`);
     if (savedCode) return savedCode;
-
-    return savedLang === "javascript"
-      ? `// 🔍 Try the Visualizer with this code!
-let age = 25;
-let name = "Alice";
-let isAdult = age >= 18;
-console.log(name + " is " + age + " years old");
-if (isAdult) {
-  console.log("Can vote!");
-}`
-      : languages[savedLang]?.starter || languages.javascript.starter;
+    return savedLang === "javascript" ? languages.javascript.starter : languages[savedLang]?.starter || languages.javascript.starter;
   });
+
   const [userInput, setUserInput] = useState("");
   const [output, setOutput] = useState("");
-  const [showAISection, setShowAISection] = useState(false);
-  const [activeAITab, setActiveAITab] = useState("explain");
   
   // Auto-save states
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -95,436 +69,191 @@ if (isAdult) {
     try {
       const saved = localStorage.getItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`);
       return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   });
-  const [showVersionHistory, setShowVersionHistory] = useState(false);
-  
-  // Editor settings states
+
   const [editorSettings, setEditorSettings] = useState(() => {
     const saved = localStorage.getItem("editorSettings");
     return saved ? JSON.parse(saved) : {
-      intellisense: true,
-      autoClosing: true,
-      formatOnType: true,
-      suggestOnTriggerCharacters: true,
-      wordBasedSuggestions: true,
-      autoSave: true, // New setting for auto-save
-      autoSaveInterval: AUTO_SAVE_INTERVAL
+      intellisense: true, autoClosing: true, formatOnType: true,
+      suggestOnTriggerCharacters: true, wordBasedSuggestions: true,
+      autoSave: true, autoSaveInterval: AUTO_SAVE_INTERVAL
     };
   });
 
-  // Multi-file project states
   const [projectFiles, setProjectFiles] = useState(() => {
     const saved = localStorage.getItem(`project-files-${language}`);
-    return saved ? JSON.parse(saved) : [
-      { 
-        id: 'main', 
-        name: getDefaultFileName(language), 
-        content: code, 
-        isMain: true,
-        path: getDefaultFileName(language)
-      }
-    ];
+    return saved ? JSON.parse(saved) : [{ 
+        id: 'main', name: getDefaultFileName(language), content: code, isMain: true, path: getDefaultFileName(language)
+      }];
   });
-
   const [activeFileId, setActiveFileId] = useState('main');
-  const [showFileManager, setShowFileManager] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Visualizer states
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [execution, setExecution] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1000);
   const [visualizerLoading, setVisualizerLoading] = useState(false);
 
-  const { theme, toggleTheme, isDark } = useTheme();
-  const { logout, currentUser } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
   const autoSaveTimeoutRef = useRef(null);
   const lastSavedContentRef = useRef({});
 
-  // Initialize last saved content ref
+  function getDefaultFileName(lang) {
+    const extensions = { javascript: 'main.js', python: 'main.py', java: 'Main.java', cpp: 'main.cpp', c: 'main.c', go: 'main.go', ruby: 'main.rb', php: 'index.php', swift: 'main.swift', rust: 'main.rs' };
+    return extensions[lang] || 'code.txt';
+  }
+  function getFileExtension(filename) { return filename.split('.').pop(); }
+
   useEffect(() => {
-    projectFiles.forEach(file => {
-      lastSavedContentRef.current[file.id] = file.content;
-    });
+    projectFiles.forEach(file => { lastSavedContentRef.current[file.id] = file.content; });
   }, []);
 
-  // Auto-save effect
   useEffect(() => {
     if (!editorSettings.autoSave) return;
-
     const saveIfChanged = () => {
       const activeFile = projectFiles.find(f => f.id === activeFileId);
       if (!activeFile) return;
-
       const currentContent = activeFile.content;
       const lastSavedContent = lastSavedContentRef.current[activeFileId];
 
-      // Only save if content has changed
       if (currentContent !== lastSavedContent) {
         setIsAutoSaving(true);
-        
-        // Save current version to history
         saveToVersionHistory(activeFile.content);
-        
-        // Update last saved content
         lastSavedContentRef.current[activeFileId] = currentContent;
-        
-        // Update project files in localStorage
         localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-        
-        // Update last saved timestamp
         const now = new Date();
         setLastSaved(now);
         localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
-        
-        // Show auto-save indicator briefly
         setTimeout(() => setIsAutoSaving(false), 1000);
       }
     };
-
-    // Clear existing timeout
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    // Set new timeout
+    if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
     autoSaveTimeoutRef.current = setTimeout(saveIfChanged, editorSettings.autoSaveInterval);
-
-    // Cleanup on unmount
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, [projectFiles, activeFileId, language, editorSettings.autoSave, editorSettings.autoSaveInterval]);
-
-  // Save on page unload
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (editorSettings.autoSave) {
-        const activeFile = projectFiles.find(f => f.id === activeFileId);
-        if (activeFile) {
-          saveToVersionHistory(activeFile.content);
-          localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-        }
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    return () => clearTimeout(autoSaveTimeoutRef.current);
   }, [projectFiles, activeFileId, language, editorSettings.autoSave]);
 
-  // Save to version history function
+  useEffect(() => { localStorage.setItem("editorSettings", JSON.stringify(editorSettings)); }, [editorSettings]);
+  useEffect(() => { localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles)); }, [projectFiles, language]);
+  useEffect(() => { localStorage.setItem(`code-${language}`, code); localStorage.setItem("lang", language); }, [code, language]);
+
   const saveToVersionHistory = (content) => {
     const now = new Date();
-    const version = {
-      id: Date.now(),
-      timestamp: now.toISOString(),
-      content: content,
-      fileId: activeFileId,
-      fileName: projectFiles.find(f => f.id === activeFileId)?.name || 'unknown',
-      language: language
-    };
-
-    setVersionHistory(prev => {
-      const newHistory = [version, ...prev].slice(0, MAX_VERSION_HISTORY);
-      localStorage.setItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`, JSON.stringify(newHistory));
-      return newHistory;
-    });
+    const version = { id: Date.now(), timestamp: now.toISOString(), content, fileId: activeFileId, fileName: projectFiles.find(f => f.id === activeFileId)?.name || 'unknown', language };
+    setVersionHistory(prev => [version, ...prev].slice(0, MAX_VERSION_HISTORY));
   };
 
-  // Restore version from history
-  const restoreVersion = (version) => {
-    if (version.fileId === activeFileId) {
-      updateFileContent(activeFileId, version.content);
-      alert(`Restored version from ${new Date(version.timestamp).toLocaleString()}`);
-    } else {
-      // Switch to the file if it exists, otherwise create it
-      const fileExists = projectFiles.find(f => f.id === version.fileId);
-      if (fileExists) {
-        setActiveFileId(version.fileId);
-        setTimeout(() => {
-          updateFileContent(version.fileId, version.content);
-        }, 100);
-      } else {
-        // Create the file if it doesn't exist
-        const newFile = {
-          id: version.fileId,
-          name: version.fileName,
-          content: version.content,
-          isMain: false,
-          path: version.fileName
-        };
-        setProjectFiles(prev => [...prev, newFile]);
-        setActiveFileId(version.fileId);
-      }
-    }
-  };
-
-  // Clear version history
-  const clearVersionHistory = () => {
-    if (window.confirm('Are you sure you want to clear all version history?')) {
-      setVersionHistory([]);
-      localStorage.removeItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`);
-    }
-  };
-
-  // Manual save function
   const manualSave = () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (activeFile) {
       setIsAutoSaving(true);
       saveToVersionHistory(activeFile.content);
       localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-      
-      const now = new Date();
-      setLastSaved(now);
-      localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
+      setLastSaved(new Date());
       lastSavedContentRef.current[activeFileId] = activeFile.content;
-      
       setTimeout(() => setIsAutoSaving(false), 1000);
-      alert('Changes saved!');
     }
   };
 
-  // Toggle auto-save setting
-  const toggleAutoSave = () => {
-    setEditorSettings(prev => ({
-      ...prev,
-      autoSave: !prev.autoSave
-    }));
-  };
-
-  // Ref to track the warning timeout to prevent memory leaks
-  const warningTimeoutRef = useRef(null);
-
-  // Cleanup timeout on unmount to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      if (warningTimeoutRef.current) {
-        clearTimeout(warningTimeoutRef.current);
-        warningTimeoutRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("aiTab", activeAITab);
-  }, [activeAITab]);
-
-  useEffect(() => {
-    localStorage.setItem("editorSettings", JSON.stringify(editorSettings));
-  }, [editorSettings]);
-
-  useEffect(() => {
-    // Save project files when they change
-    localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-  }, [projectFiles, language]);
-
-  // Keep server alive
-  useEffect(() => {
-    const keepAlive = async () => {
-      try {
-        await fetch(`${API_BASE}/health`, { method: 'GET' });
-      } catch (err) {
-        console.log('Keep-alive ping failed');
-      }
-    };
-    keepAlive();
-    const intervalId = setInterval(keepAlive, 8 * 60 * 1000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // Apply shared link if present
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const shareId = params.get('share');
-    if (shareId) {
-      const data = JSON.parse(localStorage.getItem(`shared-${shareId}`) || 'null');
-      if (data) {
-        setLanguage(data.language);
-        setCode(data.code);
-        setUserInput(data.userInput || '');
-      }
-    }
-  }, []);
-
-  // Helper function to get default file name based on language
-  function getDefaultFileName(lang) {
-    const extensions = {
-      javascript: 'main.js',
-      python: 'main.py',
-      java: 'Main.java',
-      cpp: 'main.cpp',
-      c: 'main.c',
-      go: 'main.go',
-      ruby: 'main.rb',
-      php: 'index.php',
-      swift: 'main.swift',
-      rust: 'main.rs'
-    };
-    return extensions[lang] || 'code.txt';
-  }
-
-  // Helper function to get file extension
-  function getFileExtension(filename) {
-    return filename.split('.').pop();
-  }
-
-  const fetchWithTimeout = async (url, options, timeout = REQUEST_TIMEOUT) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const runCode = async () => {
+    const activeFile = projectFiles.find(f => f.id === activeFileId);
+    if (!activeFile || !activeFile.content.trim()) { setOutput("Please write some code first."); return; }
+    setActivePanelTab("output");
+    if (!isPanelOpen) setIsPanelOpen(true);
+    
+    setLoading(true);
+    setLoadingMessage("Processing...");
+    setOutput("");
+    
     try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      clearTimeout(timeoutId);
-      return response;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout - server took too long to respond');
-      }
-      throw error;
-    }
-  };
-
-  const explainQuestion = async () => {
-    if (!questionText.trim()) {
-      alert('Please paste a question first.');
-      return;
-    }
-    setIsExplaining(true);
-    localStorage.removeItem('question');
-    localStorage.removeItem('explanation');
-    try {
-      incrementStat('aiExplains', 1);
-      const res = await fetchWithTimeout(`${API_BASE}/api/gpt/explain`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: questionText }),
-      }, 60000);
+      incrementStat('runs', 1);
+      const res = await fetch(`${API_BASE}/compile`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language, code: activeFile.content, stdin: userInput }),
+      });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
-      setExplanation(data.explanation);
-      localStorage.setItem('question', questionText);
-      localStorage.setItem('explanation', data.explanation);
+      const result = await res.json();
+      setOutput(result.output || "No output");
     } catch (err) {
-      setExplanation(err.message || 'Error explaining the question.');
+      setOutput(`❌ Error: ${err.message}`);
     } finally {
-      setIsExplaining(false);
+      setLoading(false);
     }
   };
 
   const debugCode = async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile || !activeFile.content.trim()) {
-      alert("Please write some code first.");
-      return;
-    }
+    if (!activeFile) return;
     setDebugLoading(true);
-    localStorage.removeItem("debugHelp");
+    setActivePanelTab("ai");
+    if (!isPanelOpen) setIsPanelOpen(true);
+    
     try {
       incrementStat('aiDebugs', 1);
-      const res = await fetchWithTimeout(`${API_BASE}/api/gpt/debug`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch(`${API_BASE}/api/gpt/debug`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: activeFile.content, errorMessage: output }),
-      }, 60000);
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      });
       const data = await res.json();
       setDebugResult(data.debugHelp);
-      localStorage.setItem("debugHelp", data.debugHelp);
-    } catch (err) {
-      setDebugResult(err.message || "Error getting debug help.");
-    } finally {
-      setDebugLoading(false);
-    }
+    } catch (err) { setDebugResult("Error debugging."); } 
+    finally { setDebugLoading(false); }
   };
 
-  useEffect(() => {
-    localStorage.setItem(`code-${language}`, code);
-    localStorage.setItem("lang", language);
-  }, [code, language]);
+  const explainQuestion = async () => {
+      if (!questionText.trim()) return alert('Paste a question first.');
+      setIsExplaining(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/gpt/explain`, {
+           method: 'POST', headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ question: questionText })
+        });
+        const data = await res.json();
+        setExplanation(data.explanation);
+      } catch (err) { setExplanation('Error explaining.'); }
+      finally { setIsExplaining(false); }
+  };
 
-  const runCode = async () => {
+  const visualizeCode = async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile || !activeFile.content.trim()) {
-      setOutput("Please write some code first.");
-      return;
-    }
-    setLoading(true);
-    setLoadingMessage("Connecting to server...");
-    setOutput("");
-    warningTimeoutRef.current = setTimeout(() => {
-      setLoadingMessage("Server is starting up (free tier)... Please wait 30-60s");
-    }, 3000);
+    if (!activeFile) return;
+    setVisualizerLoading(true);
     try {
-      incrementStat('runs', 1);
-      const res = await fetchWithTimeout(`${API_BASE}/compile`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          language,
-          code: activeFile.content,
-          stdin: userInput
-        }),
-      });
-      clearTimeout(warningTimeoutRef.current);
-      warningTimeoutRef.current = null;
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      setLoadingMessage("Processing code...");
-      const result = await res.json();
-      setOutput(result.output || "No output");
-    } catch (err) {
-      clearTimeout(warningTimeoutRef.current);
-      warningTimeoutRef.current = null;
-      if (err.message.includes('timeout')) {
-        setOutput("⏱️ Request timeout. The server took too long to respond.\\n\\nTips:\\n- Try again in a moment\\n- Check your internet connection\\n- Simplify your code if it's too complex");
-      } else if (err.message.includes('Failed to fetch')) {
-        setOutput("🌐 Network error. Cannot reach the server.\\n\\nTips:\\n- Check your internet connection\\n- The server might be down\\n- Try again in a few minutes");
-      } else {
-        setOutput(`❌ Error: ${err.message}\\n\\nPlease try again.`);
-      }
-    } finally {
-      clearTimeout(warningTimeoutRef.current);
-      warningTimeoutRef.current = null;
-      setLoading(false);
-      setLoadingMessage("");
+        const res = await fetch(`${API_BASE}/api/visualizer/visualize`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: activeFile.content, language })
+        });
+        const data = await res.json();
+        if (data.success) {
+            setExecution(data.execution);
+            setCurrentStep(0);
+            setShowVisualizer(true);
+        } else { alert(data.error || 'Not supported'); }
+    } catch (e) { alert('Connection failed'); }
+    setVisualizerLoading(false);
+  };
+
+  const addNewFile = () => {
+    const fileName = window.prompt('File name:', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
+    if (fileName) {
+        const newFile = { id: `file-${Date.now()}`, name: fileName, content: '', isMain: false, path: fileName };
+        setProjectFiles(prev => [...prev, newFile]);
+        setActiveFileId(newFile.id);
     }
   };
-
-  const reset = () => {
-    const newCode = language === "javascript" ?
-      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
-      languages[language].starter;
-
-    // Reset to single file project
-    setProjectFiles(prev => [
-      {
-        id: 'main',
-        name: getDefaultFileName(language),
-        content: newCode,
-        isMain: true,
-        path: getDefaultFileName(language)
-      }
-    ]);
-    setActiveFileId('main');
-    setUserInput("");
-    setOutput("");
-    setExplanation("");
-    setQuestionText("");
-    setDebugResult("");
-    setShowVisualizer(false);
-    setExecution([]);
-    localStorage.removeItem("question");
-    localStorage.removeItem("explanation");
-    localStorage.removeItem("debugHelp");
+  const updateFileContent = (id, content) => {
+      setProjectFiles(prev => prev.map(f => f.id === id ? { ...f, content } : f));
   };
-
+  
+  const exportToZip = async () => {
+      setIsExporting(true);
+      const zip = new JSZip();
+      projectFiles.forEach(f => zip.file(f.name, f.content));
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `JustCode-${languages[language].name}.zip`);
+      setIsExporting(false);
+  };
   const downloadPDF = () => {
     const doc = new jsPDF();
     const title = `JustCode - ${languages[language].name} Project`;
@@ -619,923 +348,288 @@ if (isAdult) {
     doc.save(`${languages[language].name}-JustCode-Project.pdf`);
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      window.location.href = "/";
-    } catch (err) {
-      alert("Logout failed!");
-    }
-  };
-
-  // Universal Visualizer - works with all languages
-  const visualizeCode = async () => {
-    const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
-
-    setVisualizerLoading(true);
-
-    try {
-      const response = await fetch(`${API_BASE}/api/visualizer/visualize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: activeFile.content, language })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        incrementStat('visualizes', 1);
-        setExecution(data.execution);
-        setCurrentStep(0);
-        setShowVisualizer(true);
-      } else {
-        alert('Visualization: ' + (data.error || 'Not supported for this language'));
-      }
-    } catch (error) {
-      console.error('Visualization failed:', error);
-      alert('Failed to connect to server. Please check your connection.');
-    }
-    setVisualizerLoading(false);
-  };
-
-  const saveCurrentAsSnippet = () => {
-    const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
-
-    const title = window.prompt('Snippet title');
-    if (!title) return;
-    addSnippet({ title: title.trim(), language, code: activeFile.content });
-    touchLastActive();
-    alert('Saved to Profile → Snippets');
-  };
-
-  // Multi-file project functions
-  const addNewFile = () => {
-    const fileName = window.prompt('Enter file name (with extension):', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
-    if (!fileName) return;
-
-    const newFile = {
-      id: `file-${Date.now()}`,
-      name: fileName,
-      content: '',
-      isMain: false,
-      path: fileName
-    };
-
-    setProjectFiles(prev => [...prev, newFile]);
-    setActiveFileId(newFile.id);
-  };
-
-  const removeFile = (fileId) => {
-    setProjectFiles(prev => {
-      if (prev.length <= 1) {
-        alert("Cannot remove the last file!");
-        return prev;
-      }
-
-      const fileToRemove = prev.find(f => f.id === fileId);
-      if (fileToRemove.isMain) {
-        alert("Cannot remove the main file!");
-        return prev;
-      }
-
-      const newFiles = prev.filter(f => f.id !== fileId);
-
-      if (activeFileId === fileId) {
-        setActiveFileId(newFiles[0].id);
-      }
-
-      return newFiles;
-    });
-  };
-
-  const renameFile = (fileId) => {
-    setProjectFiles(prev => {
-      const file = prev.find(f => f.id === fileId);
-      const newName = window.prompt('Enter new file name:', file.name);
-      if (!newName || newName === file.name) return prev;
-
-      return prev.map(f =>
-        f.id === fileId ? { ...f, name: newName, path: newName } : f
-      );
-    });
-  };
-
-  const setAsMainFile = (fileId) => {
-    setProjectFiles(prev => prev.map(f => ({
-      ...f,
-      isMain: f.id === fileId
-    })));
-  };
-
-  const updateFileContent = (fileId, content) => {
-    setProjectFiles(prev => prev.map(f =>
-      f.id === fileId ? { ...f, content } : f
-    ));
-  };
-
-  // Export to ZIP function
-  const exportToZip = async () => {
-    if (projectFiles.length === 0) {
-      alert("No files to export!");
-      return;
-    }
-
-    setIsExporting(true);
-    let exportSuccess = false;
-
-    try {
-      const zip = new JSZip();
-      const projectName = `JustCode-${languages[language].name}-Project`;
-
-      // Add all files to zip
-      projectFiles.forEach(file => {
-        zip.file(file.name, file.content);
-      });
-
-      // Add README with project info
-      const readmeContent = `# ${languages[language].name} Project
-Generated by JustCode Editor
-Date: ${new Date().toLocaleDateString()}
-Time: ${new Date().toLocaleTimeString()}
-
-## Files:
-${projectFiles.map(f => `- ${f.name}${f.isMain ? ' (main)' : ''}`).join('\n')}
-
-## Project Settings:
-- Language: ${languages[language].name}
-- Total Files: ${projectFiles.length}
-- Main File: ${projectFiles.find(f => f.isMain)?.name}
-
-## Notes:
-This project was created using the JustCode Online Editor.
-Visit https://justcoding.onrender.com for more information.`;
-
-      zip.file("README.md", readmeContent);
-
-      // Generate and download the zip
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, `${projectName}.zip`);
-      exportSuccess = true;
-      alert(`Project exported as ${projectName}.zip`);
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Failed to export project. Please try again.');
-    } finally {
-      setIsExporting(false);
-      if (exportSuccess) {
-        incrementStat('exports', 1);
-      }
-    }
-  };
-
-  const exportSingleFile = () => {
-    const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
-    
-    const blob = new Blob([activeFile.content], { type: 'text/plain' });
-    saveAs(blob, activeFile.name);
-    incrementStat('singleExports', 1);
-  };
-
-  const nextStep = () => {
-    if (currentStep < execution.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const resetVisualizer = () => {
-    setCurrentStep(0);
-    setIsPlaying(false);
-  };
-
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  useEffect(() => {
-    let interval;
-    if (isPlaying && currentStep < execution.length - 1) {
-      interval = setInterval(() => {
-        setCurrentStep(prev => {
-          if (prev >= execution.length - 1) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, speed);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentStep, execution.length, speed]);
-
-  const toggleIntellisense = () => {
-    setEditorSettings(prev => ({
-      ...prev,
-      intellisense: !prev.intellisense
-    }));
-  };
-
-  const toggleAutoClosing = () => {
-    setEditorSettings(prev => ({
-      ...prev,
-      autoClosing: !prev.autoClosing
-    }));
-  };
-
-  const toggleFormatOnType = () => {
-    setEditorSettings(prev => ({
-      ...prev,
-      formatOnType: !prev.formatOnType
-    }));
-  };
-
-  const currentState = execution[currentStep];
   const activeFile = projectFiles.find(f => f.id === activeFileId) || projectFiles[0];
+  const currentState = execution[currentStep];
 
   return (
-    <div className="workspace">
-      {loading && <Loader message={loadingMessage || "Running code..."} />}
+    <div className={`main-editor-container ${!isPanelOpen ? 'panel-closed' : ''}`}>
+      {loading && <Loader message={loadingMessage || "Processing..."} />}
 
-      {/* Header */}
-      <header className="workspace-header">
+      <header className="editor-header">
         <div className="header-left">
-          <h1 className="logo">
-            <FaCode className="logo-icon" />
-            <span>Editor</span>
-          </h1>
-        </div>
-        <div className="header-right">
-          {/* Auto-save indicator */}
-          <div className="auto-save-indicator">
-            {isAutoSaving ? (
-              <span className="saving">Saving...</span>
-            ) : (
-              <span className="saved" title={`Last saved: ${lastSaved.toLocaleTimeString()}`}>
-                <FaClock /> Auto-saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
+          <div className="logo-section">
+            <FaCode className="logo-icon text-blue-500" size={24} />
+            <h1 className="font-bold text-xl ml-2 hidden md:block">JustCode</h1>
           </div>
-          
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            <span className="icon">
-              {isDark ? <FaSun /> : <FaMoon />}
+          <div className="divider-vertical"></div>
+          <div className="file-info-header">
+            <span className="file-name">{activeFile.name}</span>
+            <span className="save-status text-xs text-gray-400 ml-2">
+                {isAutoSaving ? 'Saving...' : 'Saved'}
             </span>
-          </button>
+          </div>
+        </div>
+
+        <div className="header-center">
+            <button onClick={runCode} className="btn-primary-run" disabled={loading} title="Run Code (Ctrl+Enter)">
+                <FaPlay size={14} /> Run
+            </button>
+
+            <select 
+                className="language-select-minimal"
+                value={language}
+                onChange={(e) => {
+                  const lang = e.target.value;
+                  setLanguage(lang);
+                  const savedCode = localStorage.getItem(`code-${lang}`);
+                  const savedProject = localStorage.getItem(`project-files-${lang}`);
+
+                  if (savedProject) {
+                    const project = JSON.parse(savedProject);
+                    setProjectFiles(prev => project);
+                    setActiveFileId(project[0].id);
+                  } else if (savedCode) {
+                    setProjectFiles(prev => [
+                      {
+                        id: 'main',
+                        name: getDefaultFileName(lang),
+                        content: savedCode,
+                        isMain: true,
+                        path: getDefaultFileName(lang)
+                      }
+                    ]);
+                    setActiveFileId('main');
+                  } else {
+                    const defaultCode = lang === "javascript" ?
+                      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
+                      languages[lang].starter;
+
+                    setProjectFiles(prev => [
+                      {
+                        id: 'main',
+                        name: getDefaultFileName(lang),
+                        content: defaultCode,
+                        isMain: true,
+                        path: getDefaultFileName(lang)
+                      }
+                    ]);
+                    setActiveFileId('main');
+                  }
+                  setShowVisualizer(false);
+                }
+              }
+            >
+                {Object.entries(languages).map(([key, val]) => (
+                    <option key={key} value={key}>{val.name}</option>
+                ))}
+            </select>
+
+            <button 
+                onClick={visualizeCode} 
+                className={`btn-icon-text ${showVisualizer ? 'active' : ''}`}
+                disabled={visualizerLoading}
+            >
+                <FaEye /> {visualizerLoading ? 'Loading...' : 'Visualizer'}
+            </button>
+        </div>
+
+        <div className="header-right">
+             <button onClick={manualSave} className="btn-icon" title="Save"><FaSave /></button>
+             <button onClick={() => setActivePanelTab('settings')} className="btn-icon" title="Settings"><FaCog /></button>
+             <button onClick={toggleTheme} className="btn-icon" title="Theme">{isDark ? <FaSun /> : <FaMoon />}</button>
+             
+             <div className="dropdown-wrapper">
+                 <button className="btn-icon" title="Export"><FaDownload /></button>
+                 <div className="dropdown-menu">
+                     <button onClick={() => { 
+                         const blob = new Blob([activeFile.content], { type: 'text/plain' });
+                         saveAs(blob, activeFile.name);
+                     }}><FaFile /> Save File</button>
+                     <button onClick={exportToZip}><FaFileArchive /> Export Zip</button>
+                     <button onClick={downloadPDF}><FaFilePdf /> Export PDF</button>
+                 </div>
+             </div>
+
+             <div className="divider-vertical"></div>
+             
+             <button 
+                className={`btn-panel-toggle ${isPanelOpen ? 'active' : ''}`}
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+                title="Toggle Side Panel"
+             >
+                {isPanelOpen ? <FaChevronRight /> : <FaChevronLeft />}
+             </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="workspace-main">
-        {/* AI Helper Section (Collapsible) */}
-        <section className="ai-section glass-card">
-          <button
-            className="ai-section-toggle"
-            onClick={() => setShowAISection(!showAISection)}
-          >
-            <div className="toggle-left">
-              <FaLightbulb className="toggle-icon" />
-              <span>AI Assistant</span>
-              <span className="toggle-hint">Get help with your questions & debug your code</span>
-            </div>
-            {showAISection ? <FaChevronUp /> : <FaChevronDown />}
-          </button>
-
-          {showAISection && (
-            <div className="ai-section-content">
-              <div className="ai-tabs">
-                <div className="ai-tab-header">
-                  <button
-                    className={`ai-tab ${activeAITab === "explain" ? "active" : ""}`}
-                    onClick={() => setActiveAITab("explain")}
-                  >
-                    <FaLightbulb />
-                    Question Helper
-                  </button>
-
-                  <button
-                    className={`ai-tab ${activeAITab === "debug" ? "active" : ""}`}
-                    onClick={() => setActiveAITab("debug")}
-                  >
-                    <FaBug />
-                    Debug Helper
-                  </button>
-                </div>
-
-                <div className="ai-tab-content">
-                  {activeAITab === "explain" && (
-                    <div className="ai-card">
-                      <h3><FaLightbulb /> Question Helper</h3>
-                      <textarea
-                        className="input-field"
-                        rows={3}
-                        placeholder="Paste your coding question here..."
-                        value={questionText}
-                        onChange={(e) => setQuestionText(e.target.value)}
-                      />
-                      <button
-                        className="btn-primary"
-                        onClick={explainQuestion}
-                        disabled={isExplaining}
-                      >
-                        {isExplaining ? "Explaining..." : "Explain Question"}
-                      </button>
-
-                      {explanation && (
-                        <div className="ai-response markdown-body">
-                          <h4>Explanation:</h4>
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {explanation}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeAITab === "debug" && (
-                    <div className="ai-card">
-                      <h3><FaBug /> Debug Helper</h3>
-                      <p className="ai-card-desc">
-                        Having errors? Get AI-powered debugging suggestions.
-                      </p>
-
-                      <button
-                        className="btn-primary"
-                        onClick={debugCode}
-                        disabled={debugLoading}
-                      >
-                        {debugLoading ? "Debugging..." : "Debug My Code"}
-                      </button>
-
-                      {debugResult && (
-                        <div className="ai-response markdown-body">
-                          <h4>Debug Suggestion:</h4>
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {debugResult}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* Toolbar */}
-        <section className="toolbar">
-          <div className="toolbar-left">
-            <select
-              className="language-select"
-              value={language}
-              onChange={(e) => {
-                const lang = e.target.value;
-                setLanguage(lang);
-                const savedCode = localStorage.getItem(`code-${lang}`);
-                const savedProject = localStorage.getItem(`project-files-${lang}`);
-
-                if (savedProject) {
-                  const project = JSON.parse(savedProject);
-                  setProjectFiles(prev => project);
-                  setActiveFileId(project[0].id);
-                } else if (savedCode) {
-                  setProjectFiles(prev => [
-                    {
-                      id: 'main',
-                      name: getDefaultFileName(lang),
-                      content: savedCode,
-                      isMain: true,
-                      path: getDefaultFileName(lang)
-                    }
-                  ]);
-                  setActiveFileId('main');
-                } else {
-                  const defaultCode = lang === "javascript" ?
-                    `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
-                    languages[lang].starter;
-
-                  setProjectFiles(prev => [
-                    {
-                      id: 'main',
-                      name: getDefaultFileName(lang),
-                      content: defaultCode,
-                      isMain: true,
-                      path: getDefaultFileName(lang)
-                    }
-                  ]);
-                  setActiveFileId('main');
-                }
-                setShowVisualizer(false);
-              }}
-            >
-              {Object.entries(languages).map(([key, val]) => (
-                <option key={key} value={key}>{val.name}</option>
-              ))}
-            </select>
-            
-            {/* File Manager Toggle */}
-            <button
-              onClick={() => setShowFileManager(!showFileManager)}
-              className="btn-file-manager"
-              title={showFileManager ? "Hide File Manager" : "Show File Manager"}
-            >
-              <FaFolder />
-              <span>Files ({projectFiles.length})</span>
-            </button>
-            
-            {/* Editor Settings Dropdown */}
-            <div className="editor-settings-dropdown">
-              <button className="btn-settings">
-                <span>⚙️ Editor Settings</span>
-                <FaChevronDown className="dropdown-arrow" />
-              </button>
-              <div className="settings-dropdown-content">
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.intellisense}
-                      onChange={toggleIntellisense}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">IntelliSense Autocomplete</span>
-                  </label>
-                  <span className="settings-hint">Smart code suggestions</span>
-                </div>
-                
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.autoClosing}
-                      onChange={toggleAutoClosing}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Auto Closing Brackets</span>
-                  </label>
-                  <span className="settings-hint">Automatically close brackets and quotes</span>
-                </div>
-                
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.formatOnType}
-                      onChange={toggleFormatOnType}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Format on Type</span>
-                  </label>
-                  <span className="settings-hint">Auto-format code as you type</span>
-                </div>
-                
-                {/* Auto-save setting */}
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.autoSave}
-                      onChange={toggleAutoSave}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Auto-save</span>
-                  </label>
-                  <span className="settings-hint">Automatically save changes every {editorSettings.autoSaveInterval / 1000} seconds</span>
-                </div>
-                
-                <div className="settings-status">
-                  <span className={`status-indicator ${editorSettings.autoSave ? 'active' : 'inactive'}`}>
-                    ●
-                  </span>
-                  <span>Auto-save: {editorSettings.autoSave ? 'ON' : 'OFF'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="toolbar-right">
-            {/* Version History Button */}
-            <button
-              onClick={() => setShowVersionHistory(!showVersionHistory)}
-              className="btn-history"
-              title="View version history"
-            >
-              <FaHistory />
-              <span>History ({versionHistory.length})</span>
-            </button>
-
-            {/* Manual Save Button */}
-            <button
-              onClick={manualSave}
-              className="btn-save"
-              disabled={isAutoSaving}
-              title="Save changes manually"
-            >
-              <FaSave />
-              <span>{isAutoSaving ? "Saving..." : "Save Now"}</span>
-            </button>
-
-            {/* Copy Button */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(activeFile.content)
-                  .then(() => {
-                    alert('Code copied to clipboard!');
-                  })
-                  .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy code to clipboard');
-                  });
-              }}
-              className="btn-copy"
-              disabled={loading}
-              title="Copy code to clipboard"
-            >
-              <FaCopy />
-              <span>Copy Code</span>
-            </button>
-
-            {/* Export Single File Button */}
-            <button
-              onClick={exportSingleFile}
-              className="btn-export-single"
-              disabled={loading}
-              title="Download current file"
-            >
-              <FaFile />
-              <span>Export File</span>
-            </button>
-
-            {/* Export ZIP Button */}
-            <button
-              onClick={exportToZip}
-              className="btn-export-zip"
-              disabled={loading || isExporting}
-              title="Export entire project as ZIP"
-            >
-              <FaFileArchive />
-              <span>{isExporting ? "Exporting..." : "Export Project"}</span>
-              {projectFiles.length > 1 && (
-                <span className="file-count-badge">{projectFiles.length}</span>
-              )}
-            </button>
-
-            <button onClick={runCode} className="btn-run" disabled={loading}>
-              <FaPlay />
-              <span>{loading ? "Running..." : "Run"}</span>
-            </button>
-
-            <button onClick={saveCurrentAsSnippet} className="btn-secondary" disabled={loading}>
-              <FaSave />
-              <span>Save Snippet</span>
-            </button>
-
-            <button
-              onClick={visualizeCode}
-              className="btn-visualize"
-              disabled={visualizerLoading}
-              title="Step through your code execution with variable tracking"
-            >
-              <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
-              {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
-            </button>
-
-            <button onClick={reset} className="btn-secondary" disabled={loading}>
-              <FaUndo />
-              <span>Reset</span>
-            </button>
-            <button onClick={downloadPDF} className="btn-secondary" disabled={loading}>
-              <FaFilePdf />
-              <span>Export PDF</span>
-            </button>
-          </div>
-        </section>
-
-        {/* Version History Panel */}
-        {showVersionHistory && (
-          <div className="version-history-panel glass-card">
-            <div className="version-history-header">
-              <h3>
-                <FaHistory />
-                <span>Version History</span>
-                <span className="version-count">{versionHistory.length} versions</span>
-              </h3>
-              <div className="version-history-actions">
-                <button
-                  onClick={manualSave}
-                  className="btn-save-version"
-                  disabled={isAutoSaving}
-                >
-                  <FaSave /> Save Current
-                </button>
-                <button
-                  onClick={clearVersionHistory}
-                  className="btn-clear-history"
-                  title="Clear all version history"
-                >
-                  Clear All
-                </button>
-                <button
-                  onClick={() => setShowVersionHistory(false)}
-                  className="btn-close-history"
-                  title="Close version history"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div className="version-list">
-              {versionHistory.length === 0 ? (
-                <div className="no-versions">No version history yet. Start coding!</div>
-              ) : (
-                versionHistory.map((version) => (
-                  <div
-                    key={version.id}
-                    className={`version-item ${version.fileId === activeFileId ? 'active-file' : ''}`}
-                    onClick={() => restoreVersion(version)}
-                  >
-                    <div className="version-info">
-                      <div className="version-time">
-                        {new Date(version.timestamp).toLocaleString()}
-                      </div>
-                      <div className="version-file">
-                        <FaFile />
-                        <span>{version.fileName}</span>
-                        {version.fileId === activeFileId && (
-                          <span className="current-file-badge">Current</span>
-                        )}
-                      </div>
-                      <div className="version-language">
-                        {languages[version.language]?.name || version.language}
-                      </div>
-                    </div>
-                    <div className="version-preview">
-                      <pre>{version.content.substring(0, 100)}...</pre>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <div className="version-history-footer">
-              <div className="version-stats">
-                <span>Auto-save: {editorSettings.autoSave ? 'Enabled' : 'Disabled'}</span>
-                <span>Interval: {editorSettings.autoSaveInterval / 1000}s</span>
-                <span>Max history: {MAX_VERSION_HISTORY} versions</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* File Manager Sidebar */}
-        {showFileManager && (
-          <div className="file-manager-sidebar glass-card">
-            <div className="file-manager-header">
-              <h3>
-                <FaFolder />
-                <span>Project Files</span>
-                <span className="file-count">{projectFiles.length} file(s)</span>
-              </h3>
-              <button
-                onClick={addNewFile}
-                className="btn-add-file"
-                title="Add new file"
-              >
-                <span>+</span>
-              </button>
-            </div>
-            <div className="file-list">
-              {projectFiles.map(file => (
-                <div 
-                  key={file.id} 
-                  className={`file-item ${activeFileId === file.id ? 'active' : ''}`}
-                  onClick={() => setActiveFileId(file.id)}
-                >
-                  <div className="file-info">
-                    <FaFile className="file-icon" />
-                    <span className="file-name">{file.name}</span>
-                    {file.isMain && <span className="main-badge">Main</span>}
-                  </div>
-                  <div className="file-actions">
-                    {!file.isMain && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setAsMainFile(file.id);
-                        }}
-                        className="btn-set-main"
-                        title="Set as main file"
-                      >
-                        ⭐
-                      </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        renameFile(file.id);
-                      }}
-                      className="btn-rename"
-                      title="Rename file"
-                      >
-                        ✏️
-                      </button>
-                      {!file.isMain && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFile(file.id);
-                          }}
-                          className="btn-remove"
-                          title="Remove file"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="file-manager-footer">
-                <button
-                  onClick={addNewFile}
-                  className="btn-add-file-full"
-                >
-                  <span>+ Add New File</span>
-                </button>
-                <div className="file-stats">
-                  <span>Total: {projectFiles.length} files</span>
-                  <span>Language: {languages[language].name}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-        {/* Editor & Output */}
-        <section className={`editor-section ${showFileManager ? 'with-file-manager' : ''} ${showVersionHistory ? 'with-version-history' : ''}`}>
-          <div className={`editor-panel glass-card ${showVisualizer ? 'visualizer-mode' : ''}`}>
-            <div className="panel-header">
-              <div className="panel-title-left">
-                <span className="panel-title">
-                  {showVisualizer ? '🔍 Code Execution Visualizer' : 'Code Editor'}
-                  {!showVisualizer && editorSettings.intellisense && (
-                    <span className="intellisense-badge" title="IntelliSense is active">
-                      💡 Smart Completion
-                    </span>
-                  )}
-                  {!showVisualizer && editorSettings.autoSave && (
-                    <span className="autosave-badge" title="Auto-save is enabled">
-                      {isAutoSaving ? '💾 Saving...' : '✓ Auto-save'}
-                    </span>
-                  )}
-                </span>
-                {!showVisualizer && (
-                  <div className="file-tab">
-                    <FaFile />
-                    <span className="file-name-display">{activeFile.name}</span>
-                    {activeFile.isMain && <span className="file-main-badge">Main</span>}
-                  </div>
-                )}
-              </div>
-              <div className="panel-header-right">
-                <span className="language-badge">{languages[language].name}</span>
-                {!showVisualizer && (
-                  <span className="file-size">
-                    {activeFile.content.length} chars
-                    {lastSaved && (
-                      <span className="last-saved" title={`Last saved: ${lastSaved.toLocaleString()}`}>
-                        · Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    )}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="editor-container">
-              {showVisualizer && execution.length > 0 ? (
-                <div className="visualizer-content">
-                  <div className="visualizer-controls-top">
-                    <div className="playback-controls">
-                      <button onClick={resetVisualizer} className="control-btn" title="Reset">
-                        <FaRedo />
-                      </button>
-                      <button onClick={prevStep} disabled={currentStep === 0} className="control-btn" title="Previous Step">
-                        <FaStepBackward />
-                      </button>
-                      <button onClick={togglePlay} className="control-btn play-btn" title={isPlaying ? 'Pause' : 'Play'}>
+      <div className="editor-zone">
+        {showVisualizer ? (
+           <div className="visualizer-container">
+              <div className="visualizer-overlay-controls">
+                 <button onClick={() => setShowVisualizer(false)} className="close-viz">✕ Exit Visualizer</button>
+                 <div className="playback-controls">
+                    <button onClick={() => setCurrentStep(0)}><FaRedo /></button>
+                    <button onClick={() => currentStep > 0 && setCurrentStep(c => c-1)}><FaStepBackward /></button>
+                    <button onClick={() => setIsPlaying(!isPlaying)} className="play-pause">
                         {isPlaying ? <FaPause /> : <FaPlay />}
-                      </button>
-                      <button onClick={nextStep} disabled={currentStep >= execution.length - 1} className="control-btn" title="Next Step">
-                        <FaStepForward />
-                      </button>
-                    </div>
-                    <div className="speed-control">
-                      <label>Speed: </label>
-                      <input
-                        type="range"
-                        min="200"
-                        max="2000"
-                        value={speed}
-                        onChange={(e) => setSpeed(Number(e.target.value))}
-                      />
-                      <span>{(2200 - speed) / 1000}x</span>
-                    </div>
-                    <div className="step-info">
-                      Step {currentStep + 1} / {execution.length}
-                    </div>
-                    <button onClick={() => setShowVisualizer(false)} className="btn-close-visualizer" title="Close Visualizer">
-                      ✕
                     </button>
-                  </div>
-
-
-
-                  {currentState && (
-                    <div className="state-info">
-                      <div className="variables-panel">
-                        <h4>📊 Variables</h4>
-                        <div className="variables-list">
-                          {Object.entries(currentState.variables).length === 0 ? (
-                            <div className="no-variables">No variables yet</div>
-                          ) : (
-                            Object.entries(currentState.variables).map(([name, info]) => (
-                              <div key={name} className="variable-item">
-                                <span className="var-name">{name}</span>
-                                <span className="var-value">
-                                  {typeof info.value === 'string' ? `"${info.value}"` : String(info.value)}
-                                </span>
-                                <span className="var-type">{info.type}</span>
-                              </div>
-                            ))
-                          )}
+                    <button onClick={() => currentStep < execution.length - 1 && setCurrentStep(c => c+1)}><FaStepForward /></button>
+                 </div>
+                 <div className="step-counter">Step {currentStep + 1} / {execution.length || 1}</div>
+              </div>
+              
+              <div className="viz-split-view">
+                 <div className="viz-code-view">
+                    <CodeEditor 
+                        language={language} 
+                        code={activeFile.content} 
+                        theme={isDark ? "vs-dark" : "light"}
+                        editorSettings={editorSettings}
+                        readOnly={true}
+                        highlightLine={currentState?.lineNumber}
+                    />
+                 </div>
+                 <div className="viz-vars-view">
+                    <h4>Variables</h4>
+                    {currentState?.variables && Object.entries(currentState.variables).map(([k, v]) => (
+                        <div key={k} className="var-row">
+                            <span className="var-name">{k}</span>
+                            <span className="var-val">{JSON.stringify(v.value)}</span>
                         </div>
-                      </div>
+                    ))}
+                 </div>
+              </div>
+           </div>
+        ) : (
+           <CodeEditor
+              language={language}
+              code={activeFile.content}
+              setCode={(c) => updateFileContent(activeFileId, c)}
+              theme={isDark ? "vs-dark" : "light"}
+              editorSettings={editorSettings}
+           />
+        )}
+      </div>
 
-                      <div className="execution-details">
-                        <h4>🔍 Step Details</h4>
-                        <div className="step-details">
-                          <p><strong>Line:</strong> {currentState.lineNumber}</p>
-                          <p><strong>Code:</strong> <code>{currentState.code}</code></p>
-                          <p><strong>Type:</strong> <span className={`type-badge ${currentState.type}`}>{currentState.type}</span></p>
-                          {currentState.output && (
-                            <p><strong>Output:</strong> <span className="output-value">{currentState.output}</span></p>
-                          )}
-                          {currentState.conditionResult !== undefined && (
-                            <p><strong>Condition:</strong> <span className={`condition-result ${currentState.conditionResult}`}>
-                              {currentState.conditionResult ? 'true' : 'false'}
-                            </span></p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+      <aside className={`side-panel ${isPanelOpen ? 'open' : 'closed'}`}>
+         <div className="panel-tabs">
+            <button className={activePanelTab === 'output' ? 'active' : ''} onClick={() => setActivePanelTab('output')} title="Output">
+                <FaTerminal />
+            </button>
+            <button className={activePanelTab === 'ai' ? 'active' : ''} onClick={() => setActivePanelTab('ai')} title="AI Assistant">
+                <FaLightbulb />
+            </button>
+            <button className={activePanelTab === 'files' ? 'active' : ''} onClick={() => setActivePanelTab('files')} title="Project Files">
+                <FaFolder />
+            </button>
+            <button className={activePanelTab === 'history' ? 'active' : ''} onClick={() => setActivePanelTab('history')} title="Version History">
+                <FaHistory />
+            </button>
+            <button className={activePanelTab === 'settings' ? 'active' : ''} onClick={() => setActivePanelTab('settings')} title="Settings">
+                <FaCog />
+            </button>
+         </div>
+
+         <div className="panel-content">
+            {activePanelTab === 'output' && (
+                <div className="panel-section output-section">
+                    <h3>Input</h3>
+                    <textarea 
+                        value={userInput} 
+                        onChange={e => setUserInput(e.target.value)} 
+                        placeholder="Stdin inputs..." 
+                        className="input-area"
+                    />
+                    <h3>Output</h3>
+                    <pre className="output-area">{output || "Run code to see output..."}</pre>
                 </div>
-              ) : (
-                <CodeEditor
-                  language={language}
-                  code={activeFile.content}
-                  setCode={(content) => updateFileContent(activeFileId, content)}
-                  theme={isDark ? "vs-dark" : "light"}
-                  editorSettings={editorSettings}
-                />
-              )}
-            </div>
-          </div>
+            )}
 
-          <div className="io-panel">
-            <div className="input-panel glass-card">
-              <div className="panel-header">
-                <span className="panel-title">Input</span>
-              </div>
-              <textarea
-                className="io-textarea"
-                rows={5}
-                placeholder="Enter input values here..."
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-              />
-            </div>
+            {activePanelTab === 'ai' && (
+                <div className="panel-section ai-section">
+                    <div className="ai-controls">
+                        <textarea 
+                            value={questionText} 
+                            onChange={e => setQuestionText(e.target.value)} 
+                            placeholder="Ask AI a question..." 
+                        />
+                        <div className="ai-buttons">
+                            <button onClick={explainQuestion} disabled={isExplaining} className="btn-small">
+                                {isExplaining ? 'Thinking...' : 'Explain'}
+                            </button>
+                            <button onClick={debugCode} disabled={debugLoading} className="btn-small btn-debug">
+                                <FaBug /> Debug Code
+                            </button>
+                        </div>
+                    </div>
+                    <div className="ai-result markdown-body">
+                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                             {explanation || debugResult || "AI responses will appear here."}
+                         </ReactMarkdown>
+                    </div>
+                </div>
+            )}
 
-            <div className="output-panel glass-card">
-              <div className="panel-header">
-                <span className="panel-title">Output</span>
-              </div>
-              <pre className="output-content">{output || "Your output will appear here..."}</pre>
-            </div>
-          </div>
-        </section>
-      </main>
+            {activePanelTab === 'files' && (
+                <div className="panel-section files-section">
+                    <div className="files-header">
+                        <h3>Files ({projectFiles.length})</h3>
+                        <button onClick={addNewFile} className="btn-add">+</button>
+                    </div>
+                    <div className="file-list">
+                        {projectFiles.map(file => (
+                            <div 
+                                key={file.id} 
+                                className={`file-row ${activeFileId === file.id ? 'active' : ''}`}
+                                onClick={() => setActiveFileId(file.id)}
+                            >
+                                <FaFile className="file-icon-small"/> 
+                                {file.name} 
+                                {file.isMain && <span className="badge-main">M</span>}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {activePanelTab === 'history' && (
+                <div className="panel-section history-section">
+                     <h3>History</h3>
+                     <div className="history-list">
+                        {versionHistory.map(v => (
+                            <div key={v.id} className="history-item" onClick={() => {
+                                updateFileContent(v.fileId, v.content);
+                                alert('Restored!');
+                            }}>
+                                <span>{new Date(v.timestamp).toLocaleTimeString()}</span>
+                                <small>{v.fileName}</small>
+                            </div>
+                        ))}
+                     </div>
+                </div>
+            )}
+
+            {activePanelTab === 'settings' && (
+                <div className="panel-section settings-section">
+                    <h3>Editor Settings</h3>
+                    <label className="setting-row">
+                        <span>Intellisense</span>
+                        <input type="checkbox" checked={editorSettings.intellisense} onChange={() => setEditorSettings(s => ({...s, intellisense: !s.intellisense}))} />
+                    </label>
+                    <label className="setting-row">
+                        <span>Auto Close Brackets</span>
+                        <input type="checkbox" checked={editorSettings.autoClosing} onChange={() => setEditorSettings(s => ({...s, autoClosing: !s.autoClosing}))} />
+                    </label>
+                    <label className="setting-row">
+                        <span>Auto Save</span>
+                        <input type="checkbox" checked={editorSettings.autoSave} onChange={() => setEditorSettings(s => ({...s, autoSave: !s.autoSave}))} />
+                    </label>
+                </div>
+            )}
+         </div>
+      </aside>
     </div>
   );
 };
 
-export default MainEditor; 
+export default MainEditor;
