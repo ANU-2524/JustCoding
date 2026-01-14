@@ -1752,10 +1752,15 @@ body {
   box-shadow:
     0 12px 35px rgba(212, 88, 31, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition:
+    transform 0.05s linear,
+    box-shadow 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+   transform: translateY(0);
 }
 
 .use-case-card:hover {
@@ -1856,3 +1861,9 @@ body {
   margin-bottom: 2rem;
 }
 
+
+.use-case-card {
+  transition-property: transform;
+  transition-duration: 0.05s;
+  transition-timing-function: linear;
+}

@@ -335,11 +335,12 @@ const HomePage = () => {
       <motion.div
         key={index}
         className="use-case-card"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.2, delay: 0.2 + index * 0.1 }}
         viewport={{ once: true }}
         whileHover={{ scale: 1.05, y: -10 }}
+
       >
         <div className="use-case-icon">{item.icon}</div>
         <h3>{item.title}</h3>
