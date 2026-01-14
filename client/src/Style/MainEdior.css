@@ -2904,6 +2904,43 @@
   transition: width 3s linear;
 }
 
+.main-editor-container {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: 60px 1fr; 
+  grid-template-columns: 1fr 350px;
+  grid-template-areas:
+    "header header"
+    "editor panel";
+  background-color: var(--bg-primary);
+}
+
+.main-editor-container.panel-closed {
+  grid-template-columns: 1fr 0px;
+}
+
+.editor-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.code-area {
+  grid-area: editor;
+  overflow: hidden;
+  position: relative;
+}
+
+.side-panel {
+  grid-area: panel;
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  overflow-y: auto;
+}
+
 /* Responsive Adjustments for Auto-Save Features */
 @media (max-width: 480px) {
   .version-history-panel {
