@@ -440,6 +440,35 @@ html {
   background: rgba(251, 113, 133, 0.1);
 }
 
+.sub-menu {
+  padding-left: 2rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.sub-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sub-menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--accent-primary);
+}
+
 .mobile-login-btn {
   display: flex;
   align-items: center;
