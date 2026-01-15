@@ -1,0 +1,80 @@
+name: Auto-lock closed issues
+
+on:
+  schedule:
+    # Runs every 1 hour
+    - cron: "0 * * * *"
+
+  # Manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      lock_after_days:
+        description: "Days after issue is closed before locking"
+        required: false
+        default: "2"
+
+permissions:
+  issues: write
+
+jobs:
+  auto-lock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lock closed issues after delay
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const lockAfterDays = parseInt(
+              core.getInput("lock_after_days") || "2",
+              10
+            );
+
+            const now = new Date();
+
+            // Fetch all closed issues
+            const issues = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "closed",
+                per_page: 100,
+              }
+            );
+
+            for (const issue of issues) {
+              // Skip pull requests
+              if (issue.pull_request) continue;
+
+              // Skip already locked issues
+              if (issue.locked) continue;
+
+              const closedAt = new Date(issue.closed_at);
+              const diffDays =
+                (now - closedAt) / (1000 * 60 * 60 * 24);
+
+              if (diffDays >= lockAfterDays) {
+                try {
+                  await github.rest.issues.lock({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    lock_reason: "resolved",
+                  });
+
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: "🔒 This issue has been automatically locked after being closed to prevent spam or off-topic discussions.",
+                  });
+
+                  console.log(`Locked issue #${issue.number}`);
+                } catch (error) {
+                  console.log(
+                    `Failed to lock issue #${issue.number}: ${error.message}`
+                  );
+                }
+              }
+            }
