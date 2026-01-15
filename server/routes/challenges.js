@@ -25,12 +25,12 @@ router.get('/', async (req, res) => {
     const { difficulty, category, search, page = 1, limit = 20 } = req.query;
 
     // Validate page and limit
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
-    if (isNaN(pageNum) || pageNum < 1) {
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    if (isNaN(pageNum) || pageNum.toString() !== page || pageNum < 1) {
       return res.status(400).json({ error: 'Invalid page number' });
     }
-    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+    if (isNaN(limitNum) || limitNum.toString() !== limit || limitNum < 1 || limitNum > 100) {
       return res.status(400).json({ error: 'Invalid limit (1-100)' });
     }
 
