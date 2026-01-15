@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
       const escapedSearch = escapeRegex(search);
       query.$or = [
         { title: { $regex: escapedSearch, $options: 'i' } },
-        { tags: { $in: [new RegExp(escapedSearch, 'i')] } }
+        { tags: { $regex: escapedSearch, $options: 'i' } }
       ];
     }
 
