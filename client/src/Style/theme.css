@@ -284,10 +284,11 @@ body {
 }
 
 .btn-secondary:hover {
-  background: var(--accent-primary);
-  color: white;
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-colored);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:active {
