@@ -1,9 +1,11 @@
 // src/components/FAQPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaXTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const FAQPage = () => {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
 

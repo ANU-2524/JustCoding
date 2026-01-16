@@ -19,10 +19,6 @@ import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
 import FAQPage from "./components/FAQPage";
-// function App() {
-//   return (
-//     <AuthProvider>
-//       <Router>
         
 
 function App() {
@@ -38,7 +34,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/blog" element={<BlogPage />} />
-<Route path="/faq" element={<FAQPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             {/* Main personal editor */}
             <Route
               path="/editor"
