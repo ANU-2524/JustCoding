@@ -16,9 +16,7 @@ const {
 const gptRoute = require("./routes/gptRoute.js");
 const codeQualityRoute = require("./routes/codeQuality.js");
 const progressRoute = require("./routes/progress.js");
-const roomRoute = require("./routes/room.js");
-const userRoute = require("./routes/user.js");
-const Room = require('./models/Room.js');
+const challengesRoute = require("./routes/challenges.js");
 
 // Multi-Language Visualizer Service
 const visualizerService = require('./services/visualizer');
@@ -142,6 +140,7 @@ const languageMap = {
 app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 app.use("/api/progress", progressRoute);
+app.use("/api/challenges", challengesRoute);
 
 // Room routes 
 app.use("/api/room", roomRoute);
