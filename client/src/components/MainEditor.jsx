@@ -864,37 +864,6 @@ Visit https://justcoding.onrender.com for more information.`;
     <div className="workspace">
       {loading && <Loader message={loadingMessage || "Running code..."} />}
 
-      {/* Header */}
-      <header className="workspace-header">
-        <div className="header-left">
-          <h1 className="logo">
-            <FaCode className="logo-icon" />
-            <span>Editor</span>
-          </h1>
-        </div>
-        <div className="header-right">
-          {/* Auto-save indicator */}
-          <div className="auto-save-indicator">
-            {isAutoSaving ? (
-              <span className="saving">Saving...</span>
-            ) : (
-              <span className="saved" title={`Last saved: ${lastSaved.toLocaleTimeString()}`}>
-                <FaClock /> Auto-saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
-          </div>
-          
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            <span className="icon">
-              {isDark ? <FaSun /> : <FaMoon />}
-            </span>
-          </button>
-        </div>
-      </header>
 
       {/* Main Content */}
       <main className="workspace-main">
@@ -997,227 +966,203 @@ Visit https://justcoding.onrender.com for more information.`;
         {/* Toolbar */}
         <section className="toolbar">
           <div className="toolbar-left">
-            <select
-              className="language-select"
-              value={language}
-              onChange={(e) => {
-                const lang = e.target.value;
-                setLanguage(lang);
-                const savedCode = localStorage.getItem(`code-${lang}`);
-                const savedProject = localStorage.getItem(`project-files-${lang}`);
+            <div className="toolbar-controls">
+              <select
+                className="language-select"
+                value={language}
+                onChange={(e) => {
+                  const lang = e.target.value;
+                  setLanguage(lang);
+                  const savedCode = localStorage.getItem(`code-${lang}`);
+                  const savedProject = localStorage.getItem(`project-files-${lang}`);
 
-                if (savedProject) {
-                  const project = JSON.parse(savedProject);
-                  setProjectFiles(prev => project);
-                  setActiveFileId(project[0].id);
-                } else if (savedCode) {
-                  setProjectFiles(prev => [
-                    {
-                      id: 'main',
-                      name: getDefaultFileName(lang),
-                      content: savedCode,
-                      isMain: true,
-                      path: getDefaultFileName(lang)
-                    }
-                  ]);
-                  setActiveFileId('main');
-                } else {
-                  const defaultCode = lang === "javascript" ?
-                    `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
-                    languages[lang].starter;
+                  if (savedProject) {
+                    const project = JSON.parse(savedProject);
+                    setProjectFiles(prev => project);
+                    setActiveFileId(project[0].id);
+                  } else if (savedCode) {
+                    setProjectFiles(prev => [
+                      {
+                        id: 'main',
+                        name: getDefaultFileName(lang),
+                        content: savedCode,
+                        isMain: true,
+                        path: getDefaultFileName(lang)
+                      }
+                    ]);
+                    setActiveFileId('main');
+                  } else {
+                    const defaultCode = lang === "javascript" ?
+                      `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
+                      languages[lang].starter;
 
-                  setProjectFiles(prev => [
-                    {
-                      id: 'main',
-                      name: getDefaultFileName(lang),
-                      content: defaultCode,
-                      isMain: true,
-                      path: getDefaultFileName(lang)
-                    }
-                  ]);
-                  setActiveFileId('main');
-                }
-                setShowVisualizer(false);
-              }}
-            >
-              {Object.entries(languages).map(([key, val]) => (
-                <option key={key} value={key}>{val.name}</option>
-              ))}
-            </select>
-            
-            {/* File Manager Toggle */}
-            <button
-              onClick={() => setShowFileManager(!showFileManager)}
-              className="btn-file-manager"
-              title={showFileManager ? "Hide File Manager" : "Show File Manager"}
-            >
-              <FaFolder />
-              <span>Files ({projectFiles.length})</span>
-            </button>
-            
-            {/* Editor Settings Dropdown */}
-            <div className="editor-settings-dropdown">
-              <button className="btn-settings">
-                <span>⚙️ Editor Settings</span>
-                <FaChevronDown className="dropdown-arrow" />
+                    setProjectFiles(prev => [
+                      {
+                        id: 'main',
+                        name: getDefaultFileName(lang),
+                        content: defaultCode,
+                        isMain: true,
+                        path: getDefaultFileName(lang)
+                      }
+                    ]);
+                    setActiveFileId('main');
+                  }
+                  setShowVisualizer(false);
+                }}
+              >
+                {Object.entries(languages).map(([key, val]) => (
+                  <option key={key} value={key}>{val.name}</option>
+                ))}
+              </select>
+              
+              {/* File Manager Toggle */}
+              <button
+                onClick={() => setShowFileManager(!showFileManager)}
+                className="btn-file-manager"
+                title={showFileManager ? "Hide File Manager" : "Show File Manager"}
+              >
+                <FaFolder />
+                <span>Files ({projectFiles.length})</span>
               </button>
-              <div className="settings-dropdown-content">
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.intellisense}
-                      onChange={toggleIntellisense}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">IntelliSense Autocomplete</span>
-                  </label>
-                  <span className="settings-hint">Smart code suggestions</span>
-                </div>
-                
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.autoClosing}
-                      onChange={toggleAutoClosing}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Auto Closing Brackets</span>
-                  </label>
-                  <span className="settings-hint">Automatically close brackets and quotes</span>
-                </div>
-                
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.formatOnType}
-                      onChange={toggleFormatOnType}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Format on Type</span>
-                  </label>
-                  <span className="settings-hint">Auto-format code as you type</span>
-                </div>
-                
-                {/* Auto-save setting */}
-                <div className="settings-item">
-                  <label className="settings-toggle">
-                    <input
-                      type="checkbox"
-                      checked={editorSettings.autoSave}
-                      onChange={toggleAutoSave}
-                    />
-                    <span className="toggle-slider"></span>
-                    <span className="settings-label">Auto-save</span>
-                  </label>
-                  <span className="settings-hint">Automatically save changes every {editorSettings.autoSaveInterval / 1000} seconds</span>
-                </div>
-                
-                <div className="settings-status">
-                  <span className={`status-indicator ${editorSettings.autoSave ? 'active' : 'inactive'}`}>
-                    ●
-                  </span>
-                  <span>Auto-save: {editorSettings.autoSave ? 'ON' : 'OFF'}</span>
+              
+              {/* Editor Settings Dropdown */}
+              <div className="editor-settings-dropdown">
+                <button className="btn-settings">
+                  <span>⚙️ Editor Settings</span>
+                  <FaChevronDown className="dropdown-arrow" />
+                </button>
+                <div className="settings-dropdown-content">
+                  <div className="settings-item">
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={editorSettings.intellisense}
+                        onChange={toggleIntellisense}
+                      />
+                      <span className="toggle-slider"></span>
+                      <span className="settings-label">IntelliSense Autocomplete</span>
+                    </label>
+                    <span className="settings-hint">Smart code suggestions</span>
+                  </div>
+                  
+                  <div className="settings-item">
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={editorSettings.autoClosing}
+                        onChange={toggleAutoClosing}
+                      />
+                      <span className="toggle-slider"></span>
+                      <span className="settings-label">Auto Closing Brackets</span>
+                    </label>
+                    <span className="settings-hint">Automatically close brackets and quotes</span>
+                  </div>
+                  
+                  <div className="settings-item">
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={editorSettings.formatOnType}
+                        onChange={toggleFormatOnType}
+                      />
+                      <span className="toggle-slider"></span>
+                      <span className="settings-label">Format on Type</span>
+                    </label>
+                    <span className="settings-hint">Auto-format code as you type</span>
+                  </div>
+                  
+                  {/* Auto-save setting */}
+                  <div className="settings-item">
+                    <label className="settings-toggle">
+                      <input
+                        type="checkbox"
+                        checked={editorSettings.autoSave}
+                        onChange={toggleAutoSave}
+                      />
+                      <span className="toggle-slider"></span>
+                      <span className="settings-label">Auto-save</span>
+                    </label>
+                    <span className="settings-hint">Automatically save changes every {editorSettings.autoSaveInterval / 1000} seconds</span>
+                  </div>
+                  
+                  <div className="settings-status">
+                    <span className={`status-indicator ${editorSettings.autoSave ? 'active' : 'inactive'}`}>
+                      ●
+                    </span>
+                    <span>Auto-save: {editorSettings.autoSave ? 'ON' : 'OFF'}</span>
+                  </div>
                 </div>
               </div>
             </div>
+            
+            {/* Action Buttons */}
+            <div className="toolbar-actions">
+              <button
+                onClick={visualizeCode}
+                className="btn-visualize"
+                disabled={visualizerLoading}
+                title="Step through your code execution with variable tracking"
+              >
+                <FaEye />
+                <span>{visualizerLoading ? "Analyzing..." : "Visualize"}</span>
+                {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
+              </button>
+
+              <button
+                onClick={() => setShowVersionHistory(!showVersionHistory)}
+                className="btn-history"
+                title="View version history"
+              >
+                <FaHistory />
+                <span>History ({versionHistory.length})</span>
+              </button>
+
+              <button
+                onClick={manualSave}
+                className="btn-save"
+                disabled={isAutoSaving}
+                title="Save changes manually"
+              >
+                <FaSave />
+                <span>{isAutoSaving ? "Saving..." : "Save Now"}</span>
+              </button>
+
+              <button
+                onClick={exportSingleFile}
+                className="btn-export-single"
+                disabled={loading}
+                title="Download current file"
+              >
+                <FaFile />
+                <span>Export File</span>
+              </button>
+
+              <button
+                onClick={exportToZip}
+                className="btn-export-zip"
+                disabled={loading || isExporting}
+                title="Export entire project as ZIP"
+              >
+                <FaFileArchive />
+                <span>{isExporting ? "Exporting..." : "Export Project"}</span>
+                {projectFiles.length > 1 && (
+                  <span className="file-count-badge">{projectFiles.length}</span>
+                )}
+              </button>
+            </div>
           </div>
+          
           <div className="toolbar-right">
-            {/* Version History Button */}
-            <button
-              onClick={() => setShowVersionHistory(!showVersionHistory)}
-              className="btn-history"
-              title="View version history"
-            >
-              <FaHistory />
-              <span>History ({versionHistory.length})</span>
-            </button>
-
-            {/* Manual Save Button */}
-            <button
-              onClick={manualSave}
-              className="btn-save"
-              disabled={isAutoSaving}
-              title="Save changes manually"
-            >
+            <button onClick={saveCurrentAsSnippet} className="btn-secondary btn-icon-only" disabled={loading} title="Save as snippet">
               <FaSave />
-              <span>{isAutoSaving ? "Saving..." : "Save Now"}</span>
             </button>
 
-            {/* Copy Button */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(activeFile.content)
-                  .then(() => {
-                    alert('Code copied to clipboard!');
-                  })
-                  .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy code to clipboard');
-                  });
-              }}
-              className="btn-copy"
-              disabled={loading}
-              title="Copy code to clipboard"
-            >
-              <FaCopy />
-              <span>Copy Code</span>
-            </button>
-
-            {/* Export Single File Button */}
-            <button
-              onClick={exportSingleFile}
-              className="btn-export-single"
-              disabled={loading}
-              title="Download current file"
-            >
-              <FaFile />
-              <span>Export File</span>
-            </button>
-
-            {/* Export ZIP Button */}
-            <button
-              onClick={exportToZip}
-              className="btn-export-zip"
-              disabled={loading || isExporting}
-              title="Export entire project as ZIP"
-            >
-              <FaFileArchive />
-              <span>{isExporting ? "Exporting..." : "Export Project"}</span>
-              {projectFiles.length > 1 && (
-                <span className="file-count-badge">{projectFiles.length}</span>
-              )}
-            </button>
-
-            <button onClick={runCode} className="btn-run" disabled={loading}>
-              <FaPlay />
-              <span>{loading ? "Running..." : "Run"}</span>
-            </button>
-
-            <button onClick={saveCurrentAsSnippet} className="btn-secondary" disabled={loading}>
-              <FaSave />
-              <span>Save Snippet</span>
-            </button>
-
-            <button
-              onClick={visualizeCode}
-              className="btn-visualize"
-              disabled={visualizerLoading}
-              title="Step through your code execution with variable tracking"
-            >
-              <FaEye /> {visualizerLoading ? "Analyzing..." : "Visualize"}
-              {!showVisualizer && <span className="visualizer-hint">NEW!</span>}
-            </button>
-
-            <button onClick={reset} className="btn-secondary" disabled={loading}>
-              <FaUndo />
-              <span>Reset</span>
-            </button>
-            <button onClick={downloadPDF} className="btn-secondary" disabled={loading}>
+            <button onClick={downloadPDF} className="btn-secondary btn-icon-only" disabled={loading} title="Export PDF">
               <FaFilePdf />
-              <span>Export PDF</span>
+            </button>
+
+            <button onClick={reset} className="btn-secondary btn-icon-only" disabled={loading} title="Reset editor">
+              <FaUndo />
             </button>
           </div>
         </section>
@@ -1409,14 +1354,29 @@ Visit https://justcoding.onrender.com for more information.`;
               <div className="panel-header-right">
                 <span className="language-badge">{languages[language].name}</span>
                 {!showVisualizer && (
-                  <span className="file-size">
-                    {activeFile.content.length} chars
-                    {lastSaved && (
-                      <span className="last-saved" title={`Last saved: ${lastSaved.toLocaleString()}`}>
-                        · Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    )}
-                  </span>
+                  <>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(activeFile.content)
+                          .then(() => {
+                            alert('Code copied to clipboard!');
+                          })
+                          .catch(err => {
+                            console.error('Failed to copy: ', err);
+                            alert('Failed to copy code to clipboard');
+                          });
+                      }}
+                      className="btn-copy-icon"
+                      disabled={loading}
+                      title="Copy code to clipboard"
+                    >
+                      <FaCopy />
+                    </button>
+                    <button onClick={runCode} className="btn-run btn-run-header" disabled={loading}>
+                      <FaPlay />
+                      <span>{loading ? "Running..." : "Run"}</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
