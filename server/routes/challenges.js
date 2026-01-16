@@ -71,6 +71,10 @@ router.get('/', async (req, res) => {
 // Get single challenge
 router.get('/:slug', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const challenge = await Challenge.findOne({ slug: req.params.slug, isActive: true })
       .select('-testCases.expectedOutput -editorial');
 
@@ -132,6 +136,10 @@ router.post('/:slug/submit', async (req, res) => {
 // Run code (without submitting)
 router.post('/:slug/run', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const { code, language, customInput } = req.body;
 
     if (!code || !language) {
@@ -162,6 +170,10 @@ router.post('/:slug/run', async (req, res) => {
 // Get challenge leaderboard
 router.get('/:slug/leaderboard', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const challenge = await Challenge.findOne({ slug: req.params.slug });
     if (!challenge) {
       return res.status(404).json({ error: 'Challenge not found' });
@@ -207,6 +219,10 @@ router.get('/:slug/submissions/:odId', async (req, res) => {
 // Get editorial (only if solved)
 router.get('/:slug/editorial', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const { odId } = req.query;
     if (!validateOdId(odId)) {
       return res.status(400).json({ error: 'Invalid odId' });
@@ -296,6 +312,10 @@ router.get('/contests/:slug', async (req, res) => {
 // Join contest
 router.post('/contests/:slug/join', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const { odId, odName } = req.body;
     const contest = await Contest.findOne({ slug: req.params.slug });
 
@@ -330,6 +350,10 @@ router.post('/contests/:slug/join', async (req, res) => {
 // Get contest leaderboard
 router.get('/contests/:slug/leaderboard', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const contest = await Contest.findOne({ slug: req.params.slug });
     if (!contest) {
       return res.status(404).json({ error: 'Contest not found' });
