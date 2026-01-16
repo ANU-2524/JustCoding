@@ -18,7 +18,8 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
-const FAQPage = lazy(() => import("./components/FAQPage"));
+import FAQPage from "./components/FAQPage";
+        
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/blog" element={<BlogPage />} />
-<Route path="/faq" element={<FAQPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             {/* Main personal editor */}
             <Route
               path="/editor"

@@ -1,10 +1,27 @@
 // src/components/FAQPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
-import "../Style/FAQPage.css";
+import {
+  FaChevronDown,
+  FaQuestionCircle,
+  FaCode,
+  FaUsers,
+  FaRobot,
+  FaLock,
+  FaShieldAlt,
+  FaGlobe,
+  FaTerminal,
+  FaRegFileCode,
+  FaDownload,
+} from "react-icons/fa";
+// import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaXTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
+import { BiLogoTwitter } from "react-icons/bi";
 
 const FAQPage = () => {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -344,60 +361,331 @@ const FAQPage = () => {
       </motion.section>
 
       {/* Footer */}
-      <motion.footer
-        className="footer"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
+      <footer className="footer animate-on-scroll">
+  <div className="footer-container">
+
+    {/* Brand */}
+    <div className="footer-brand">
+      <p>
+        &copy; {new Date().getFullYear()} JustCoding. Built with love, learning,
+        and late nights by Anu 💌🌸.
+      </p>
+    </div>
+
+    {/* Quick Links */}
+    <div className="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li onClick={() => navigate("/")}>Home</li>
+        <li onClick={() => navigate("/editor")}>Editor</li>
+        <li onClick={() => navigate("/live")}>Collaborate</li>
+        <li onClick={() => navigate("/profile")}>Profile</li>
+      </ul>
+    </div>
+
+    {/* Legal */}
+    <div className="footer-links">
+      <h4>Legal</h4>
+      <ul>
+        <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
+        <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
+      </ul>
+    </div>
+
+    {/* Feedback & Rating */}
+    <div className="footer-feedback">
+      <h4>Feedback</h4>
+
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSeVYOjh-QcmfOkOHtprYlMoKiKG_Tl6bZuA9c1A8JVdUhHbKA/viewform?usp=publish-editor"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="feedback-btn"
+        title="Help us improve JustCoding 💛"
       >
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          &copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.
-        </motion.p>
-        <motion.div
-          className="social-icons"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <motion.a
-            href="https://x.com/_Anuuu_Soniii_"
-            aria-label="Twitter"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaTwitter />
-          </motion.a>
-          <motion.a
-            href="https://github.com/ANU-2524/"
-            aria-label="GitHub"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaGithub />
-          </motion.a>
-          <motion.a
-            href="https://www.linkedin.com/in/anu--soni/"
-            aria-label="LinkedIn"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaLinkedin />
-          </motion.a>
-        </motion.div>
-      </motion.footer>
+        Give Feedback
+      </a>
+
+      <div className="rating">
+        <span>Rate Us:</span>
+        <div className="stars">★ ★ ★ ★ ★</div>
+      </div>
+    </div>
+
+    {/* Social Links */}
+    <div className="footer-social">
+      <h4>Connect</h4>
+      <a
+        href="https://x.com/_Anuuu_Soniii_"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <BiLogoTwitterX  /> Twitter
+      </a>
+      <a
+        href="https://github.com/ANU-2524/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FaGithub /> GitHub
+      </a>
+      <a
+        href="https://www.linkedin.com/in/anu--soni/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FaLinkedin /> LinkedIn
+      </a>
+    </div>
+
+  </div>
+</footer>
+
+
+      {/* Add FAQ-specific CSS */}
+      <style jsx>{`
+        .faq-page {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .faq-hero .hero-content h1 {
+          font-size: 4rem;
+        }
+        
+        .faq-hero .hero-content p {
+          font-size: 1.3rem;
+          max-width: 700px;
+          margin: 0 auto;
+        }
+        
+        .faq-stats {
+          padding-top: 4rem;
+        }
+        
+        .stat-box {
+          text-align: center;
+          padding: 2rem;
+        }
+        
+        .stat-box h4 {
+          font-size: 2.5rem;
+          margin: 1rem 0;
+          background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 800;
+        }
+        
+        .stat-box p {
+          color: #94a3b8;
+          font-size: 1rem;
+        }
+        
+        .faq-filter-section {
+          max-width: 1200px;
+          margin: 2rem auto 4rem;
+          padding: 0 1rem;
+        }
+        
+        .faq-filter-container {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        
+        .faq-filter-btn {
+          padding: 0.75rem 2rem;
+          border-radius: 50px;
+          border: none;
+          background: rgba(255, 255, 255, 0.1);
+          color: #cbd5e1;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-filter-btn.active {
+          background: linear-gradient(90deg, #6366f1, #8b5cf6);
+          color: #fff;
+        }
+        
+        .faq-filter-btn:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .faq-filter-btn.active:hover {
+          background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        }
+        
+        .faq-list-section {
+          max-width: 800px;
+          margin: 0 auto 4rem;
+          padding: 0 1rem;
+        }
+        
+        .faq-item-card {
+          background: rgba(30, 41, 59, 0.5);
+          border-radius: 20px;
+          margin-bottom: 1rem;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+        }
+        
+        .faq-question-btn {
+          width: 100%;
+          padding: 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: none;
+          border: none;
+          color: #fff;
+          cursor: pointer;
+          font-size: 1.1rem;
+          font-weight: 600;
+          text-align: left;
+        }
+        
+        .faq-question-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+        
+        .faq-icon-circle {
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          padding: 0.75rem;
+          border-radius: 12px;
+          font-size: 1.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 50px;
+          min-height: 50px;
+        }
+        
+        .faq-question-text {
+          flex: 1;
+        }
+        
+        .faq-chevron-icon {
+          transition: transform 0.3s ease;
+          margin-left: 1rem;
+        }
+        
+        .faq-answer-container {
+          overflow: hidden;
+        }
+        
+        .faq-answer-text {
+          padding: 0 1.5rem 1.5rem;
+          color: #cbd5e1;
+          line-height: 1.6;
+          font-size: 1rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          margin-top: 0;
+          padding-top: 1.5rem;
+        }
+        
+        .faq-cta {
+          max-width: 800px;
+          margin: 0 auto 4rem;
+          padding: 4rem 2rem;
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-cta h2 {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+        }
+        
+        .faq-cta p {
+          font-size: 1.1rem;
+          color: #94a3b8;
+          max-width: 600px;
+          margin: 0 auto 2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+          .faq-hero .hero-content h1 {
+            font-size: 3rem;
+          }
+          
+          .faq-hero .hero-content p {
+            font-size: 1.1rem;
+          }
+          
+          .faq-filter-btn {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+          }
+          
+          .faq-question-btn {
+            padding: 1rem;
+            font-size: 1rem;
+          }
+          
+          .faq-icon-circle {
+            min-width: 40px;
+            min-height: 40px;
+            padding: 0.5rem;
+            font-size: 1rem;
+          }
+          
+          .faq-question-content {
+            gap: 0.75rem;
+          }
+          
+          .stat-box h4 {
+            font-size: 2rem;
+          }
+          
+          .faq-cta {
+            padding: 3rem 1.5rem;
+          }
+          
+          .faq-cta h2 {
+            font-size: 2rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .faq-hero .hero-content h1 {
+            font-size: 2.5rem;
+          }
+          
+          .faq-filter-container {
+            gap: 0.5rem;
+          }
+          
+          .faq-filter-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+          }
+          
+          .faq-question-text {
+            font-size: 0.95rem;
+          }
+          
+          .faq-answer-text {
+            padding: 0 1rem 1rem;
+            font-size: 0.95rem;
+          }
+          
+          .faq-cta h2 {
+            font-size: 1.75rem;
+          }
+        }
+      `}</style>
     </div>
   );
 };

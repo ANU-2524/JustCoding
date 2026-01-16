@@ -1817,4 +1817,42 @@ body {
   .use-cases-grid {
     padding: 0;
   }
+} 
+
+.policy-card {
+  background: linear-gradient(
+    145deg,
+    rgba(13, 17, 23, 0.95),
+    rgba(26, 32, 44, 0.9)
+  );
+  border: 1px solid rgba(212, 88, 31, 0.35);
+  border-radius: 18px;
+  padding: 3rem;
+  color: #f0f6fc;
+  box-shadow: 0 12px 35px rgba(212, 88, 31, 0.15);
 }
+
+.policy-card h2 {
+  color: #d4581f;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.policy-card p,
+.policy-card li {
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.policy-card ul {
+  padding-left: 1.2rem;
+}
+
+.policy-date {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+

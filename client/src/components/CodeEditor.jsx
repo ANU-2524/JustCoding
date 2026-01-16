@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import '../Style/CodeEditor.css';
+// import '../Style/CodeEditor.css';
 
 const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
   const monaco = useMonaco();
