@@ -2,7 +2,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaXTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaQuestionCircle,
+  FaCode,
+  FaUsers,
+  FaRobot,
+  FaLock,
+  FaShieldAlt,
+  FaGlobe,
+  FaTerminal,
+  FaRegFileCode,
+  FaDownload,
+} from "react-icons/fa";
+// import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaXTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
+import { BiLogoTwitter } from "react-icons/bi";
 
 const FAQPage = () => {
   const navigate = useNavigate();
@@ -404,7 +420,7 @@ const FAQPage = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <FaXTwitter /> Twitter
+        <BiLogoTwitterX  /> Twitter
       </a>
       <a
         href="https://github.com/ANU-2524/"
