@@ -19,7 +19,8 @@ import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
 import FAQPage from "./components/FAQPage";
-        
+import PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
+import TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));       
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="terms" element={<TermsAndConditions />} />
             {/* Main personal editor */}
             <Route
               path="/editor"
