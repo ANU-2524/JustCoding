@@ -19,8 +19,8 @@ import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 import Loader from "./components/Loader";
 import FAQPage from "./components/FAQPage";
-import PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
-import TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));       
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
+const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));       
 
 function App() {
   return (
