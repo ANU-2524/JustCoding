@@ -18,7 +18,8 @@ import {
 // import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaXTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
-import { BiLogoTwitter } from "react-icons/bi";
+// import { BiLogoTwitter } from "react-icons/bi";
+// import "../Style/FAQPage.css";
 
 const FAQPage = () => {
   const navigate = useNavigate();
@@ -420,7 +421,7 @@ const FAQPage = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <BiLogoTwitterX  /> Twitter
+      Twitter
       </a>
       <a
         href="https://github.com/ANU-2524/"
