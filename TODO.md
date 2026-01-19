@@ -1,10 +1,8 @@
-# TODO: Add Slug Validation to Routes
+# TODO: Add API Standards Documentation
 
-- [x] Add slug validation to router.get('/:slug') - Get single challenge
-- [x] Add slug validation to router.post('/:slug/submit') - Submit solution
-- [ ] Add slug validation to router.post('/:slug/run') - Run code
-- [ ] Add slug validation to router.get('/:slug/leaderboard') - Get challenge leaderboard
-- [ ] Add slug validation to router.get('/:slug/editorial') - Get editorial
-- [ ] Add slug validation to router.get('/contests/:slug') - Get single contest
-- [ ] Add slug validation to router.post('/contests/:slug/join') - Join contest
-- [ ] Add slug validation to router.get('/contests/:slug/leaderboard') - Get contest leaderboard
+## Tasks
+- [x] Add "API Standards" section to README.md documenting consistent response formats
+  - [x] Document success responses: return relevant data objects directly
+  - [x] Document error responses: use { error: string }
+  - [x] Include examples from routes following the standard (challenges.js, gptRoute.js)
+  - [x] Suggest updating inconsistent routes (progress.js, codeQuality.js)

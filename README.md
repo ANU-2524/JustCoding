@@ -166,6 +166,87 @@ If this project helped you — even a little — that means everything 🌱
 
 ---
 
+## 🏗️ API Standards
+
+This section outlines the consistent response formats used across all API endpoints to ensure uniformity and simplify client-side handling.
+
+### Success Responses
+Success responses should return the relevant data object directly, without unnecessary wrappers. This keeps responses clean and focused on the data.
+
+**Format:**
+```json
+{
+  "key": "value",
+  "anotherKey": {
+    "nested": "object"
+  }
+}
+```
+
+**Examples:**
+- From `/contests/:slug/join` (challenges.js):
+  ```json
+  {
+    "participant": {
+      "odId": "user123",
+      "odName": "John Doe"
+    }
+  }
+  ```
+- From `/explain` (gptRoute.js):
+  ```json
+  {
+    "explanation": "This is a simple explanation of the programming concept."
+  }
+  ```
+
+### Error Responses
+All error responses use a consistent format with an `error` key containing a descriptive string message.
+
+**Format:**
+```json
+{
+  "error": "Descriptive error message"
+}
+```
+
+**Examples:**
+- Validation error:
+  ```json
+  {
+    "error": "Missing required fields"
+  }
+  ```
+- Not found error:
+  ```json
+  {
+    "error": "Challenge not found"
+  }
+  ```
+
+### Inconsistent Routes (To Be Updated)
+Some routes currently use a wrapper format for success responses (`{ success: true, data: object }`). These should be updated to return data directly for consistency:
+
+- `progress.js`: Routes like `/dashboard/:userId`, `/event`, `/leaderboard`, `/export/:userId`
+- `codeQuality.js`: Route `/analyze`
+
+**Current inconsistent format:**
+```json
+{
+  "success": true,
+  "data": {
+    "key": "value"
+  }
+}
+```
+
+**Should be changed to:**
+```json
+{
+  "key": "value"
+}
+```
+
 ## 📚 API Reference
 
 ### POST /contests/:slug/join
