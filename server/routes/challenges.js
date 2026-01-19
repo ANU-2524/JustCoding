@@ -331,17 +331,18 @@ router.post('/contests/:slug/join', async (req, res) => {
     // Check if already joined
     const existing = contest.participants.find(p => p.odId === odId);
     if (existing) {
-      return res.json({ message: 'Already joined', participant: existing });
+      return res.json({ participant: existing });
     }
 
     if (contest.participants.length >= contest.maxParticipants) {
       return res.status(400).json({ error: 'Contest is full' });
     }
 
-    contest.participants.push({ odId, odName: odName || 'Anonymous' });
+    const newParticipant = { odId, odName: odName || 'Anonymous' };
+    contest.participants.push(newParticipant);
     await contest.save();
 
-    res.json({ message: 'Joined successfully' });
+    res.json({ participant: newParticipant });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
