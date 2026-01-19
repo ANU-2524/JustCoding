@@ -163,3 +163,55 @@ MIT License
 JustCode is built to make learning and debugging code less intimidating and more human.
 
 If this project helped you — even a little — that means everything 🌱
+
+---
+
+## 📚 API Reference
+
+### POST /contests/:slug/join
+
+Joins a contest.
+
+**Request Body:**
+
+```json
+{
+  "odId": "string",
+  "odName": "string" (optional)
+}
+```
+
+**Response:**
+
+```json
+{
+  "participant": {
+    "odId": "string",
+    "odName": "string"
+  }
+}
+```
+
+**Examples:**
+
+- Successful join:
+
+```json
+{
+  "participant": {
+    "odId": "user123",
+    "odName": "John Doe"
+  }
+}
+```
+
+- Already joined:
+
+```json
+{
+  "participant": {
+    "odId": "user123",
+    "odName": "John Doe"
+  }
+}
+```
