@@ -9,19 +9,19 @@ import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 const BlogPage = lazy(() => import("./components/BlogPage"));
 const HomePage = lazy(() => import("./components/HomePage"));
-const JoinRoom = lazy(() => import("./components/JoinRoom")); 
-const LiveRoom = lazy(() => import("./components/LiveRoom")); 
+const JoinRoom = lazy(() => import("./components/JoinRoom"));
+const LiveRoom = lazy(() => import("./components/LiveRoom"));
 const UserDashboard = lazy(() => import("./components/UserDashboard"));
 const Challenges = lazy(() => import("./components/Challenges"));
 const ChallengeSolve = lazy(() => import("./components/ChallengeSolve"));
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
-import Loader from "./components/Loader";
+// import Loader from "./components/Loader";
 // import FAQPage from "./components/FAQPage";
 // const FAQPage = lazy(() => import("./components/FAQPage"));
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
-const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));       
+const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));
 
 function App() {
   return (
@@ -29,69 +29,69 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="app-container">
-          <Cursor />
-          <Navbar />
-          <Suspense fallback={<Loader />}> 
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            {/* <Route path="/faq" element={<FAQPage />} /> */}
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="terms" element={<TermsAndConditions />} />
-            {/* Main personal editor */}
-            <Route
-              path="/editor"
-              element={
-                <ProtectedRoute>
-                  <MainEditor />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Profile route */}
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* User Dashboard route */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <UserDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Cursor />
+            <Navbar />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                {/* <Route path="/faq" element={<FAQPage />} /> */}
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsAndConditions />} />
+                {/* Main personal editor */}
+                <Route
+                  path="/editor"
+                  element={
+                    <ProtectedRoute>
+                      <MainEditor />
+                    </ProtectedRoute>
+                  }
+                />
 
-            {/* Collaborative editor */}
-            <Route
-              path="/live"
-              element={
-                <JoinRoom />
-              }
-            />
-            <Route
-              path="/live/:roomId"
-              element={
-                <LiveRoom />
-              }
-            />
+                {/* Profile route */}
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
 
-            {/* Coding Challenges */}
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/challenges/:slug" element={<ChallengeSolve />} />
-          </Routes>
-          </Suspense>
-          <ScrollToTop />
-        </div>
-      </Router>
-    </AuthProvider>
+                {/* User Dashboard route */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <UserDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Collaborative editor */}
+                <Route
+                  path="/live"
+                  element={
+                    <JoinRoom />
+                  }
+                />
+                <Route
+                  path="/live/:roomId"
+                  element={
+                    <LiveRoom />
+                  }
+                />
+
+                {/* Coding Challenges */}
+                <Route path="/challenges" element={<Challenges />} />
+                <Route path="/challenges/:slug" element={<ChallengeSolve />} />
+              </Routes>
+            </Suspense>
+            <ScrollToTop />
+          </div>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
 
   );
