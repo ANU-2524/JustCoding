@@ -1,4 +1,4 @@
-# TODO: Add Slug Validation to Routes
+# TODO: Add API Standards Documentation
 
 - [x] Add slug validation to router.get('/:slug') - Get single challenge
 - [x] Add slug validation to router.post('/:slug/submit') - Submit solution
