@@ -100,6 +100,10 @@ router.get('/:slug', async (req, res) => {
 // Submit solution
 router.post('/:slug/submit', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const { code, language, odId, odName } = req.body;
 
     if (!code || !language || !odId) {
@@ -295,6 +299,10 @@ router.get('/contests/list', async (req, res) => {
 // Get single contest
 router.get('/contests/:slug', async (req, res) => {
   try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
     const contest = await Contest.findOne({ slug: req.params.slug })
       .populate('challenges', 'title slug difficulty points solvedCount');
 
