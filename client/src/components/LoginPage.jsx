@@ -1,151 +1,123 @@
 // src/components/LoginPage.jsx
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { auth, provider } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-  browserPopupRedirectResolver,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GithubAuthProvider 
 } from "firebase/auth";
-import { useNavigate, useLocation } from "react-router-dom"; // ✅ Added useLocation
+import { useNavigate, useLocation } from "react-router-dom";
 import "../Style/LoginPage.css";
 import { FcGoogle } from "react-icons/fc";
+import { FaGithub, FaEye, FaEyeSlash, FaRocket, FaCode } from "react-icons/fa"; 
 
 const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isRightPanelActive, setIsRightPanelActive] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ used to detect original page
+  const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/editor"; // 👈 default to /editor if no previous page
+  const from = location.state?.from?.pathname || "/editor";
 
-  const handleGoogleSignIn = async () => {
+  // Password Strength Logic
+  const strengthScore = useMemo(() => {
+    if (!password) return 0;
+    let score = 0;
+    if (password.length > 7) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+    return score;
+  }, [password]);
+
+  const handleSocialSignIn = async (type) => {
+    const socialProvider = type === 'google' ? provider : new GithubAuthProvider();
     try {
-      await signInWithPopup(auth, provider); // ✅ set resolver
-      navigate(from); // take back to /editor or intended route
-    } catch (err) {
-      alert(err.message);
-    }
+      await signInWithPopup(auth, socialProvider);
+      navigate(from);
+    } catch (err) { alert(err.message); }
   };
 
-  const handleResetPassword = async () => {
-  if (!email) {
-    alert("Enter your email first");
-    return;
-  }
-
-  try {
-    await sendPasswordResetEmail(auth, email);
-    alert("Password reset link sent. Check your email.");
-  } catch (error) {
-    switch (error.code) {
-      case "auth/user-not-found":
-        alert("No account found with this email");
-        break;
-      case "auth/invalid-email":
-        alert("Invalid email address");
-        break;
-      default:
-        alert(error.message);
-    }
-  }
-};
-
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, type) => {
     e.preventDefault();
     try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-      navigate(from); // ✅ Go back to previous route
-    } catch (error) {
-      alert(error.message);
-    }
+      if (type === 'login') await signInWithEmailAndPassword(auth, email, password);
+      else await createUserWithEmailAndPassword(auth, email, password);
+      navigate(from);
+    } catch (error) { alert(error.message); }
   };
 
   return (
     <div className="login-container">
-      <div className="login-page">
-        <div className="login-left">
-          <div className="login-content-wrapper">
-            <div className="login-header">
-              <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
-              <p className="subtitle">{isLogin ? "Sign in to continue to JustCoding" : "Join us to start coding"}</p>
-            </div>
-            
-            <form className="login-form" onSubmit={handleSubmit}>
-              <div className="input-group">
-                <label htmlFor="email">Email Address</label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="input-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              {isLogin && (
-                <div className="form-footer">
-                  <p
-                    className="forgot-password"
-                    onClick={handleResetPassword}
-                  >
-                    Forgot Password?
-                  </p>
-                </div>
-              )}
-
-              <button type="submit" className="auth-button">
-                {isLogin ? "Login" : "Create Account"}
-              </button>
-
-              <div className="divider">
-                <span>or</span>
-              </div>
-            </form>
-
-            <div className="google-signin-container">
-              <button className="google-button" onClick={handleGoogleSignIn}>
-                <FcGoogle size={20} style={{ marginRight: "8px" }} />
-                {isLogin ? "Sign in with Google" : "Sign up with Google"}
-              </button>
-            </div>
-            
-            <div className="switch-mode">
-              <p>
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-                <span onClick={() => setIsLogin(!isLogin)}>
-                  {isLogin ? " Sign Up" : " Login"}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className={`sliding-wrapper ${isRightPanelActive ? "right-panel-active" : ""}`}>
         
-        <div className="login-right">
-          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&h=800&q=80" alt="Coding" className="login-right-image" />
-          <div className="login-right-content">
-            <h3>JustCoding</h3>
-            <p>Experience seamless collaborative coding with our powerful editor. Connect with developers worldwide and enhance your skills.</p>
+        {/* SIGN UP FORM */}
+        <div className="form-container sign-up-container">
+          <form onSubmit={(e) => handleSubmit(e, 'signup')}>
+            <h1 className="form-title">Create Account</h1>
+            <div className="social-auth-row">
+              <button type="button" className="social-btn" onClick={() => handleSocialSignIn('google')}><FcGoogle /></button>
+              <button type="button" className="social-btn github" onClick={() => handleSocialSignIn('github')}><FaGithub /></button>
+            </div>
+            <span className="divider-text">or use email for registration</span>
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <div className="password-wrapper">
+                <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <span className="eye-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</span>
+            </div>
+            {password && (
+                <div className="strength-meter-container">
+                    <div className="strength-bars">
+                        {[1, 2, 3, 4].map(b => <div key={b} className={`bar ${strengthScore >= b ? `lvl-${strengthScore}` : ''}`} />)}
+                    </div>
+                </div>
+            )}
+            <button className="auth-action-btn">Sign Up</button>
+          </form>
+        </div>
+
+        {/* LOGIN FORM */}
+        <div className="form-container sign-in-container">
+          <form onSubmit={(e) => handleSubmit(e, 'login')}>
+            <h1 className="form-title">Sign In</h1>
+            <div className="social-auth-row">
+              <button type="button" className="social-btn" onClick={() => handleSocialSignIn('google')}><FcGoogle /></button>
+              <button type="button" className="social-btn github" onClick={() => handleSocialSignIn('github')}><FaGithub /></button>
+            </div>
+            <span className="divider-text">or use your account</span>
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <div className="password-wrapper">
+                <input type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <span className="eye-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</span>
+            </div>
+            <button className="auth-action-btn">Sign In</button>
+          </form>
+        </div>
+
+        {/* THE SLIDING OVERLAY WITH IMAGE */}
+        <div className="overlay-container">
+          <div className="overlay">
+            <img 
+              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80" 
+              alt="Coding Background" 
+              className="overlay-bg-image" 
+            />
+            <div className="overlay-panel overlay-left">
+              <FaCode className="overlay-icon" />
+              <h1>Welcome Back!</h1>
+              <p>To keep connected with us please login with your personal info</p>
+              <button className="ghost-btn" onClick={() => setIsRightPanelActive(false)}>Sign In</button>
+            </div>
+            <div className="overlay-panel overlay-right">
+              <FaRocket className="overlay-icon" />
+              <h1>Hello, Friend!</h1>
+              <p>Enter your personal details and start journey with us</p>
+              <button className="ghost-btn" onClick={() => setIsRightPanelActive(true)}>Sign Up</button>
+            </div>
           </div>
         </div>
       </div>
