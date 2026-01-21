@@ -1,11 +1,11 @@
-/* src/Style/LiveRoom.css */
+* src/Style/LiveRoom.css */
 
 body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #0c141d, #1a2332);
-  color: #f0f6fc;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
@@ -13,7 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(135deg, #0c141d, #1a2332);
+  background: var(--bg-primary);
   padding-top: 70px; /* Space for fixed navbar */
   box-sizing: border-box;
 }
@@ -22,11 +22,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
-  backdrop-filter: blur(12px);
-  color: white;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--text-primary);
   padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(212, 88, 31, 0.4);
+  border-bottom: 1px solid var(--border-accent);
   position: fixed;
   top: 70px; /* Account for navbar */
   left: 0;
@@ -76,12 +77,13 @@ body {
 .editor-panel {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 88, 31, 0.4);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-accent);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 12px 35px rgba(212, 88, 31, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
   height: 100%; /* Full height of the container */
 }
@@ -266,19 +268,20 @@ body {
 .chat-panel {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 88, 31, 0.4);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-accent);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 12px 35px rgba(212, 88, 31, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
   height: 100%; /* Full height of the container */
 }
 
 .chat-heading {
   margin: 0 0 1rem 0;
-  color: #d4581f;
+  color: var(--accent-primary);
   font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
@@ -289,10 +292,10 @@ body {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 1rem;
-  border: 1px solid rgba(212, 88, 31, 0.3);
+  border: 1px solid var(--border-secondary);
   padding: 1rem;
   border-radius: 12px;
-  background: rgba(13, 17, 23, 0.7);
+  background: var(--bg-secondary);
   max-height: 300px;
   flex-shrink: 0; /* Don't allow messages to shrink */
 }
@@ -301,18 +304,18 @@ body {
   margin-bottom: 0.75rem;
   padding: 0.5rem;
   border-radius: 8px;
-  background: rgba(212, 88, 31, 0.1);
+  background: var(--bg-tertiary);
 }
 
 .chat-messages strong {
-  color: #d4581f;
+  color: var(--accent-primary);
   margin-right: 0.5rem;
 }
 
 .typing-notification {
   font-style: italic;
   font-size: 0.85rem;
-  color: #aaa;
+  color: var(--text-tertiary);
   margin-bottom: 0.75rem;
   text-align: center;
   height: auto;
@@ -322,10 +325,10 @@ body {
 .chat-panel input {
   padding: 0.75rem;
   font-size: 1rem;
-  border: 1px solid rgba(212, 88, 31, 0.4);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  background: rgba(13, 17, 23, 0.7);
-  color: #f0f6fc;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   font-family: inherit;
   margin-bottom: 0.75rem;
   transition: all 0.3s ease;
@@ -334,14 +337,14 @@ body {
 
 .chat-panel input:focus {
   outline: none;
-  border-color: #d4581f;
-  box-shadow: 0 0 0 3px rgba(212, 88, 31, 0.2);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .chat-panel button {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--accent-gradient);
   color: white;
   border: none;
   border-radius: 8px;
@@ -353,7 +356,7 @@ body {
 
 .chat-panel button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--shadow-colored);
 }
 
 .modal-overlay {
