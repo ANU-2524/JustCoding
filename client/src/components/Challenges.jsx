@@ -25,10 +25,253 @@ const categoryIcons = {
   other: '💡'
 };
 
+// Static list of popular LeetCode problems
+const leetCodeProblems = [
+  {
+    id: 1,
+    title: "Two Sum",
+    slug: "two-sum",
+    difficulty: "easy",
+    category: "arrays",
+    points: 100,
+    solvedCount: 2456789,
+    successRate: 45.2,
+    leetCodeUrl: "https://leetcode.com/problems/two-sum/",
+    tags: ["array", "hash-table"]
+  },
+  {
+    id: 2,
+    title: "Add Two Numbers",
+    slug: "add-two-numbers",
+    difficulty: "medium",
+    category: "linked-lists",
+    points: 200,
+    solvedCount: 1234567,
+    successRate: 32.1,
+    leetCodeUrl: "https://leetcode.com/problems/add-two-numbers/",
+    tags: ["linked-list", "math"]
+  },
+  {
+    id: 3,
+    title: "Longest Substring Without Repeating Characters",
+    slug: "longest-substring-without-repeating-characters",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 987654,
+    successRate: 28.7,
+    leetCodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    tags: ["string", "sliding-window"]
+  },
+  {
+    id: 4,
+    title: "Median of Two Sorted Arrays",
+    slug: "median-of-two-sorted-arrays",
+    difficulty: "hard",
+    category: "arrays",
+    points: 300,
+    solvedCount: 567890,
+    successRate: 25.3,
+    leetCodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    tags: ["array", "binary-search", "divide-and-conquer"]
+  },
+  {
+    id: 5,
+    title: "Longest Palindromic Substring",
+    slug: "longest-palindromic-substring",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 876543,
+    successRate: 27.8,
+    leetCodeUrl: "https://leetcode.com/problems/longest-palindromic-substring/",
+    tags: ["string", "dynamic-programming"]
+  },
+  {
+    id: 6,
+    title: "Zigzag Conversion",
+    slug: "zigzag-conversion",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 654321,
+    successRate: 35.6,
+    leetCodeUrl: "https://leetcode.com/problems/zigzag-conversion/",
+    tags: ["string"]
+  },
+  {
+    id: 7,
+    title: "Reverse Integer",
+    slug: "reverse-integer",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1234567,
+    successRate: 25.8,
+    leetCodeUrl: "https://leetcode.com/problems/reverse-integer/",
+    tags: ["math"]
+  },
+  {
+    id: 8,
+    title: "String to Integer (atoi)",
+    slug: "string-to-integer-atoi",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 789012,
+    successRate: 15.2,
+    leetCodeUrl: "https://leetcode.com/problems/string-to-integer-atoi/",
+    tags: ["string", "parsing"]
+  },
+  {
+    id: 9,
+    title: "Palindrome Number",
+    slug: "palindrome-number",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1456789,
+    successRate: 48.9,
+    leetCodeUrl: "https://leetcode.com/problems/palindrome-number/",
+    tags: ["math"]
+  },
+  {
+    id: 10,
+    title: "Regular Expression Matching",
+    slug: "regular-expression-matching",
+    difficulty: "hard",
+    category: "strings",
+    points: 300,
+    solvedCount: 345678,
+    successRate: 25.1,
+    leetCodeUrl: "https://leetcode.com/problems/regular-expression-matching/",
+    tags: ["string", "dynamic-programming", "recursion"]
+  },
+  {
+    id: 11,
+    title: "Container With Most Water",
+    slug: "container-with-most-water",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 678901,
+    successRate: 45.6,
+    leetCodeUrl: "https://leetcode.com/problems/container-with-most-water/",
+    tags: ["array", "two-pointers"]
+  },
+  {
+    id: 12,
+    title: "Integer to Roman",
+    slug: "integer-to-roman",
+    difficulty: "medium",
+    category: "math",
+    points: 200,
+    solvedCount: 567890,
+    successRate: 52.3,
+    leetCodeUrl: "https://leetcode.com/problems/integer-to-roman/",
+    tags: ["math", "string"]
+  },
+  {
+    id: 13,
+    title: "Roman to Integer",
+    slug: "roman-to-integer",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1234567,
+    successRate: 55.7,
+    leetCodeUrl: "https://leetcode.com/problems/roman-to-integer/",
+    tags: ["math", "string"]
+  },
+  {
+    id: 14,
+    title: "Longest Common Prefix",
+    slug: "longest-common-prefix",
+    difficulty: "easy",
+    category: "strings",
+    points: 100,
+    solvedCount: 987654,
+    successRate: 38.9,
+    leetCodeUrl: "https://leetcode.com/problems/longest-common-prefix/",
+    tags: ["string"]
+  },
+  {
+    id: 15,
+    title: "3Sum",
+    slug: "3sum",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 789012,
+    successRate: 24.5,
+    leetCodeUrl: "https://leetcode.com/problems/3sum/",
+    tags: ["array", "two-pointers", "sorting"]
+  },
+  {
+    id: 16,
+    title: "3Sum Closest",
+    slug: "3sum-closest",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 456789,
+    successRate: 42.1,
+    leetCodeUrl: "https://leetcode.com/problems/3sum-closest/",
+    tags: ["array", "two-pointers", "sorting"]
+  },
+  {
+    id: 17,
+    title: "Letter Combinations of a Phone Number",
+    slug: "letter-combinations-of-a-phone-number",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 678901,
+    successRate: 43.2,
+    leetCodeUrl: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+    tags: ["string", "backtracking"]
+  },
+  {
+    id: 18,
+    title: "4Sum",
+    slug: "4sum",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 345678,
+    successRate: 31.4,
+    leetCodeUrl: "https://leetcode.com/problems/4sum/",
+    tags: ["array", "two-pointers", "sorting"]
+  },
+  {
+    id: 19,
+    title: "Remove Nth Node From End of List",
+    slug: "remove-nth-node-from-end-of-list",
+    difficulty: "medium",
+    category: "linked-lists",
+    points: 200,
+    solvedCount: 567890,
+    successRate: 35.6,
+    leetCodeUrl: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+    tags: ["linked-list", "two-pointers"]
+  },
+  {
+    id: 20,
+    title: "Valid Parentheses",
+    slug: "valid-parentheses",
+    difficulty: "easy",
+    category: "strings",
+    points: 100,
+    solvedCount: 1456789,
+    successRate: 38.7,
+    leetCodeUrl: "https://leetcode.com/problems/valid-parentheses/",
+    tags: ["string", "stack"]
+  }
+];
+
 const Challenges = () => {
-  const navigate = useNavigate();
-  const [challenges, setChallenges] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [challenges, setChallenges] = useState(leetCodeProblems);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     difficulty: '',
     category: '',
@@ -37,47 +280,35 @@ const Challenges = () => {
   const [userProgress, setUserProgress] = useState(null);
   const [activeTab, setActiveTab] = useState('challenges');
 
-  const odId = localStorage.getItem('odId') || `user-${Date.now()}`;
-  if (!localStorage.getItem('odId')) {
-    localStorage.setItem('odId', odId);
-  }
-
   useEffect(() => {
-    fetchChallenges();
-    fetchUserProgress();
-  }, [filters.difficulty, filters.category]);
+    filterChallenges();
+  }, [filters.difficulty, filters.category, filters.search]);
 
-  const fetchChallenges = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      if (filters.difficulty) params.append('difficulty', filters.difficulty);
-      if (filters.category) params.append('category', filters.category);
-      if (filters.search) params.append('search', filters.search);
+  const filterChallenges = () => {
+    let filtered = leetCodeProblems;
 
-      const res = await fetch(`${BACKEND_URL}/api/challenges?${params}`);
-      const data = await res.json();
-      setChallenges(data.challenges || []);
-    } catch (error) {
-      console.error('Error fetching challenges:', error);
-    } finally {
-      setLoading(false);
+    if (filters.difficulty) {
+      filtered = filtered.filter(challenge => challenge.difficulty === filters.difficulty);
     }
-  };
 
-  const fetchUserProgress = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/challenges/user/${odId}/progress`);
-      const data = await res.json();
-      setUserProgress(data);
-    } catch (error) {
-      console.error('Error fetching progress:', error);
+    if (filters.category) {
+      filtered = filtered.filter(challenge => challenge.category === filters.category);
     }
+
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(challenge =>
+        challenge.title.toLowerCase().includes(searchTerm) ||
+        challenge.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    setChallenges(filtered);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchChallenges();
+    filterChallenges();
   };
 
   return (
@@ -202,21 +433,20 @@ const Challenges = () => {
             ) : (
               challenges.map((challenge) => (
                 <div
-                  key={challenge._id}
+                  key={challenge.id}
                   className="challenge-card"
-                  onClick={() => navigate(`/challenges/${challenge.slug}`)}
                 >
                   <div className="challenge-header">
                     <span className="category-icon">{categoryIcons[challenge.category] || '💡'}</span>
                     <h3>{challenge.title}</h3>
-                    <span 
+                    <span
                       className="difficulty-badge"
                       style={{ backgroundColor: difficultyColors[challenge.difficulty] }}
                     >
                       {challenge.difficulty}
                     </span>
                   </div>
-                  
+
                   <div className="challenge-meta">
                     <span className="points">
                       <FaStar /> {challenge.points} pts
@@ -233,6 +463,17 @@ const Challenges = () => {
                     {challenge.tags?.slice(0, 3).map((tag, i) => (
                       <span key={i} className="tag">{tag}</span>
                     ))}
+                  </div>
+
+                  <div className="challenge-actions">
+                    <a
+                      href={challenge.leetCodeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="solve-leetcode-btn"
+                    >
+                      Solve on LeetCode
+                    </a>
                   </div>
                 </div>
               ))
