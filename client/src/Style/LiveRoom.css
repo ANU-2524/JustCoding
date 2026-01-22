@@ -1,20 +1,20 @@
-/* src/Style/LiveRoom.css */
+* src/Style/LiveRoom.css */
 
 body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #0c141d, #1a2332);
-  color: #f0f6fc;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
 .live-room-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: radial-gradient(circle at top left, #1a2332, #0c141d);
-  padding-top: 70px;
+  height: 100vh;
+  background: var(--bg-primary);
+  padding-top: 70px; /* Space for fixed navbar */
   box-sizing: border-box;
 }
 
@@ -22,14 +22,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(13, 17, 23, 0.9);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  color: white;
-  padding: 0.8rem 2.5rem;
-  border-bottom: 1px solid rgba(212, 88, 31, 0.4);
-  position: sticky;
-  top: 0;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--text-primary);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-accent);
+  position: fixed;
+  top: 70px; /* Account for navbar */
   left: 0;
   right: 0;
   z-index: 100;
@@ -84,13 +84,15 @@ body {
 .editor-panel {
   display: flex;
   flex-direction: column;
-  background: rgba(23, 28, 36, 0.4);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 88, 31, 0.4);
-  border-radius: 20px;
-  padding: 1.25rem;
-  box-shadow: 0 10px 40px rgba(212, 88, 31, 0.1);
-  height: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-accent);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  height: 100%; /* Full height of the container */
 }
 
 .toolbar {
@@ -264,18 +266,20 @@ body {
 .chat-panel {
   display: flex;
   flex-direction: column;
-  background: rgba(23, 28, 36, 0.4);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 88, 31, 0.4);
-  border-radius: 20px;
-  padding: 1.25rem;
-  height: 100%;
-  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.2);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-accent);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  height: 100%; /* Full height of the container */
 }
 
 .chat-heading {
   margin: 0 0 1rem 0;
-  color: #d4581f;
+  color: var(--accent-primary);
   font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
@@ -287,51 +291,30 @@ body {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 1rem;
+  border: 1px solid var(--border-secondary);
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  max-height: 300px;
+  flex-shrink: 0; /* Don't allow messages to shrink */
+}
+
+.chat-messages div {
+  margin-bottom: 0.75rem;
   padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
 }
 
-.message {
-  max-width: 85%;
-  padding: 0.75rem 1rem;
-  border-radius: 12px 12px 12px 4px;
-  background: rgba(255, 255, 255, 0.05);
-  font-size: 0.9rem;
-  line-height: 1.4;
-  word-break: break-word;
-  position: relative;
-  align-self: flex-start;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.own-message {
-  align-self: flex-end;
-  background: rgba(212, 88, 31, 0.2);
-  border-color: rgba(212, 88, 31, 0.3);
-  border-radius: 12px 12px 4px 12px;
-  color: #fff;
-}
-
-.message strong {
-  display: block;
-  font-size: 0.7rem;
-  color: #94a3b8;
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.own-message strong {
-  color: #ff9d71;
-  text-align: right;
+.chat-messages strong {
+  color: var(--accent-primary);
+  margin-right: 0.5rem;
 }
 
 .typing-notification {
   font-style: italic;
   font-size: 0.85rem;
-  color: #aaa;
+  color: var(--text-tertiary);
   margin-bottom: 0.75rem;
   text-align: center;
   height: auto;
@@ -339,11 +322,17 @@ body {
   /* Don't allow typing notification to shrink */
 }
 
-.chat-input-area {
-  display: flex;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+.chat-panel input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: inherit;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0; /* Don't allow input to shrink */
 }
 
 .chat-input-area input {
@@ -359,13 +348,15 @@ body {
 
 .chat-input-area input:focus {
   outline: none;
-  border-color: #d4581f;
-  background: rgba(15, 23, 42, 0.8);
-  box-shadow: 0 0 0 3px rgba(212, 88, 31, 0.15);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.chat-input-area button {
-  background: #d4581f;
+.chat-panel button {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--accent-gradient);
+  color: white;
   border: none;
   color: white;
   padding: 0 1.5rem;
@@ -376,10 +367,9 @@ body {
   white-space: nowrap;
 }
 
-.chat-input-area button:hover {
-  background: #ff7043;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(212, 88, 31, 0.3);
+.chat-panel button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-colored);
 }
 
 .modal-overlay {

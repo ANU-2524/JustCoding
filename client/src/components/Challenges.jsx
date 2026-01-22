@@ -23,305 +23,289 @@ const categoryIcons = {
   other: '💡'
 };
 
-const mockChallenges = [
+// Static list of popular LeetCode problems
+const leetCodeProblems = [
   {
-    _id: '1', title: 'Two Sum', slug: 'two-sum', difficulty: 'easy', category: 'arrays', points: 100, solvedCount: 1524, successRate: 85, tags: ['array', 'hash-table'],
-    description: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
-    examples: [
-      { input: 'nums = [2,7,11,15], target = 9', output: '[0,1]', explanation: 'Because nums[0] + nums[1] == 9' },
-      { input: 'nums = [3,2,4], target = 6', output: '[1,2]', explanation: 'Because nums[1] + nums[2] == 6' }
-    ],
-    constraints: ['2 <= nums.length <= 10^4', '-10^9 <= nums[i] <= 10^9', '-10^9 <= target <= 10^9']
+    id: 1,
+    title: "Two Sum",
+    slug: "two-sum",
+    difficulty: "easy",
+    category: "arrays",
+    points: 100,
+    solvedCount: 2456789,
+    successRate: 45.2,
+    leetCodeUrl: "https://leetcode.com/problems/two-sum/",
+    tags: ["array", "hash-table"]
   },
   {
-    _id: '2', title: 'Reverse String', slug: 'reverse-string', difficulty: 'easy', category: 'strings', points: 50, solvedCount: 1845, successRate: 92, tags: ['string', 'two-pointers'],
-    description: 'Write a function that reverses a string. The input string is given as an array of characters.',
-    examples: [
-      { input: 's = ["h","e","l","l","o"]', output: '["o","l","l","e","h"]', explanation: 'The string "hello" reversed' }
-    ],
-    constraints: ['1 <= s.length <= 10^5', 's[i] is a printable ascii character']
+    id: 2,
+    title: "Add Two Numbers",
+    slug: "add-two-numbers",
+    difficulty: "medium",
+    category: "linked-lists",
+    points: 200,
+    solvedCount: 1234567,
+    successRate: 32.1,
+    leetCodeUrl: "https://leetcode.com/problems/add-two-numbers/",
+    tags: ["linked-list", "math"]
   },
   {
-    _id: '3', title: 'Valid Parentheses', slug: 'valid-parentheses', difficulty: 'easy', category: 'strings', points: 80, solvedCount: 1342, successRate: 78, tags: ['string', 'stack'],
-    description: 'Given a string s containing just the characters "(", ")", "{", "}", "[" and "]", determine if valid.',
-    examples: [
-      { input: 's = "()"', output: 'true', explanation: 'Valid parentheses' },
-      { input: 's = "(]"', output: 'false', explanation: 'Invalid parentheses' }
-    ],
-    constraints: ['1 <= s.length <= 10^4', 's consists of parentheses only']
+    id: 3,
+    title: "Longest Substring Without Repeating Characters",
+    slug: "longest-substring-without-repeating-characters",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 987654,
+    successRate: 28.7,
+    leetCodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    tags: ["string", "sliding-window"]
   },
   {
-    _id: '4', title: 'Merge Sorted Lists', slug: 'merge-sorted-lists', difficulty: 'easy', category: 'linked-lists', points: 100, solvedCount: 1123, successRate: 75, tags: ['linked-list'],
-    description: 'Merge two sorted linked lists and return it as a sorted list.',
-    examples: [
-      { input: 'list1 = [1,2,4], list2 = [1,3,4]', output: '[1,1,2,3,4,4]' }
-    ],
-    constraints: ['0 <= lists length <= 50', '-100 <= Node.val <= 100']
+    id: 4,
+    title: "Median of Two Sorted Arrays",
+    slug: "median-of-two-sorted-arrays",
+    difficulty: "hard",
+    category: "arrays",
+    points: 300,
+    solvedCount: 567890,
+    successRate: 25.3,
+    leetCodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    tags: ["array", "binary-search", "divide-and-conquer"]
   },
   {
-    _id: '5', title: 'Best Time to Buy Stock', slug: 'best-time-stock', difficulty: 'easy', category: 'arrays', points: 120, solvedCount: 1456, successRate: 68, tags: ['array', 'dp'],
-    description: 'You are given an array prices where prices[i] is the price of a stock on the ith day.',
-    examples: [
-      { input: 'prices = [7,1,5,3,6,4]', output: '5', explanation: 'Buy at 1, sell at 6' }
-    ],
-    constraints: ['1 <= prices.length <= 10^5', '0 <= prices[i] <= 10^4']
+    id: 5,
+    title: "Longest Palindromic Substring",
+    slug: "longest-palindromic-substring",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 876543,
+    successRate: 27.8,
+    leetCodeUrl: "https://leetcode.com/problems/longest-palindromic-substring/",
+    tags: ["string", "dynamic-programming"]
   },
   {
-    _id: '6', title: 'Valid Anagram', slug: 'valid-anagram', difficulty: 'easy', category: 'strings', points: 70, solvedCount: 1543, successRate: 90, tags: ['string', 'hash-table'],
-    description: 'Given two strings s and t, return true if t is an anagram of s.',
-    examples: [
-      { input: 's = "anagram", t = "nagaram"', output: 'true' },
-      { input: 's = "rat", t = "car"', output: 'false' }
-    ],
-    constraints: ['1 <= s.length, t.length <= 5 * 10^4']
+    id: 6,
+    title: "Zigzag Conversion",
+    slug: "zigzag-conversion",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 654321,
+    successRate: 35.6,
+    leetCodeUrl: "https://leetcode.com/problems/zigzag-conversion/",
+    tags: ["string"]
   },
   {
-    _id: '7', title: 'Maximum Subarray', slug: 'maximum-subarray', difficulty: 'medium', category: 'arrays', points: 200, solvedCount: 1123, successRate: 65, tags: ['array', 'dp'],
-    description: 'Given an integer array nums, find the subarray with the largest sum.',
-    examples: [
-      { input: 'nums = [-2,1,-3,4,-1,2,1,-5,4]', output: '6', explanation: '[4,-1,2,1] has sum 6' }
-    ],
-    constraints: ['1 <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4']
+    id: 7,
+    title: "Reverse Integer",
+    slug: "reverse-integer",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1234567,
+    successRate: 25.8,
+    leetCodeUrl: "https://leetcode.com/problems/reverse-integer/",
+    tags: ["math"]
   },
   {
-    _id: '8', title: '3Sum', slug: 'three-sum', difficulty: 'medium', category: 'arrays', points: 220, solvedCount: 987, successRate: 52, tags: ['array', 'two-pointers'],
-    description: 'Given an integer array nums, return all the triplets that sum to 0.',
-    examples: [
-      { input: 'nums = [-1,0,1,2,-1,-4]', output: '[[-1,-1,2],[-1,0,1]]' }
-    ],
-    constraints: ['3 <= nums.length <= 3000', '-10^5 <= nums[i] <= 10^5']
+    id: 8,
+    title: "String to Integer (atoi)",
+    slug: "string-to-integer-atoi",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 789012,
+    successRate: 15.2,
+    leetCodeUrl: "https://leetcode.com/problems/string-to-integer-atoi/",
+    tags: ["string", "parsing"]
   },
   {
-    _id: '9', title: 'Group Anagrams', slug: 'group-anagrams', difficulty: 'medium', category: 'strings', points: 180, solvedCount: 765, successRate: 68, tags: ['string', 'hash-table'],
-    description: 'Given an array of strings strs, group the anagrams together.',
-    examples: [
-      { input: 'strs = ["eat","tea","tan","ate","nat","bat"]', output: '[["bat"],["nat","tan"],["ate","eat","tea"]]' }
-    ],
-    constraints: ['1 <= strs.length <= 10^4', '0 <= strs[i].length <= 100']
+    id: 9,
+    title: "Palindrome Number",
+    slug: "palindrome-number",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1456789,
+    successRate: 48.9,
+    leetCodeUrl: "https://leetcode.com/problems/palindrome-number/",
+    tags: ["math"]
   },
   {
-    _id: '10', title: 'Longest Substring', slug: 'longest-substring', difficulty: 'medium', category: 'strings', points: 200, solvedCount: 987, successRate: 58, tags: ['string', 'sliding-window'],
-    description: 'Given a string s, find the length of the longest substring without repeating characters.',
-    examples: [
-      { input: 's = "abcabcbb"', output: '3', explanation: '"abc" with length 3' }
-    ],
-    constraints: ['0 <= s.length <= 5 * 10^4']
+    id: 10,
+    title: "Regular Expression Matching",
+    slug: "regular-expression-matching",
+    difficulty: "hard",
+    category: "strings",
+    points: 300,
+    solvedCount: 345678,
+    successRate: 25.1,
+    leetCodeUrl: "https://leetcode.com/problems/regular-expression-matching/",
+    tags: ["string", "dynamic-programming", "recursion"]
   },
   {
-    _id: '11', title: 'Search Rotated Array', slug: 'search-rotated-array', difficulty: 'medium', category: 'arrays', points: 210, solvedCount: 321, successRate: 48, tags: ['array', 'binary-search'],
-    description: 'Search in rotated sorted array.',
-    examples: [
-      { input: 'nums = [4,5,6,7,0,1,2], target = 0', output: '4' }
-    ],
-    constraints: ['1 <= nums.length <= 5000', '-10^4 <= nums[i] <= 10^4']
+    id: 11,
+    title: "Container With Most Water",
+    slug: "container-with-most-water",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 678901,
+    successRate: 45.6,
+    leetCodeUrl: "https://leetcode.com/problems/container-with-most-water/",
+    tags: ["array", "two-pointers"]
   },
   {
-    _id: '12', title: 'Combination Sum', slug: 'combination-sum', difficulty: 'medium', category: 'arrays', points: 220, solvedCount: 234, successRate: 42, tags: ['array', 'backtracking'],
-    description: 'Find all unique combinations in candidates where the numbers sum to target.',
-    examples: [
-      { input: 'candidates = [2,3,6,7], target = 7', output: '[[2,2,3],[7]]' }
-    ],
-    constraints: ['1 <= candidates.length <= 30', '2 <= candidates[i] <= 40']
+    id: 12,
+    title: "Integer to Roman",
+    slug: "integer-to-roman",
+    difficulty: "medium",
+    category: "math",
+    points: 200,
+    solvedCount: 567890,
+    successRate: 52.3,
+    leetCodeUrl: "https://leetcode.com/problems/integer-to-roman/",
+    tags: ["math", "string"]
   },
   {
-    _id: '13', title: 'Permutations', slug: 'permutations', difficulty: 'medium', category: 'arrays', points: 180, solvedCount: 543, successRate: 58, tags: ['array', 'backtracking'],
-    description: 'Given an array nums of distinct integers, return all possible permutations.',
-    examples: [
-      { input: 'nums = [1,2,3]', output: '[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]' }
-    ],
-    constraints: ['1 <= nums.length <= 6', '-10 <= nums[i] <= 10']
+    id: 13,
+    title: "Roman to Integer",
+    slug: "roman-to-integer",
+    difficulty: "easy",
+    category: "math",
+    points: 100,
+    solvedCount: 1234567,
+    successRate: 55.7,
+    leetCodeUrl: "https://leetcode.com/problems/roman-to-integer/",
+    tags: ["math", "string"]
   },
   {
-    _id: '14', title: 'Merge Intervals', slug: 'merge-intervals', difficulty: 'medium', category: 'arrays', points: 190, solvedCount: 654, successRate: 62, tags: ['array', 'sorting'],
-    description: 'Given an array of intervals, merge overlapping intervals.',
-    examples: [
-      { input: 'intervals = [[1,3],[2,6],[8,10],[15,18]]', output: '[[1,6],[8,10],[15,18]]' }
-    ],
-    constraints: ['1 <= intervals.length <= 10^4', 'intervals[i].length == 2']
+    id: 14,
+    title: "Longest Common Prefix",
+    slug: "longest-common-prefix",
+    difficulty: "easy",
+    category: "strings",
+    points: 100,
+    solvedCount: 987654,
+    successRate: 38.9,
+    leetCodeUrl: "https://leetcode.com/problems/longest-common-prefix/",
+    tags: ["string"]
   },
   {
-    _id: '15', title: 'Unique Paths', slug: 'unique-paths', difficulty: 'medium', category: 'dp', points: 200, solvedCount: 765, successRate: 65, tags: ['dp', 'math'],
-    description: 'A robot is located at the top-left corner of a m x n grid.',
-    examples: [
-      { input: 'm = 3, n = 7', output: '28' }
-    ],
-    constraints: ['1 <= m, n <= 100']
+    id: 15,
+    title: "3Sum",
+    slug: "3sum",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 789012,
+    successRate: 24.5,
+    leetCodeUrl: "https://leetcode.com/problems/3sum/",
+    tags: ["array", "two-pointers", "sorting"]
   },
   {
-    _id: '16', title: 'Coin Change', slug: 'coin-change', difficulty: 'medium', category: 'dp', points: 230, solvedCount: 432, successRate: 52, tags: ['dp'],
-    description: 'You are given an integer array coins representing coins and an integer amount.',
-    examples: [
-      { input: 'coins = [1,2,5], amount = 11', output: '3', explanation: '11 = 5 + 5 + 1' }
-    ],
-    constraints: ['1 <= coins.length <= 12', '1 <= coins[i] <= 2^31 - 1', '0 <= amount <= 10^4']
+    id: 16,
+    title: "3Sum Closest",
+    slug: "3sum-closest",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 456789,
+    successRate: 42.1,
+    leetCodeUrl: "https://leetcode.com/problems/3sum-closest/",
+    tags: ["array", "two-pointers", "sorting"]
   },
   {
-    _id: '17', title: 'House Robber', slug: 'house-robber', difficulty: 'medium', category: 'dp', points: 190, solvedCount: 654, successRate: 63, tags: ['dp'],
-    description: 'You are a professional robber planning to rob houses along a street.',
-    examples: [
-      { input: 'nums = [1,2,3,1]', output: '4', explanation: 'Rob house 1 and 3' }
-    ],
-    constraints: ['1 <= nums.length <= 100', '0 <= nums[i] <= 400']
+    id: 17,
+    title: "Letter Combinations of a Phone Number",
+    slug: "letter-combinations-of-a-phone-number",
+    difficulty: "medium",
+    category: "strings",
+    points: 200,
+    solvedCount: 678901,
+    successRate: 43.2,
+    leetCodeUrl: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+    tags: ["string", "backtracking"]
   },
   {
-    _id: '18', title: 'Word Break', slug: 'word-break', difficulty: 'medium', category: 'dp', points: 210, solvedCount: 543, successRate: 58, tags: ['dp'],
-    description: 'Given a string s and a dictionary of strings wordDict, return true if s can be segmented.',
-    examples: [
-      { input: 's = "leetcode", wordDict = ["leet","code"]', output: 'true' }
-    ],
-    constraints: ['1 <= s.length <= 300', '1 <= wordDict.length <= 1000']
+    id: 18,
+    title: "4Sum",
+    slug: "4sum",
+    difficulty: "medium",
+    category: "arrays",
+    points: 200,
+    solvedCount: 345678,
+    successRate: 31.4,
+    leetCodeUrl: "https://leetcode.com/problems/4sum/",
+    tags: ["array", "two-pointers", "sorting"]
   },
   {
-    _id: '19', title: 'Number of Islands', slug: 'number-of-islands', difficulty: 'medium', category: 'graphs', points: 210, solvedCount: 543, successRate: 57, tags: ['graph', 'dfs'],
-    description: 'Given an m x n 2D binary grid representing a map of 1s (land) and 0s (water).',
-    examples: [
-      { input: 'grid = [["1","1","1","1","0"],["1","1","0","1","0"],["1","1","0","0","0"],["0","0","0","0","0"]]', output: '1' }
-    ],
-    constraints: ['m == grid.length', 'n == grid[i].length', '1 <= m, n <= 300']
+    id: 19,
+    title: "Remove Nth Node From End of List",
+    slug: "remove-nth-node-from-end-of-list",
+    difficulty: "medium",
+    category: "linked-lists",
+    points: 200,
+    solvedCount: 567890,
+    successRate: 35.6,
+    leetCodeUrl: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+    tags: ["linked-list", "two-pointers"]
   },
   {
-    _id: '20', title: 'Course Schedule', slug: 'course-schedule', difficulty: 'medium', category: 'graphs', points: 230, solvedCount: 432, successRate: 55, tags: ['graph', 'topological-sort'],
-    description: 'There are a total of numCourses courses labeled from 0 to numCourses - 1.',
-    examples: [
-      { input: 'numCourses = 2, prerequisites = [[1,0]]', output: 'true' }
-    ],
-    constraints: ['1 <= numCourses <= 2000', '0 <= prerequisites.length <= 5000']
-  },
-  {
-    _id: '21', title: 'Trapping Rain Water', slug: 'trapping-rain-water', difficulty: 'hard', category: 'arrays', points: 350, solvedCount: 234, successRate: 38, tags: ['array', 'two-pointers'],
-    description: 'Given n non-negative integers representing an elevation map.',
-    examples: [
-      { input: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]', output: '6' }
-    ],
-    constraints: ['n == height.length', '1 <= n <= 2 * 10^4', '0 <= height[i] <= 10^5']
-  },
-  {
-    _id: '22', title: 'N-Queens', slug: 'n-queens', difficulty: 'hard', category: 'arrays', points: 320, solvedCount: 187, successRate: 42, tags: ['array', 'backtracking'],
-    description: 'The n-queens puzzle is placing n queens on an n x n chessboard.',
-    examples: [
-      { input: 'n = 4', output: '[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]' }
-    ],
-    constraints: ['1 <= n <= 9']
-  },
-  {
-    _id: '23', title: 'Sliding Window Maximum', slug: 'sliding-window-max', difficulty: 'hard', category: 'arrays', points: 310, solvedCount: 198, successRate: 37, tags: ['array', 'heap'],
-    description: 'You are given an array of integers nums and an integer k.',
-    examples: [
-      { input: 'nums = [1,3,-1,-3,5,3,6,7], k = 3', output: '[3,3,5,5,6,7]' }
-    ],
-    constraints: ['1 <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4', '1 <= k <= nums.length']
-  },
-  {
-    _id: '24', title: 'Median of Two Arrays', slug: 'median-arrays', difficulty: 'hard', category: 'arrays', points: 400, solvedCount: 89, successRate: 28, tags: ['array', 'binary-search'],
-    description: 'Given two sorted arrays nums1 and nums2, return the median of the two sorted arrays.',
-    examples: [
-      { input: 'nums1 = [1,3], nums2 = [2]', output: '2.00000' }
-    ],
-    constraints: ['nums1.length == m', 'nums2.length == n', '0 <= m <= 1000', '0 <= n <= 1000']
-  },
-  {
-    _id: '25', title: 'Regular Expression', slug: 'regex-matching', difficulty: 'hard', category: 'strings', points: 380, solvedCount: 76, successRate: 25, tags: ['string', 'dp'],
-    description: 'Given an input string s and a pattern p, implement regular expression matching.',
-    examples: [
-      { input: 's = "aa", p = "a"', output: 'false' },
-      { input: 's = "aa", p = "a*"', output: 'true' }
-    ],
-    constraints: ['1 <= s.length <= 20', '1 <= p.length <= 30']
-  },
-  {
-    _id: '26', title: 'Merge k Sorted Lists', slug: 'merge-k-lists', difficulty: 'hard', category: 'linked-lists', points: 360, solvedCount: 123, successRate: 33, tags: ['linked-list', 'heap'],
-    description: 'You are given an array of k linked-lists lists, each sorted in ascending order.',
-    examples: [
-      { input: 'lists = [[1,4,5],[1,3,4],[2,6]]', output: '[1,1,2,3,4,4,5,6]' }
-    ],
-    constraints: ['k == lists.length', '0 <= k <= 10^4', '0 <= lists[i].length <= 500']
-  },
-  {
-    _id: '27', title: 'Reverse Nodes in k-Group', slug: 'reverse-nodes-k', difficulty: 'hard', category: 'linked-lists', points: 340, solvedCount: 98, successRate: 30, tags: ['linked-list'],
-    description: 'Given the head of a linked list, reverse the nodes of the list k at a time.',
-    examples: [
-      { input: 'head = [1,2,3,4,5], k = 2', output: '[2,1,4,3,5]' }
-    ],
-    constraints: ['The number of nodes in the list is n.', '1 <= k <= n <= 5000', '0 <= Node.val <= 1000']
-  },
-  {
-    _id: '28', title: 'Sudoku Solver', slug: 'sudoku-solver', difficulty: 'hard', category: 'arrays', points: 350, solvedCount: 109, successRate: 34, tags: ['array', 'backtracking'],
-    description: 'Write a program to solve a Sudoku puzzle by filling the empty cells.',
-    examples: [],
-    constraints: ['board.length == 9', 'board[i].length == 9']
-  },
-  {
-    _id: '29', title: 'First Missing Positive', slug: 'first-missing-positive', difficulty: 'hard', category: 'arrays', points: 320, solvedCount: 165, successRate: 39, tags: ['array', 'hash-table'],
-    description: 'Given an unsorted integer array nums, return the smallest missing positive integer.',
-    examples: [
-      { input: 'nums = [1,2,0]', output: '3' },
-      { input: 'nums = [3,4,-1,1]', output: '2' }
-    ],
-    constraints: ['1 <= nums.length <= 5 * 10^5', '-2^31 <= nums[i] <= 2^31 - 1']
-  },
-  {
-    _id: '30', title: 'Word Ladder', slug: 'word-ladder', difficulty: 'hard', category: 'graphs', points: 370, solvedCount: 87, successRate: 32, tags: ['graph', 'bfs'],
-    description: 'A transformation sequence from word beginWord to word endWord.',
-    examples: [
-      { input: 'beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]', output: '5' }
-    ],
-    constraints: ['1 <= beginWord.length <= 10', 'endWord.length == beginWord.length', '1 <= wordList.length <= 5000']
+    id: 20,
+    title: "Valid Parentheses",
+    slug: "valid-parentheses",
+    difficulty: "easy",
+    category: "strings",
+    points: 100,
+    solvedCount: 1456789,
+    successRate: 38.7,
+    leetCodeUrl: "https://leetcode.com/problems/valid-parentheses/",
+    tags: ["string", "stack"]
   }
 ];
 
-const mockContests = [
-  { _id: 'c1', title: 'Weekly Coding Challenge #1', slug: 'weekly-1', status: 'active', description: 'Solve 5 problems in 2 hours', startTime: '2024-01-15T10:00:00', duration: 120, participantCount: 234 },
-  { _id: 'c2', title: 'Algorithm Master Cup', slug: 'algorithm-cup', status: 'upcoming', description: 'Advanced algorithms competition', startTime: '2024-01-20T14:00:00', duration: 180, participantCount: 187 },
-  { _id: 'c3', title: 'Data Structures Sprint', slug: 'ds-sprint', status: 'ended', description: 'Fast-paced data structures challenge', startTime: '2024-01-10T09:00:00', duration: 90, participantCount: 321 }
-];
-
 const Challenges = () => {
-  const navigate = useNavigate();
-  const [challenges, setChallenges] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [challenges, setChallenges] = useState(leetCodeProblems);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     difficulty: '',
     category: '',
     search: ''
   });
   const [activeTab, setActiveTab] = useState('challenges');
-  const [selectedChallenge, setSelectedChallenge] = useState(null);
-  const [showProblemPopup, setShowProblemPopup] = useState(false);
 
   useEffect(() => {
-    fetchChallenges();
-  }, [filters.difficulty, filters.category]);
+    filterChallenges();
+  }, [filters.difficulty, filters.category, filters.search]);
 
-  const fetchChallenges = async () => {
-    setLoading(true);
-    
-    setTimeout(() => {
-      let filtered = [...mockChallenges];
-      
-      if (filters.difficulty) {
-        filtered = filtered.filter(c => c.difficulty === filters.difficulty);
-      }
-      
-      if (filters.category) {
-        filtered = filtered.filter(c => c.category === filters.category);
-      }
-      
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filtered = filtered.filter(c => 
-          c.title.toLowerCase().includes(searchLower) ||
-          c.tags.some(tag => tag.toLowerCase().includes(searchLower))
-        );
-      }
-      
-      setChallenges(filtered);
-      setLoading(false);
-    }, 300);
+  const filterChallenges = () => {
+    let filtered = leetCodeProblems;
+
+    if (filters.difficulty) {
+      filtered = filtered.filter(challenge => challenge.difficulty === filters.difficulty);
+    }
+
+    if (filters.category) {
+      filtered = filtered.filter(challenge => challenge.category === filters.category);
+    }
+
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(challenge =>
+        challenge.title.toLowerCase().includes(searchTerm) ||
+        challenge.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    setChallenges(filtered);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchChallenges();
+    filterChallenges();
   };
 
   const handleChallengeClick = (challenge) => {
@@ -423,21 +407,20 @@ const Challenges = () => {
             ) : (
               challenges.map((challenge) => (
                 <div
-                  key={challenge._id}
+                  key={challenge.id}
                   className="challenge-card"
-                  onClick={() => handleChallengeClick(challenge)}
                 >
                   <div className="challenge-header">
                     <span className="category-icon">{categoryIcons[challenge.category] || '💡'}</span>
                     <h3>{challenge.title}</h3>
-                    <span 
+                    <span
                       className="difficulty-badge"
                       style={{ backgroundColor: difficultyColors[challenge.difficulty] }}
                     >
                       {challenge.difficulty}
                     </span>
                   </div>
-                  
+
                   <div className="challenge-meta">
                     <span className="points">
                       <FaStar /> {challenge.points} pts
@@ -454,6 +437,17 @@ const Challenges = () => {
                     {challenge.tags?.slice(0, 3).map((tag, i) => (
                       <span key={i} className="tag">{tag}</span>
                     ))}
+                  </div>
+
+                  <div className="challenge-actions">
+                    <a
+                      href={challenge.leetCodeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="solve-leetcode-btn"
+                    >
+                      Solve on LeetCode
+                    </a>
                   </div>
                 </div>
               ))

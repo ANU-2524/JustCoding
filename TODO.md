@@ -1,4 +1,9 @@
-# TODO: Add API Standards Documentation
+# Theme Fix for LiveRoom Chat Panel
+
+## Current Status
+- Identified that LiveRoom.css uses hardcoded dark theme colors
+- ThemeContext and theme.css are properly set up with CSS custom properties
+- Need to replace hardcoded colors with theme variables
 
 - [x] Add slug validation to router.get('/:slug') - Get single challenge
 - [x] Add slug validation to router.post('/:slug/submit') - Submit solution
