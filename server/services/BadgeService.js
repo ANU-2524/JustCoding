@@ -42,7 +42,10 @@ class BadgeService {
 
   static async checkAndAwardBadges(userId) {
     try {
-      const user = await User.findOne({ userId });
+      // FIX: Sanitize input to prevent NoSQL injection
+      const safeUserId = String(userId);
+
+      const user = await User.findOne({ userId: safeUserId });
       if (!user) return [];
 
       const newBadges = [];
@@ -51,10 +54,11 @@ class BadgeService {
       for (const achievement of achievements) {
         if (user.badges.includes(achievement.badgeId)) continue;
 
-        const earned = await this.checkBadgeCriteria(userId, achievement);
+        // Pass sanitized userId
+        const earned = await this.checkBadgeCriteria(safeUserId, achievement);
         if (earned) {
           await User.findOneAndUpdate(
-            { userId },
+            { userId: safeUserId },
             { 
               $push: { badges: achievement.badgeId },
               $inc: { totalPoints: achievement.points }
@@ -73,43 +77,46 @@ class BadgeService {
 
   static async checkBadgeCriteria(userId, achievement) {
     const { badgeId } = achievement;
+    
+    // FIX: Ensure userId is treated strictly as a string
+    const safeUserId = String(userId);
 
     switch (badgeId) {
       case 'first_run':
-        return await LearningEvent.countDocuments({ userId, eventType: 'code_run' }) >= 1;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'code_run' }) >= 1;
       
       case 'code_runner_10':
-        return await LearningEvent.countDocuments({ userId, eventType: 'code_run' }) >= 10;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'code_run' }) >= 10;
       
       case 'code_runner_100':
-        return await LearningEvent.countDocuments({ userId, eventType: 'code_run' }) >= 100;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'code_run' }) >= 100;
       
       case 'polyglot':
-        const languages = await LearningEvent.distinct('language', { userId, language: { $exists: true } });
+        const languages = await LearningEvent.distinct('language', { userId: safeUserId, language: { $exists: true } });
         return languages.length >= 5;
       
       case 'first_ai_help':
-        return await LearningEvent.countDocuments({ userId, eventType: 'ai_explain' }) >= 1;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'ai_explain' }) >= 1;
       
       case 'debug_master':
-        return await LearningEvent.countDocuments({ userId, eventType: 'ai_debug' }) >= 25;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'ai_debug' }) >= 25;
       
       case 'visualizer':
-        return await LearningEvent.countDocuments({ userId, eventType: 'visualize' }) >= 10;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'visualize' }) >= 10;
       
       case 'collaborator':
-        return await LearningEvent.countDocuments({ userId, eventType: 'session_join' }) >= 5;
+        return await LearningEvent.countDocuments({ userId: safeUserId, eventType: 'session_join' }) >= 5;
       
       case 'points_100':
-        const user100 = await User.findOne({ userId });
+        const user100 = await User.findOne({ userId: safeUserId });
         return user100 && user100.totalPoints >= 100;
       
       case 'points_500':
-        const user500 = await User.findOne({ userId });
+        const user500 = await User.findOne({ userId: safeUserId });
         return user500 && user500.totalPoints >= 500;
       
       case 'points_1000':
-        const user1000 = await User.findOne({ userId });
+        const user1000 = await User.findOne({ userId: safeUserId });
         return user1000 && user1000.totalPoints >= 1000;
       
       default:
@@ -119,7 +126,10 @@ class BadgeService {
 
   static async getUserBadges(userId) {
     try {
-      const user = await User.findOne({ userId });
+      // FIX: Sanitize input to prevent NoSQL injection
+      const safeUserId = String(userId);
+
+      const user = await User.findOne({ userId: safeUserId });
       if (!user) return [];
 
       const badges = await Achievement.find({ 
