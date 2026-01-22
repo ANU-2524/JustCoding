@@ -57,12 +57,12 @@ const Navbar = () => {
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/challenges', label: 'Challenges', icon: <FaTrophy /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
-    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
+    // { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
-    { path: '/profile', label: 'Profile', icon: <FaUser /> },
   ];
   
-  const authenticatedNavItems = [
+  const profileDropdownItems = [
+    { path: '/profile', label: 'Profile', icon: <FaUser /> },
     { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine /> },
   ];
 
@@ -103,23 +103,8 @@ const Navbar = () => {
               )}
             </Link>
           ))}
-          {currentUser && authenticatedNavItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-            >
-              <span className="nav-link-icon">{item.icon}</span>
-              <span>{item.label}</span>
-              {location.pathname === item.path && (
-                <motion.div 
-                  className="active-indicator"
-                  layoutId="activeTab"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-            </Link>
-          ))}
+          
+
         </div>
 
         <div className="nav-actions">
@@ -166,9 +151,16 @@ const Navbar = () => {
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                      <FaUser /> Profile
-                    </Link>
+                    {profileDropdownItems.map((item) => (
+                      <Link 
+                        key={item.path}
+                        to={item.path}
+                        className="dropdown-item"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        {item.icon} {item.label}
+                      </Link>
+                    ))}
                     <button className="dropdown-item" onClick={handleLogout}>
                       <FaSignOutAlt /> Logout
                     </button>
@@ -254,23 +246,8 @@ const Navbar = () => {
                     </Link>
                   </motion.div>
                 ))}
-                {currentUser && authenticatedNavItems.map((item, index) => (
-                  <motion.div
-                    key={item.path}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 * (index + navItems.length) }}
-                  >
-                    <Link
-                      to={item.path}
-                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </Link>
-                  </motion.div>
-                ))}
+                
+
               </div>
               
               {/* Mobile Profile Section (when logged in) */}
@@ -298,13 +275,16 @@ const Navbar = () => {
                     </span>
                   </div>
                   
-                  <Link 
-                    to="/profile" 
-                    className="mobile-profile-link"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <FaUser /> <span>Profile</span>
-                  </Link>
+                  {profileDropdownItems.map((item) => (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className="mobile-profile-link"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.icon} <span>{item.label}</span>
+                    </Link>
+                  ))}
                   
                   <button 
                     className="mobile-logout-btn"
