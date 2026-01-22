@@ -2,6 +2,29 @@ const express = require('express');
 const { ESLint } = require('eslint');
 const router = express.Router();
 
+// Validation functions
+function validateCode(code) {
+  return typeof code === 'string' && code.length > 0 && code.length <= 10000; // Reasonable limit for code snippets
+}
+
+function validateLanguage(language) {
+  const validLanguages = ['javascript', 'typescript'];
+  return typeof language === 'string' && validLanguages.includes(language);
+}
+
+// Logging helper
+function logRequest(req, message, level = 'info') {
+  const logData = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date().toISOString(),
+    message
+  };
+  console[level](JSON.stringify(logData));
+}
+
 // ESLint configurations for different languages
 const eslintConfigs = {
   javascript: {
@@ -60,7 +83,6 @@ router.post('/analyze', async (req, res) => {
     // Only support JavaScript and TypeScript for now
     if (!['javascript', 'typescript'].includes(language)) {
       return res.json({
-        success: true,
         issues: [],
         message: `Code quality analysis not available for ${language}`,
       });
@@ -104,14 +126,19 @@ router.post('/analyze', async (req, res) => {
       // Ignore fix errors
     }
 
+    const totalErrors = issues.filter((i) => i.severity === 'error').length;
+    const totalWarnings = issues.filter((i) => i.severity === 'warning').length;
+
+    logRequest(req, `Code analysis completed: ${totalErrors} errors, ${totalWarnings} warnings`);
+
     res.json({
       issues,
       fixedCode,
-      totalErrors: issues.filter((i) => i.severity === 'error').length,
-      totalWarnings: issues.filter((i) => i.severity === 'warning').length,
+      totalErrors,
+      totalWarnings,
     });
   } catch (error) {
-    console.error('Code quality analysis error:', error);
+    logRequest(req, `Code quality analysis error: ${error.message}`, 'error');
     res.status(500).json({
       error: 'Failed to analyze code quality',
       details: error.message,

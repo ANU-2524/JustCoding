@@ -4,19 +4,60 @@ const BadgeService = require('../services/BadgeService');
 const User = require('../models/User');
 const router = express.Router();
 
+// Validation functions
+function validateUserId(userId) {
+  return typeof userId === 'string' && userId.length > 0 && userId.length <= 100;
+}
+
+function validateEventType(eventType) {
+  const validTypes = ['code_run', 'code_submit', 'challenge_solve', 'tutorial_view', 'login'];
+  return typeof eventType === 'string' && validTypes.includes(eventType);
+}
+
+function validateTimeframe(timeframe) {
+  const validTimeframes = ['weekly', 'monthly', 'all-time'];
+  return typeof timeframe === 'string' && validTimeframes.includes(timeframe);
+}
+
+function validateLimit(limit) {
+  const num = parseInt(limit, 10);
+  return !isNaN(num) && num > 0 && num <= 100;
+}
+
+// Logging helper
+function logRequest(req, message, level = 'info') {
+  const logData = {
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date().toISOString(),
+    message
+  };
+  console[level](JSON.stringify(logData));
+}
+
 // Get user progress dashboard
 router.get('/dashboard/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
+    if (!validateUserId(userId)) {
+      logRequest(req, `Invalid userId: ${userId}`, 'warn');
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    logRequest(req, `Fetching dashboard for user: ${userId}`);
+
     // Check if MongoDB is available
     if (!require('mongoose').connection.readyState) {
-      return res.status(503).json({ 
+      logRequest(req, 'Database not available, returning fallback', 'warn');
+      return res.status(503).json({
         error: 'Database not available',
-        fallback: true 
+        fallback: true
       });
     }
-    
+
     const [progress, badges, newBadges] = await Promise.all([
       AnalyticsService.getUserProgress(userId),
       BadgeService.getUserBadges(userId),
@@ -24,19 +65,21 @@ router.get('/dashboard/:userId', async (req, res) => {
     ]);
 
     if (!progress) {
+      logRequest(req, `User not found: ${userId}`, 'warn');
       return res.status(404).json({ error: 'User not found' });
     }
 
+    logRequest(req, `Dashboard fetched successfully for user: ${userId}`);
     res.json({
       ...progress,
       badges,
       newBadges
     });
   } catch (error) {
-    console.error('Dashboard error:', error);
-    res.status(503).json({ 
+    logRequest(req, `Dashboard error: ${error.message}`, 'error');
+    res.status(503).json({
       error: 'Database not available',
-      fallback: true 
+      fallback: true
     });
   }
 });
@@ -45,19 +88,25 @@ router.get('/dashboard/:userId', async (req, res) => {
 router.post('/event', async (req, res) => {
   try {
     const { userId, eventType, metadata } = req.body;
-    
-    if (!userId || !eventType) {
-      return res.status(400).json({ error: 'userId and eventType required' });
+
+    if (!validateUserId(userId)) {
+      logRequest(req, `Invalid userId: ${userId}`, 'warn');
+      return res.status(400).json({ error: 'Invalid userId format' });
     }
+
+    if (!validateEventType(eventType)) {
+      logRequest(req, `Invalid eventType: ${eventType}`, 'warn');
+      return res.status(400).json({ error: 'Invalid eventType. Must be one of: code_run, code_submit, challenge_solve, tutorial_view, login' });
+    }
+
+    logRequest(req, `Recording event: ${eventType} for user: ${userId}`);
 
     // Check if MongoDB is available
     if (!require('mongoose').connection.readyState) {
+      logRequest(req, 'Database not available, returning fallback', 'warn');
       return res.json({
-        success: true,
-        data: {
-          event: null,
-          newBadges: []
-        },
+        event: null,
+        newBadges: [],
         fallback: true
       });
     }
@@ -65,12 +114,13 @@ router.post('/event', async (req, res) => {
     const event = await AnalyticsService.recordEvent(userId, eventType, metadata);
     const newBadges = await BadgeService.checkAndAwardBadges(userId);
 
+    logRequest(req, `Event recorded successfully: ${eventType} for user: ${userId}`);
     res.json({
       event,
       newBadges
     });
   } catch (error) {
-    console.error('Event recording error:', error);
+    logRequest(req, `Event recording error: ${error.message}`, 'error');
     res.json({
       event: null,
       newBadges: [],
@@ -108,10 +158,19 @@ router.get('/leaderboard', async (req, res) => {
 router.get('/export/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (!validateUserId(userId)) {
+      logRequest(req, `Invalid userId: ${userId}`, 'warn');
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    logRequest(req, `Exporting progress data for user: ${userId}`);
+
     const progress = await AnalyticsService.getUserProgress(userId);
     const badges = await BadgeService.getUserBadges(userId);
 
     if (!progress) {
+      logRequest(req, `User not found for export: ${userId}`, 'warn');
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -136,12 +195,10 @@ router.get('/export/:userId', async (req, res) => {
       generatedAt: new Date().toISOString()
     };
 
-    res.json({
-      success: true,
-      data: exportData
-    });
+    logRequest(req, `Progress data exported successfully for user: ${userId}`);
+    res.json(exportData);
   } catch (error) {
-    console.error('Export error:', error);
+    logRequest(req, `Export error: ${error.message}`, 'error');
     res.status(500).json({ error: 'Failed to export progress data' });
   }
 });
