@@ -28,12 +28,9 @@ router.get('/dashboard/:userId', async (req, res) => {
     }
 
     res.json({
-      success: true,
-      data: {
-        ...progress,
-        badges,
-        newBadges
-      }
+      ...progress,
+      badges,
+      newBadges
     });
   } catch (error) {
     console.error('Dashboard error:', error);
@@ -69,20 +66,14 @@ router.post('/event', async (req, res) => {
     const newBadges = await BadgeService.checkAndAwardBadges(userId);
 
     res.json({
-      success: true,
-      data: {
-        event,
-        newBadges
-      }
+      event,
+      newBadges
     });
   } catch (error) {
     console.error('Event recording error:', error);
     res.json({
-      success: true,
-      data: {
-        event: null,
-        newBadges: []
-      },
+      event: null,
+      newBadges: [],
       fallback: true
     });
   }
@@ -106,10 +97,7 @@ router.get('/leaderboard', async (req, res) => {
       .limit(limit)
       .select('userId displayName totalPoints level badges lastActiveAt');
 
-    res.json({
-      success: true,
-      data: leaderboard
-    });
+    res.json(leaderboard);
   } catch (error) {
     console.error('Leaderboard error:', error);
     res.status(500).json({ error: 'Failed to fetch leaderboard' });

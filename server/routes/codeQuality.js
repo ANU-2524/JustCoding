@@ -105,7 +105,6 @@ router.post('/analyze', async (req, res) => {
     }
 
     res.json({
-      success: true,
       issues,
       fixedCode,
       totalErrors: issues.filter((i) => i.severity === 'error').length,
