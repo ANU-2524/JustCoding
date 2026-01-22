@@ -5,13 +5,49 @@
   background: linear-gradient(135deg, #0c141d, #1a2332);
   padding-top: 80px;
   color: #f0f6fc;
+  position: relative;
+}
+
+/* ========== BLUR EFFECT - ADD THIS ========== */
+.problem-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  background: rgba(5, 2, 18, 0.6); /* softer dim */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Make sure popup stays on top */
+.problem-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(5, 2, 18, 0.907);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
 }
 
 /* Hero Section */
 .challenges-hero {
   text-align: center;
   padding: 3rem 2rem;
-  background: linear-gradient(145deg, rgba(212, 88, 31, 0.1), rgba(0, 255, 224, 0.05));
+  background: linear-gradient(
+    145deg,
+    rgba(212, 88, 31, 0.1),
+    rgba(0, 255, 224, 0.05)
+  );
   border-bottom: 1px solid rgba(212, 88, 31, 0.3);
 }
 
@@ -72,9 +108,15 @@
   text-transform: uppercase;
 }
 
-.stat-item.easy .stat-value { color: #4caf50; }
-.stat-item.medium .stat-value { color: #ff9800; }
-.stat-item.hard .stat-value { color: #f44336; }
+.stat-item.easy .stat-value {
+  color: #4caf50;
+}
+.stat-item.medium .stat-value {
+  color: #ff9800;
+}
+.stat-item.hard .stat-value {
+  color: #f44336;
+}
 
 /* Tabs */
 .challenges-tabs {
@@ -200,7 +242,11 @@
 }
 
 .challenge-card {
-  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
+  background: linear-gradient(
+    145deg,
+    rgba(13, 17, 23, 0.95),
+    rgba(26, 32, 44, 0.9)
+  );
   border: 1px solid rgba(212, 88, 31, 0.3);
   border-radius: 12px;
   padding: 1.5rem;
@@ -295,7 +341,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-icon {
@@ -313,7 +361,11 @@
 }
 
 .contest-card {
-  background: linear-gradient(145deg, rgba(13, 17, 23, 0.95), rgba(26, 32, 44, 0.9));
+  background: linear-gradient(
+    145deg,
+    rgba(13, 17, 23, 0.95),
+    rgba(26, 32, 44, 0.9)
+  );
   border: 1px solid rgba(212, 88, 31, 0.3);
   border-radius: 12px;
   padding: 1.5rem;
@@ -431,68 +483,14 @@
   color: #4caf50;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .challenges-hero h1 {
-    font-size: 1.8rem;
-  }
-
-  .user-stats-bar {
-    gap: 1rem;
-  }
-
-  .stat-item {
-    padding: 0.75rem 1rem;
-    min-width: 60px;
-  }
-
-  .filters-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-form {
-    max-width: none;
-  }
-
-  .filter-buttons {
-    justify-content: center;
-  }
-
-  .challenges-list {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-  }
-
-  .contests-list {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-  }
-
-  .leaderboard-header,
-  .leaderboard-row {
-    grid-template-columns: 60px 1fr 80px 80px;
-    font-size: 0.9rem;
-  }
-}
 /* Problem Popup Styles */
-.problem-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(5, 2, 18, 0.907);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
-
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .problem-popup {
@@ -507,8 +505,14 @@
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .popup-header {
@@ -682,21 +686,63 @@
   color: var(--text-primary);
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
+  .challenges-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .user-stats-bar {
+    gap: 1rem;
+  }
+
+  .stat-item {
+    padding: 0.75rem 1rem;
+    min-width: 60px;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-form {
+    max-width: none;
+  }
+
+  .filter-buttons {
+    justify-content: center;
+  }
+
+  .challenges-list {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .contests-list {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .leaderboard-header,
+  .leaderboard-row {
+    grid-template-columns: 60px 1fr 80px 80px;
+    font-size: 0.9rem;
+  }
+
   .problem-popup {
     width: 95%;
     margin: 10px;
   }
-  
+
   .popup-header h2 {
     font-size: 1.5rem;
   }
-  
+
   .popup-footer {
     flex-direction: column;
   }
-  
+
   .start-solving-btn,
   .close-btn {
     width: 100%;
