@@ -1,14 +1,18 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const connectDB = async () => {
+  if (!process.env.MONGO_URI) {
+    console.error("❌ MONGO_URI missing in .env file");
+    process.exit(1);
+  }
+
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/justcoding';
-    await mongoose.connect(mongoURI);
-    console.log('✅ MongoDB connected successfully');
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected ✅");
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
-    // Don't exit process, allow app to run without DB
+    console.error("MongoDB error:", error.message);
+    process.exit(1);
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

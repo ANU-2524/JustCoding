@@ -1,5 +1,5 @@
 ﻿// BACKEND: server.js (or index.js)
-require('dotenv').config();
+// require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -7,6 +7,9 @@ const http = require("http");
 const { Server } = require("socket.io");
 const connectDB = require('./config/database');
 const BadgeService = require('./services/BadgeService');
+import  authRoutes  from "./routes/auth.routes.js";
+dotenv.config();
+
 const {
   generalLimiter,
   aiLimiter,
@@ -240,3 +243,4 @@ app.get('/test', (req, res) => {
 });
 
 server.listen(process.env.PORT || 4334, () => console.log(`JustCode Server running on port ${process.env.PORT || 4334}`));
+// BACKEND: index.js
