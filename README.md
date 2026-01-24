@@ -118,6 +118,32 @@ http://localhost:4334
 Important:
 You must keep two terminals running at the same time — one for the client and one for the server.
 
+(OR)
+
+### 🐳 Quick Start with Docker
+
+The easiest way to get started! Docker handles all dependencies and setup automatically.
+
+**Steps:**
+```bash
+# Clone the repository
+git clone https://github.com/ANU-2524/JustCoding.git
+cd JustCoding
+
+# Copy environment variables
+cp .env.example .env
+
+# Start all services (MongoDB, Backend, Frontend)
+docker-compose up
+```
+
+That's it! 🎉
+- **Frontend**: http://localhost:5173
+- **Backend**: http://localhost:4334
+- **MongoDB**: localhost:27017
+
+For detailed Docker documentation, see **[DOCKER.md](./DOCKER.md)**
+
 ---
 
 

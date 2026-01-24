@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: justcode-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: justcoding
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - justcode-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/justcoding --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # Backend Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: justcode-server
+    restart: unless-stopped
+    ports:
+      - "4334:4334"
+    environment:
+      - NODE_ENV=production
+      - PORT=4334
+      - MONGODB_URI=mongodb://mongodb:27017/justcoding
+      - FRONTEND_URL=http://localhost:5173
+      # Add your API keys here or use .env file
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - justcode-network
+    volumes:
+      # Mount source code for development (comment out for production)
+      - ./server:/app
+      - /app/node_modules
+    # For production, comment out the volume mounts above
+
+  # Frontend Client (Development)
+  client-dev:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: justcode-client-dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:4334
+    depends_on:
+      - server
+    networks:
+      - justcode-network
+    volumes:
+      # Mount source code for hot-reloading
+      - ./client:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+  # Frontend Client (Production) - uncomment for production deployment
+  # client-prod:
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   container_name: justcode-client-prod
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - server
+  #   networks:
+  #     - justcode-network
+
+networks:
+  justcode-network:
+    driver: bridge
+    name: justcode-network
+
+volumes:
+  mongodb_data:
+    name: justcode-mongodb-data
+  mongodb_config:
+    name: justcode-mongodb-config
