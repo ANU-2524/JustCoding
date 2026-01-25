@@ -1,0 +1,154 @@
+.leaderboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.leaderboard-header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.timeframe-selector {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.timeframe-selector button {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.timeframe-selector button.active,
+.timeframe-selector button:hover {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.leaderboard-item:hover {
+  transform: translateY(-2px);
+}
+
+.leaderboard-item.top-three {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border: 2px solid #ffd700;
+}
+
+.rank {
+  margin-right: 20px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.rank-icon {
+  font-size: 24px;
+}
+
+.rank-icon.gold { color: #ffd700; }
+.rank-icon.silver { color: #c0c0c0; }
+.rank-icon.bronze { color: #cd7f32; }
+
+.rank-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: #666;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info h3 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.user-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.user-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .leaderboard-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .user-stats {
+    justify-content: center;
+  }
+}

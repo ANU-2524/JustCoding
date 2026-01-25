@@ -22,6 +22,7 @@ import "./Style/Navbar.css";
 // const FAQPage = lazy(() => import("./components/FAQPage"));
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));
+const Leaderboard = lazy(() => import("./components/Leaderboard"));
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
                 {/* <Route path="/faq" element={<FAQPage />} /> */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
                 {/* Main personal editor */}
                 <Route
                   path="/editor"
