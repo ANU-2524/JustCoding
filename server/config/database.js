@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
-  if (!process.env.MONGO_URI) {
-    console.error("❌ MONGO_URI missing in .env file");
+  if (!process.env.MONGODB_URI) {
+    console.error("❌ MONGODB_URI missing in .env file");
     process.exit(1);
   }
 
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log("MongoDB connected ✅");
   } catch (error) {
     console.error("MongoDB error:", error.message);
@@ -15,4 +15,4 @@ const connectDB = async () => {
   }
 };
 
-export default connectDB;
+module.exports = connectDB;

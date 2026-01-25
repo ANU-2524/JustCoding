@@ -3,12 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const http = require("http");
-const { Server } = require("socket.io");
+const http = require('http');
+const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 const BadgeService = require('./services/BadgeService');
-import  authRoutes  from "./routes/auth.routes.js";
-dotenv.config();
+const Room = require('./models/Room');
 
 const {
   generalLimiter,
@@ -16,10 +16,12 @@ const {
   codeLimiter,
   rateLimitLogger
 } = require('./middleware/simpleRateLimiter');
-const gptRoute = require("./routes/gptRoute.js");
-const codeQualityRoute = require("./routes/codeQuality.js");
-const progressRoute = require("./routes/progress.js");
-const challengesRoute = require("./routes/challenges.js");
+const gptRoute = require('./routes/gptRoute');
+const codeQualityRoute = require('./routes/codeQuality');
+const progressRoute = require('./routes/progress');
+const challengesRoute = require('./routes/challenges');
+const roomRoute = require('./routes/room');
+const userRoute = require('./routes/user');
 
 // Multi-Language Visualizer Service
 const visualizerService = require('./services/visualizer');
