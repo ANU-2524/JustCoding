@@ -14,6 +14,7 @@ const LiveRoom = lazy(() => import("./components/LiveRoom"));
 const UserDashboard = lazy(() => import("./components/UserDashboard"));
 const Challenges = lazy(() => import("./components/Challenges"));
 const ChallengeSolve = lazy(() => import("./components/ChallengeSolve"));
+const Contests = lazy(() => import("./components/Contests"));
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -23,6 +24,8 @@ import "./Style/Navbar.css";
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
+const ContestDetail = lazy(() => import("./components/ContestDetail"));
+const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 
 function App() {
   return (
@@ -88,6 +91,11 @@ function App() {
                 {/* Coding Challenges */}
                 <Route path="/challenges" element={<Challenges />} />
                 <Route path="/challenges/:slug" element={<ChallengeSolve />} />
+                
+                {/* Contests */}
+                <Route path="/contests" element={<Contests />} />
+                <Route path="/contests/:slug" element={<ContestDetail />} />
+                <Route path="/contests/:slug/leaderboard" element={<ContestLeaderboard />} />
               </Routes>
             </Suspense>
             <ScrollToTop />

@@ -1,0 +1,262 @@
+.contest-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.contest-detail-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contest-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #f8f9fa;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contest-detail-header h1 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.contest-description {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.contest-info-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.contest-info-card, .contest-actions-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.contest-info-card h3, .contest-actions-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.info-item svg {
+  color: #007bff;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-item div {
+  flex: 1;
+}
+
+.info-item strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.info-item span {
+  color: #666;
+  font-size: 14px;
+}
+
+.contest-actions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.joined-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #d4edda;
+  border-radius: 6px;
+  color: #155724;
+}
+
+.success-icon {
+  color: #28a745;
+}
+
+.btn-primary, .btn-secondary, .btn-outline {
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+}
+
+.btn-outline:hover {
+  background: #007bff;
+  color: white;
+}
+
+.contest-challenges {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.contest-challenges h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.challenge-card {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.2s;
+}
+
+.challenge-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.challenge-header {
+  margin-bottom: 15px;
+}
+
+.challenge-header h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.challenge-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.difficulty {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.difficulty.easy { background: #d4edda; color: #155724; }
+.difficulty.medium { background: #fff3cd; color: #856404; }
+.difficulty.hard { background: #f8d7da; color: #721c24; }
+
+.points {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ffc107;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.challenge-stats {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.btn-small {
+  padding: 8px 12px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-small:hover {
+  background: #0056b3;
+}
+
+.loading, .error-state {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .contest-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .challenges-grid {
+    grid-template-columns: 1fr;
+  }
+}
