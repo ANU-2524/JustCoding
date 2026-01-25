@@ -28,6 +28,7 @@ const ContestDetail = lazy(() => import("./components/ContestDetail"));
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
+const BadgesPage = lazy(() => import("./components/BadgesPage"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
 function App() {
@@ -105,6 +106,7 @@ function App() {
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/progress" element={<Analytics />} />
                 <Route path="/export" element={<ProgressExport />} />
+                <Route path="/badges" element={<BadgesPage />} />
               </Routes>
             </Suspense>
             <ScrollToTop />
