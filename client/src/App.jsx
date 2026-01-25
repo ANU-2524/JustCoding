@@ -26,6 +26,7 @@ const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"))
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
 const ContestDetail = lazy(() => import("./components/ContestDetail"));
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
+const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
 function App() {
@@ -97,6 +98,7 @@ function App() {
                 <Route path="/contests" element={<Contests />} />
                 <Route path="/contests/:slug" element={<ContestDetail />} />
                 <Route path="/contests/:slug/leaderboard" element={<ContestLeaderboard />} />
+                <Route path="/admin/contests" element={<ContestManagement />} />
                 
                 {/* Analytics/Progress */}
                 <Route path="/analytics" element={<Analytics />} />
