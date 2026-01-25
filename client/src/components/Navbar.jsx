@@ -58,6 +58,7 @@ const Navbar = () => {
     { path: '/challenges', label: 'Challenges', icon: <FaTrophy /> },
     { path: '/contests', label: 'Contests', icon: <FaTrophy /> },
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
+    { path: '/analytics', label: 'Analytics', icon: <FaChartLine /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     // { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
