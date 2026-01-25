@@ -31,6 +31,7 @@ const ProgressExport = lazy(() => import("./components/ProgressExport"));
 const BadgesPage = lazy(() => import("./components/BadgesPage"));
 const UserManagement = lazy(() => import("./components/UserManagement"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
+const RoomManagement = lazy(() => import("./components/RoomManagement"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
 function App() {
@@ -111,6 +112,7 @@ function App() {
                 <Route path="/badges" element={<BadgesPage />} />
                 <Route path="/admin/users" element={<UserManagement />} />
                 <Route path="/debug" element={<DebugHelper />} />
+                <Route path="/admin/rooms" element={<RoomManagement />} />
               </Routes>
             </Suspense>
             <ScrollToTop />

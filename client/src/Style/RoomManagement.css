@@ -1,0 +1,354 @@
+.room-management {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.management-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3b82f6;
+}
+
+.room-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.management-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.status-filter select {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  font-size: 1rem;
+  min-width: 150px;
+}
+
+.rooms-table {
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 0.5fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 0.5fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+}
+
+.table-row:hover {
+  background: #f9fafb;
+}
+
+.room-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+.room-info p {
+  margin: 0 0 0.5rem 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.room-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-tag {
+  background: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.lock-icon {
+  color: #f59e0b;
+  font-size: 0.9rem;
+}
+
+.participants-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.participant-count {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.participant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.participant-name {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.more-participants {
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.col-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.action-btn.view {
+  background: #3b82f6;
+}
+
+.action-btn.lock {
+  background: #f59e0b;
+}
+
+.action-btn.delete {
+  background: #ef4444;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.room-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.room-detail-section {
+  margin-bottom: 2rem;
+}
+
+.room-detail-section h3 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-item label {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.detail-item span {
+  color: #1f2937;
+}
+
+.participants-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.participant-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.participant-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.participant-joined {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .management-controls {
+    justify-content: center;
+  }
+  
+  .room-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .participant-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
