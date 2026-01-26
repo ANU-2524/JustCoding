@@ -5,7 +5,7 @@ const learningEventSchema = new mongoose.Schema({
   eventType: { 
     type: String, 
     required: true,
-    enum: ['code_run', 'ai_explain', 'ai_debug', 'snippet_create', 'session_join', 'visualize', 'challenge_complete']
+    enum: ['code_run', 'ai_explain', 'ai_debug', 'snippet_create', 'session_join', 'visualize', 'challenge_complete', 'tutorial_start', 'tutorial_step_complete', 'tutorial_complete', 'tutorial_quiz_attempt']
   },
   language: { type: String },
   codeLength: { type: Number },
