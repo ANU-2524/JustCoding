@@ -1,30 +1,33 @@
 ﻿// BACKEND: server.js (or index.js)
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const http = require('http');
-const { Server } = require('socket.io');
-const mongoose = require('mongoose');
-const connectDB = require('./config/database');
-const BadgeService = require('./services/BadgeService');
-const Room = require('./models/Room');
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+import connectDB from './config/database.js';
+import BadgeService from './services/BadgeService.js';
+import Room from './models/Room.js';
 
-const {
+import {
   generalLimiter,
   aiLimiter,
   codeLimiter,
   rateLimitLogger
-} = require('./middleware/simpleRateLimiter');
-const gptRoute = require('./routes/gptRoute');
-const codeQualityRoute = require('./routes/codeQuality');
-const progressRoute = require('./routes/progress');
-const challengesRoute = require('./routes/challenges');
-const roomRoute = require('./routes/room');
-const userRoute = require('./routes/user');
+} from './middleware/simpleRateLimiter.js';
+import gptRoute from './routes/gptRoute.js';
+import codeQualityRoute from './routes/codeQuality.js';
+import progressRoute from './routes/progress.js';
+import challengesRoute from './routes/challenges.js';
+import roomRoute from './routes/room.js';
+import userRoute from './routes/user.js';
+import communityRoute from './routes/community.js';
 
 // Multi-Language Visualizer Service
-const visualizerService = require('./services/visualizer');
+import visualizerServicePkg from './services/visualizer/index.js';
+const visualizerService = visualizerServicePkg;
 
 const app = express();
 const server = http.createServer(app);
@@ -146,6 +149,7 @@ app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 app.use("/api/progress", progressRoute);
 app.use("/api/challenges", challengesRoute);
+app.use("/api/community", communityRoute);
 
 // Room routes 
 app.use("/api/room", roomRoute);

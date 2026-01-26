@@ -35,6 +35,7 @@ const DebugHelper = lazy(() => import("./components/DebugHelper"));
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
 
 const Analytics = lazy(() => import("./components/Analytics"));
+const CommunityPage = lazy(() => import("./components/CommunityPage"));
 
 function App() {
   return (
@@ -114,6 +115,9 @@ function App() {
                 <Route path="/badges" element={<BadgesPage />} />
                 <Route path="/admin/users" element={<UserManagement />} />
                 <Route path="/debug" element={<DebugHelper />} />
+
+                {/* Community Forum */}
+                <Route path="/community" element={<CommunityPage />} />
 
                 <Route path="/admin/rooms" element={<RoomManagement />} />
 
