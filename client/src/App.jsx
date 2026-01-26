@@ -29,8 +29,9 @@ const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"))
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
 const BadgesPage = lazy(() => import("./components/BadgesPage"));
-const UserManagement = lazy(() => import("./components/UserManagement"));
+// const UserManagement = lazy(() => import("./components/UserManagement"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
+
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
 const CodeQuality = lazy(() => import("./components/CodeQuality"));
 const Analytics = lazy(() => import("./components/Analytics"));
@@ -111,8 +112,9 @@ function App() {
                 <Route path="/progress" element={<Analytics />} />
                 <Route path="/export" element={<ProgressExport />} />
                 <Route path="/badges" element={<BadgesPage />} />
-                <Route path="/admin/users" element={<UserManagement />} />
+                {/* <Route path="/admin/users" element={<UserManagement />} /> */}
                 <Route path="/debug" element={<DebugHelper />} />
+
                 <Route path="/admin/rooms" element={<RoomManagement />} />
                 <Route path="/code-quality" element={<CodeQuality />} />
               </Routes>

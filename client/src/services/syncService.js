@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4334';
+const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
 
 // Sync user profile with backend
 export async function syncProfileToBackend(userId, profile) {
@@ -36,7 +36,7 @@ export async function fetchSnippetsFromBackend(userId) {
         const response = await fetch(`${API_BASE}/api/user/snippets/${userId}`);
         if (!response.ok) throw new Error('Failed to fetch snippets');
         const data = await response.json();
-        return data.success ? data.data : [];
+        return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Fetch snippets error:', error);
         return [];
@@ -53,7 +53,7 @@ export async function createSnippetOnBackend(userId, snippet) {
         });
         if (!response.ok) throw new Error('Failed to create snippet');
         const data = await response.json();
-        return data.success ? data.data : null;
+        return data ? data : null;
     } catch (error) {
         console.error('Create snippet error:', error);
         return null;
