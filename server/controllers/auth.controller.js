@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/use.js"; 
+import User from "../models/User.js"; 
 import { transporter } from "../config/mail.js";
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is missing in environment variables");

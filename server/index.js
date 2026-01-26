@@ -22,6 +22,7 @@ const progressRoute = require('./routes/progress');
 const challengesRoute = require('./routes/challenges');
 const roomRoute = require('./routes/room');
 const userRoute = require('./routes/user');
+const tutorialsRoute = require('./routes/tutorials');
 
 // Multi-Language Visualizer Service
 const visualizerService = require('./services/visualizer');
@@ -146,6 +147,7 @@ app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 app.use("/api/progress", progressRoute);
 app.use("/api/challenges", challengesRoute);
+app.use("/api/tutorials", tutorialsRoute);
 
 // Room routes 
 app.use("/api/room", roomRoute);
