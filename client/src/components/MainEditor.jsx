@@ -3,7 +3,7 @@ import CodeEditor from './CodeEditor';
 import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile, FaHistory, FaClock } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import Loader from './Loader';
-import '../Style/MainEdior.css';
+import '../Style/MainEditor.css';
 import jsPDF from "jspdf";
 import { useAuth } from "./AuthContext";
 import ReactMarkdown from "react-markdown";
