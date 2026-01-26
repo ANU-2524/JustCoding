@@ -30,6 +30,7 @@ const progressRoute = require('./routes/progress');
 const challengesRoute = require('./routes/challenges');
 const roomRoute = require('./routes/room');
 const userRoute = require('./routes/user');
+const tutorialsRoute = require('./routes/tutorials');
 
 // Socket.IO (modularized)
 const { initializeSocket, cleanup: socketCleanup } = require('./socket');
@@ -95,6 +96,7 @@ app.use("/api/progress", progressRoute);
 
 // Challenges routes
 app.use("/api/challenges", challengesRoute);
+app.use("/api/tutorials", tutorialsRoute);
 
 // Room routes
 app.use("/api/room", roomRoute);
