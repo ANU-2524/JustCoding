@@ -84,6 +84,8 @@ router.post('/analyze', async (req, res) => {
     if (!['javascript', 'typescript'].includes(language)) {
       return res.json({
         issues: [],
+        totalErrors: 0,
+        totalWarnings: 0,
         message: `Code quality analysis not available for ${language}`,
       });
     }
