@@ -1,29 +1,7 @@
 const express = require('express');
 const { ESLint } = require('eslint');
 const router = express.Router();
-
-// Validation functions
-function validateCode(code) {
-  return typeof code === 'string' && code.length > 0 && code.length <= 10000; // Reasonable limit for code snippets
-}
-
-function validateLanguage(language) {
-  const validLanguages = ['javascript', 'typescript'];
-  return typeof language === 'string' && validLanguages.includes(language);
-}
-
-// Logging helper
-function logRequest(req, message, level = 'info') {
-  const logData = {
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    timestamp: new Date().toISOString(),
-    message
-  };
-  console[level](JSON.stringify(logData));
-}
+const { validate, logRequest } = require('../middleware/validation');
 
 // ESLint configurations for different languages
 const eslintConfigs = {
@@ -70,21 +48,23 @@ const eslintConfigs = {
   },
 };
 
-router.post('/analyze', async (req, res) => {
+/**
+ * POST /api/code-quality/analyze
+ * Analyze code quality using ESLint
+ * Returns: { success, issues, fixedCode, totalErrors, totalWarnings }
+ */
+router.post('/analyze', validate('codeQuality'), async (req, res) => {
   try {
     const { code, language } = req.body;
-
-    if (!code || !language) {
-      return res.status(400).json({
-        error: 'Code and language are required',
-      });
-    }
 
     // Only support JavaScript and TypeScript for now
     if (!['javascript', 'typescript'].includes(language)) {
       return res.json({
+        success: true,
         issues: [],
-        message: `Code quality analysis not available for ${language}`,
+        totalErrors: 0,
+        totalWarnings: 0,
+        message: `Code quality analysis not available for ${language}`
       });
     }
 
@@ -132,16 +112,18 @@ router.post('/analyze', async (req, res) => {
     logRequest(req, `Code analysis completed: ${totalErrors} errors, ${totalWarnings} warnings`);
 
     res.json({
+      success: true,
       issues,
       fixedCode,
       totalErrors,
-      totalWarnings,
+      totalWarnings
     });
   } catch (error) {
     logRequest(req, `Code quality analysis error: ${error.message}`, 'error');
     res.status(500).json({
+      success: false,
       error: 'Failed to analyze code quality',
-      details: error.message,
+      details: error.message
     });
   }
 });

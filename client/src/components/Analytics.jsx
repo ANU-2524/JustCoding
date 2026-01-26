@@ -20,7 +20,13 @@ const Analytics = () => {
       const userId = currentUser.uid || currentUser.email || 'guest';
       const response = await fetch(`http://localhost:4334/api/progress/dashboard/${userId}`);
       const data = await response.json();
-      setAnalytics(data);
+      // Handle response - works with both old and new format
+      if (data.success === false) {
+        console.error('API error:', data.error);
+        setAnalytics(null);
+      } else {
+        setAnalytics(data);
+      }
     } catch (error) {
       console.error('Error fetching analytics:', error);
       setAnalytics(null);
