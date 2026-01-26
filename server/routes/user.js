@@ -22,22 +22,19 @@ router.get('/profile/:userId', async (req, res) => {
         }
 
         res.json({
-            success: true,
-            data: {
-                userId: user.userId,
-                displayName: user.displayName,
-                email: user.email,
-                bio: user.bio,
-                photoURL: user.photoURL,
-                githubUrl: user.githubUrl,
-                linkedinUrl: user.linkedinUrl,
-                preferences: user.preferences,
-                totalPoints: user.totalPoints,
-                level: user.level,
-                badges: user.badges,
-                createdAt: user.createdAt,
-                lastActiveAt: user.lastActiveAt
-            }
+            userId: user.userId,
+            displayName: user.displayName,
+            email: user.email,
+            bio: user.bio,
+            photoURL: user.photoURL,
+            githubUrl: user.githubUrl,
+            linkedinUrl: user.linkedinUrl,
+            preferences: user.preferences,
+            totalPoints: user.totalPoints,
+            level: user.level,
+            badges: user.badges,
+            createdAt: user.createdAt,
+            lastActiveAt: user.lastActiveAt
         });
     } catch (error) {
         console.error('Get profile error:', error);
@@ -71,16 +68,13 @@ router.put('/profile/:userId', async (req, res) => {
         );
 
         res.json({
-            success: true,
-            data: {
-                userId: user.userId,
-                displayName: user.displayName,
-                bio: user.bio,
-                photoURL: user.photoURL,
-                githubUrl: user.githubUrl,
-                linkedinUrl: user.linkedinUrl,
-                preferences: user.preferences
-            }
+            userId: user.userId,
+            displayName: user.displayName,
+            bio: user.bio,
+            photoURL: user.photoURL,
+            githubUrl: user.githubUrl,
+            linkedinUrl: user.linkedinUrl,
+            preferences: user.preferences
         });
     } catch (error) {
         console.error('Update profile error:', error);
@@ -103,10 +97,7 @@ router.get('/snippets/:userId', async (req, res) => {
             .sort({ updatedAt: -1 })
             .limit(100);
 
-        res.json({
-            success: true,
-            data: snippets
-        });
+        res.json(snippets);
     } catch (error) {
         console.error('Get snippets error:', error);
         res.status(500).json({ error: 'Failed to get snippets' });
@@ -129,10 +120,7 @@ router.post('/snippets', async (req, res) => {
             code: code || ''
         });
 
-        res.status(201).json({
-            success: true,
-            data: snippet
-        });
+        res.status(201).json(snippet);
     } catch (error) {
         console.error('Create snippet error:', error);
         res.status(500).json({ error: 'Failed to create snippet' });
@@ -164,10 +152,7 @@ router.put('/snippets/:snippetId', async (req, res) => {
             return res.status(404).json({ error: 'Snippet not found' });
         }
 
-        res.json({
-            success: true,
-            data: snippet
-        });
+        res.json(snippet);
     } catch (error) {
         console.error('Update snippet error:', error);
         res.status(500).json({ error: 'Failed to update snippet' });
@@ -190,10 +175,7 @@ router.delete('/snippets/:snippetId', async (req, res) => {
             return res.status(404).json({ error: 'Snippet not found' });
         }
 
-        res.json({
-            success: true,
-            message: 'Snippet deleted'
-        });
+        res.json({ message: 'Snippet deleted' });
     } catch (error) {
         console.error('Delete snippet error:', error);
         res.status(500).json({ error: 'Failed to delete snippet' });
@@ -236,9 +218,8 @@ router.post('/snippets/sync', async (req, res) => {
         }
 
         res.json({
-            success: true,
             synced: results.length,
-            data: results
+            snippets: results
         });
     } catch (error) {
         console.error('Sync snippets error:', error);
