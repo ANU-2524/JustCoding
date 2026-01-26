@@ -5,6 +5,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   transition: all 0.3s ease;
+  padding-top: 100px;
 }
 
 .auth-management-container.dark {
@@ -15,17 +16,21 @@
   text-align: center;
   margin-bottom: 30px;
   color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-top: 0;
 }
 
 .auth-header p {
   font-size: 1.2rem;
   opacity: 0.9;
+  margin-bottom: 0;
 }
 
 .auth-main {
@@ -521,6 +526,10 @@
 }
 
 @media (max-width: 768px) {
+  .auth-management-container {
+    padding-top: 80px;
+  }
+  
   .auth-header h1 {
     font-size: 2rem;
   }
