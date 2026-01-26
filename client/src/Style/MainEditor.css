@@ -49,6 +49,7 @@
   gap: var(--space-md);
 }
 
+/* Logo styling */
 .logo {
   display: flex;
   align-items: center;
@@ -77,18 +78,21 @@
   }
 }
 
+/* Icon for the logo */
 .logo-icon {
   color: var(--accent-primary);
   font-size: 1.75rem;
 
 }
 
+/* Right side of header with user actions */
 .header-right {
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
+/* Logout button styling */
 .logout-btn {
   display: flex;
   align-items: center;
@@ -189,17 +193,20 @@
   margin-left: var(--space-sm);
 }
 
+/* Content area of the AI section */
 .ai-section-content {
   padding: 0 var(--space-lg) var(--space-lg);
   animation: fadeIn var(--transition-normal) ease-out;
 }
 
+/* Grid layout for AI cards */
 .ai-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-lg);
 }
 
+/* Individual AI feature card */
 .ai-card {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-primary);
@@ -264,6 +271,7 @@
   white-space: pre-wrap;
 }
 
+/* Markdown content styling for AI responses */
 .markdown-body {
   font-size: 0.875rem;
   line-height: 1.65;
@@ -320,17 +328,20 @@
   color: var(--text-primary);
 }
 
+/* AI feature tabs container */
 .ai-tabs {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Tab header container */
 .ai-tab-header {
   display: flex;
   border-bottom: 1px solid var(--bg-tertiary);
 }
 
+/* Individual tab button */
 .ai-tab {
   display: flex;
   align-items: center;

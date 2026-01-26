@@ -1,7 +1,7 @@
 # ✨ Feature: Code Execution Visualizer
 
 ## 🎯 **Overview**
-Added a step-by-step code execution visualizer that helps users understand JavaScript code flow with real-time variable tracking and interactive debugging controls.
+Added a step-by-step code execution visualizer that helps users understand code flow across multiple programming languages with real-time variable tracking and interactive debugging controls.
 
 ## 🚀 **Features Added**
 
@@ -47,8 +47,8 @@ Added a step-by-step code execution visualizer that helps users understand JavaS
 ## 🎮 **How to Use**
 
 1. **Navigate to Editor**: Go to `/editor` page
-2. **Select JavaScript**: Choose JavaScript from language dropdown
-3. **Write/Paste Code**: Add JavaScript code with variables
+2. **Select Language**: Choose from supported languages (JavaScript, Python, Java, C++, Go) from the dropdown
+3. **Write/Paste Code**: Add code in the selected language
 4. **Click Visualize**: Press the "👁️ Visualize" button
 5. **Step Through Code**: Use playback controls to navigate execution
 6. **View Variables**: Monitor variable changes in real-time
@@ -56,6 +56,7 @@ Added a step-by-step code execution visualizer that helps users understand JavaS
 
 ## 📱 **Example Usage**
 
+### JavaScript
 ```javascript
 // Perfect test code for visualizer
 let age = 25;
@@ -64,6 +65,52 @@ let isAdult = age >= 18;
 console.log(name + " is " + age + " years old");
 if (isAdult) {
   console.log("Can vote!");
+}
+```
+
+### Python
+```python
+# Python visualization example
+age = 25
+name = "Alice"
+is_adult = age >= 18
+print(f"{name} is {age} years old")
+if is_adult:
+    print("Can vote!")
+```
+
+### Java
+```java
+// Java visualization example
+public class Main {
+    public static void main(String[] args) {
+        int age = 25;
+        String name = "Alice";
+        boolean isAdult = age >= 18;
+        System.out.println(name + " is " + age + " years old");
+        if (isAdult) {
+            System.out.println("Can vote!");
+        }
+    }
+}
+```
+
+### C++
+```cpp
+// C++ visualization example
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    int age = 25;
+    string name = "Alice";
+    bool isAdult = age >= 18;
+    cout << name << " is " << age << " years old" << endl;
+    if (isAdult) {
+        cout << "Can vote!" << endl;
+    }
+    return 0;
 }
 ```
 
@@ -76,8 +123,8 @@ if (isAdult) {
 - **Beginner Friendly**: Makes complex concepts easier to understand
 
 ## 🔧 **Supported Languages**
-- **Current**: JavaScript (ES6+ syntax)
-- **Future**: Python, Java, C++ (extensible architecture)
+- **Current**: JavaScript, Python, Java, C++, Go (ES6+ syntax for JS, standard syntax for others)
+- **Extensible**: Architecture supports adding more languages easily
 
 ## 📊 **Performance**
 - **Lightweight**: Minimal impact on existing functionality
@@ -85,11 +132,12 @@ if (isAdult) {
 - **Responsive**: Smooth animations and interactions
 
 ## 🧪 **Testing**
-- ✅ Variable declarations and assignments
-- ✅ Conditional statements (if/else)
-- ✅ Console output statements
-- ✅ Expression evaluation
-- ✅ Multi-step code execution
+- ✅ Variable declarations and assignments (all languages)
+- ✅ Conditional statements (if/else) (all languages)
+- ✅ Output statements (console.log, print, System.out.println, cout) (all languages)
+- ✅ Loop structures (for, while) (all languages)
+- ✅ Function/method definitions (all languages)
+- ✅ Multi-step code execution (all languages)
 - ✅ Mobile responsiveness
 - ✅ Theme compatibility (light/dark mode)
 
