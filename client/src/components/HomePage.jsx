@@ -7,6 +7,7 @@ import { FaRobot, FaCode, FaUsers, FaFilePdf, FaGithub, FaLinkedin, FaCodeBranch
 import { FaXTwitter } from "react-icons/fa6";
 import CardSwap, { Card } from './CardSwap';
 import HowItWorks from './HowItWorks';
+import FeaturedTutorials from './FeaturedTutorials';
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
@@ -271,6 +272,8 @@ const HomePage = () => {
         </div>
       </motion.section>
 
+      {/* Featured Tutorials Section */}
+      <FeaturedTutorials />
 
 {/* Use Cases Section */}
 <motion.section
