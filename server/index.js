@@ -10,6 +10,22 @@ const connectDB = require('./config/database');
 const BadgeService = require('./services/BadgeService');
 const Room = require('./models/Room');
 
+// Logging Service
+const { logger, httpLogger } = require('./services/logger');
+
+// Error Handling
+const { 
+  errorHandler, 
+  notFoundHandler,
+  setupUnhandledRejectionHandler,
+  setupUncaughtExceptionHandler
+} = require('./middleware/error');
+const { asyncHandler } = require('./middleware/async');
+const { BadRequestError, ExternalServiceError } = require('./utils/ErrorResponse');
+
+// Setup uncaught exception handler early
+setupUncaughtExceptionHandler();
+
 const {
   generalLimiter,
   aiLimiter,
@@ -34,7 +50,7 @@ const server = http.createServer(app);
 connectDB();
 
 // Initialize badges on startup
-BadgeService.initializeBadges().catch(console.error);
+BadgeService.initializeBadges().catch(err => logger.warn('Badge initialization failed', { error: err.message }));
 
 const userMap = {};
 const roomTimers = {};
@@ -53,6 +69,9 @@ app.use(cors({
 // Security: Request size limiting - increased for code submissions
 app.use(express.json({ limit: '50kb' }));
 
+// HTTP Request Logging
+app.use(httpLogger);
+
 // Security: Rate limiting
 app.use(rateLimitLogger);
 app.use(generalLimiter);
@@ -66,7 +85,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
+  logger.info("User connected", { socketId: socket.id });
 
   socket.on("join-room", async ({ roomId, username }) => {
     try {
@@ -81,14 +100,14 @@ io.on("connection", (socket) => {
         });
       }
 
-      console.log(`${username} joined room ${roomId}`);
+      logger.info(`${username} joined room ${roomId}`, { username, roomId });
       userMap[socket.id] = { username, roomId };
 
       socket.emit('code-update', room.code);
 
       socket.to(roomId).emit("user-joined", `${username} joined the room`);
     } catch (error) {
-      console.error('Error joining room:', error);
+      logger.error('Error joining room', { error: error.message, roomId });
     }
   });
 
@@ -104,7 +123,7 @@ io.on("connection", (socket) => {
         await Room.updateOne({ roomId }, { code });
         delete roomTimers[roomId];
       } catch (error) {
-        console.error('Error updating room code:', error);
+        logger.error('Error updating room code', { error: error.message, roomId });
       }
     }, 2000);
   });
@@ -124,7 +143,7 @@ io.on("connection", (socket) => {
       socket.to(roomId).emit("user-left", `${username} left the room`);
       delete userMap[socket.id];
     }
-    console.log("User disconnected", socket.id);
+    logger.info("User disconnected", { odId: socket.id });
   });
 });
 
@@ -156,26 +175,16 @@ app.use("/api/room", roomRoute);
 app.use("/api/user", userRoute);
 
 // Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
-app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
+app.post('/api/visualizer/visualize', codeLimiter, asyncHandler(async (req, res) => {
   const { code, language } = req.body;
 
   if (!code || !language) {
-    return res.status(400).json({
-      success: false,
-      error: 'Missing required fields: code and language'
-    });
+    throw new BadRequestError('Missing required fields: code and language');
   }
 
-  try {
-    const result = visualizerService.visualize(code, language);
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
+  const result = visualizerService.visualize(code, language);
+  res.json({ success: true, ...result });
+}));
 
 // Get supported languages for visualizer
 app.get('/api/visualizer/languages', (req, res) => {
@@ -186,65 +195,76 @@ app.get('/api/visualizer/languages', (req, res) => {
 });
 
 // Code execution endpoint with security
-app.post('/compile', codeLimiter, async (req, res) => {
+app.post('/compile', codeLimiter, asyncHandler(async (req, res) => {
   const { language, code, stdin } = req.body;
 
   if (!language || !code) {
-    return res.status(400).json({
-      error: 'Missing required fields: language and code'
-    });
+    throw new BadRequestError('Missing required fields: language and code');
   }
 
   if (code.length > 10000) {
-    return res.status(400).json({
-      error: 'Code too long. Maximum 10,000 characters allowed.'
-    });
+    throw new BadRequestError('Code too long. Maximum 10,000 characters allowed.');
   }
 
   if (stdin && stdin.length > 1000) {
-    return res.status(400).json({
-      error: 'Input too long. Maximum 1,000 characters allowed.'
-    });
+    throw new BadRequestError('Input too long. Maximum 1,000 characters allowed.');
   }
 
   const langInfo = languageMap[language];
   if (!langInfo) {
-    return res.status(400).json({
-      error: 'Unsupported language',
-      supportedLanguages: Object.keys(languageMap)
-    });
+    throw new BadRequestError(`Unsupported language. Supported: ${Object.keys(languageMap).join(', ')}`);
   }
 
-  try {
-    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
-      language,
-      version: langInfo.version,
-      stdin: stdin || '',
-      files: [{ name: `main.${langInfo.ext}`, content: code }],
-    });
+  const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+    language,
+    version: langInfo.version,
+    stdin: stdin || '',
+    files: [{ name: `main.${langInfo.ext}`, content: code }],
+  }).catch(err => {
+    throw new ExternalServiceError('Code execution service unavailable. Please try again.');
+  });
 
-    const output = response.data.run.stdout || response.data.run.stderr || "No output";
-    const sanitizedOutput = output.substring(0, 5000);
+  const output = response.data.run.stdout || response.data.run.stderr || "No output";
+  const sanitizedOutput = output.substring(0, 5000);
 
-    res.json({ output: sanitizedOutput });
-  } catch (error) {
-    console.error("Compile Error:", error.message);
-    res.status(500).json({
-      error: 'Code execution failed. Please try again.',
-      tip: 'Check your code for syntax errors.'
-    });
-  }
+  res.json({ success: true, output: sanitizedOutput });
+}));
+
+app.get('/', (req, res) => {
+  res.json({ 
+    name: 'JustCoding API',
+    version: '1.0.0',
+    status: 'running'
+  });
 });
 
-app.get('/', (req, res) => res.send('JustCode backend with Multi-Language Visualizer'));
-
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    success: true,
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.get('/test', (req, res) => {
-  res.json({ message: 'Server is working!', port: process.env.PORT || 4334 });
+  res.json({ success: true, message: 'Server is working!', port: process.env.PORT || 4334 });
 });
 
-server.listen(process.env.PORT || 4334, () => console.log(`JustCode Server running on port ${process.env.PORT || 4334}`));
-// BACKEND: index.js
+// 404 Handler - must be after all routes
+app.use(notFoundHandler);
+
+// Global Error Handler - must be last
+app.use(errorHandler);
+
+// Start server
+const PORT = process.env.PORT || 4334;
+server.listen(PORT, () => {
+  logger.info(`🚀 JustCoding Server running on port ${PORT}`);
+  logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Setup unhandled rejection handler
+setupUnhandledRejectionHandler(server);
+
+module.exports = { app, server };
