@@ -1,174 +1,385 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from './ThemeContext';
+import { FaCode, FaExclamationTriangle, FaCheckCircle, FaLightbulb, FaBug, FaStar, FaRocket, FaDownload, FaHistory } from 'react-icons/fa';
 import '../Style/CodeQuality.css';
 
 const CodeQuality = () => {
   const { isDark } = useTheme();
-  const [code, setCode] = useState(`// Sample JavaScript Code
-function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-let result = fibonacci(10);
-console.log(result);
-
-// TODO: Optimize this recursive function
-var x = 5; // Should use const
-if (x == 5) { // Should use ===
-    console.log("Equal")
-}`);
+  const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [error, setError] = useState('');
+  const [copyState, setCopyState] = useState('Copy');
+  const [analysisHistory, setAnalysisHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
-  const languages = ['javascript', 'python', 'java', 'cpp', 'typescript'];
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('codeQualityHistory');
+    if (saved) {
+      try {
+        setAnalysisHistory(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to load history:', e);
+      }
+    }
+  }, []);
 
   const analyzeCode = async () => {
     if (!code.trim()) return;
-    
+
     setLoading(true);
+    setError('');
     try {
-      const response = await fetch('/api/codeQuality/analyze', {
+      const response = await fetch('/api/code-quality/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language })
       });
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to analyze code. Please try again.');
+      }
+
       setAnalysis(data);
-    } catch (error) {
-      // Enhanced sample analysis
-      setAnalysis({
-        score: 72,
-        grade: 'B',
-        issues: [
-          { type: 'error', line: 16, severity: 'high', message: 'Use === instead of == for comparison', category: 'Best Practices' },
-          { type: 'warning', line: 15, severity: 'medium', message: 'Variable "x" should be const instead of var', category: 'Code Style' },
-          { type: 'info', line: 2, severity: 'low', message: 'Consider memoization for recursive fibonacci', category: 'Performance' },
-          { type: 'warning', line: 17, severity: 'medium', message: 'Missing semicolon', category: 'Syntax' }
-        ],
-        metrics: {
-          complexity: 4,
-          maintainability: 78,
-          duplications: 0,
-          testCoverage: 0,
-          linesOfCode: 18,
-          functions: 1
-        },
-        suggestions: [
-          'Add memoization to improve fibonacci performance',
-          'Use consistent variable declarations (const/let)',
-          'Add proper error handling',
-          'Consider adding unit tests'
-        ]
-      });
+
+      // Save to history
+      const historyEntry = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        language,
+        code: code.substring(0, 100) + (code.length > 100 ? '...' : ''),
+        score: calculateScore(data),
+        totalErrors: data.totalErrors,
+        totalWarnings: data.totalWarnings,
+      };
+
+      const updatedHistory = [historyEntry, ...analysisHistory].slice(0, 10);
+      setAnalysisHistory(updatedHistory);
+      localStorage.setItem('codeQualityHistory', JSON.stringify(updatedHistory));
+    } catch (err) {
+      console.error('Analysis failed:', err);
+      setAnalysis(null);
+      setError(err.message || 'Failed to analyze code. Please try again.');
     }
     setLoading(false);
   };
 
-  const getScoreColor = (score) => {
-    if (score >= 90) return '#10b981';
-    if (score >= 70) return '#f59e0b';
-    return '#ef4444';
+  const copyFixedCode = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopyState('Copied');
+      setTimeout(() => setCopyState('Copy'), 1500);
+    } catch (err) {
+      console.error('Copy failed:', err);
+      setCopyState('Retry');
+    }
   };
 
-  const getGradeEmoji = (grade) => {
-    const grades = { 'A': '🏆', 'B': '👍', 'C': '⚠️', 'D': '❌', 'F': '💥' };
-    return grades[grade] || '📊';
+  const exportReport = () => {
+    if (!analysis) return;
+
+    const report = `
+CODE QUALITY ANALYSIS REPORT
+============================
+Language: ${analysis.language?.toUpperCase()}
+Timestamp: ${new Date().toLocaleString()}
+Score: ${calculateScore(analysis)}/100
+
+METRICS:
+--------
+Total Lines: ${analysis.metrics?.totalLines || 0}
+Non-Empty Lines: ${analysis.metrics?.nonEmptyLines || 0}
+Comment Lines: ${analysis.metrics?.commentLines || 0}
+Comment Percentage: ${analysis.metrics?.commentPercentage || 0}%
+Cyclomatic Complexity: ${analysis.metrics?.complexity || 0}
+Maintainability: ${analysis.metrics?.maintainability || 'N/A'}
+Average Line Length: ${analysis.metrics?.avgLineLength || 0}
+
+ISSUES:
+-------
+Total Errors: ${analysis.totalErrors || 0}
+Total Warnings: ${analysis.totalWarnings || 0}
+
+${analysis.issues?.map((issue, i) => `
+${i + 1}. [${issue.severity?.toUpperCase()}] Line ${issue.line}
+   ${issue.message}
+   Rule: ${issue.ruleId || 'N/A'}
+`).join('\n') || 'No issues found'}
+
+---
+Generated by JustCoding Code Quality Analyzer
+    `.trim();
+
+    const blob = new Blob([report], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `code-quality-report-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
+
+  const loadFromHistory = (entry) => {
+    setCode(entry.code);
+    setShowHistory(false);
+  };
+
+  const calculateScore = (data) => {
+    if (!data || data.error) return 0;
+    const totalIssues = (data.totalErrors || 0) + (data.totalWarnings || 0);
+    const baseScore = 100;
+    const penalty = Math.min(totalIssues * 5, 80); // Max penalty of 80 points
+    return Math.max(0, baseScore - penalty);
+  };
+
+  const getGradeInfo = (score) => {
+    if (score >= 90) return { grade: 'A', emoji: '🌟', text: 'Excellent' };
+    if (score >= 80) return { grade: 'B', emoji: '✅', text: 'Good' };
+    if (score >= 70) return { grade: 'C', emoji: '⚠️', text: 'Fair' };
+    if (score >= 60) return { grade: 'D', emoji: '❌', text: 'Poor' };
+    return { grade: 'F', emoji: '💥', text: 'Critical' };
+  };
+
+  const getSuggestions = (issues) => {
+    const suggestions = [];
+    if (!issues) return suggestions;
+
+    const errorCount = issues.filter(i => i.severity === 'error').length;
+    const warningCount = issues.filter(i => i.severity === 'warning').length;
+
+    if (errorCount > 0) {
+      suggestions.push({
+        icon: <FaBug />,
+        text: `Fix ${errorCount} critical error${errorCount > 1 ? 's' : ''} to improve code reliability`
+      });
+    }
+
+    if (warningCount > 0) {
+      suggestions.push({
+        icon: <FaExclamationTriangle />,
+        text: `Address ${warningCount} warning${warningCount > 1 ? 's' : ''} to enhance code quality`
+      });
+    }
+
+    if (errorCount === 0 && warningCount === 0) {
+      suggestions.push({
+        icon: <FaStar />,
+        text: 'Great job! Your code follows best practices'
+      });
+    }
+
+    if (analysis?.metrics?.complexity > 10) {
+      suggestions.push({
+        icon: <FaLightbulb />,
+        text: `Consider refactoring - complexity is ${analysis.metrics.complexity} (high). Aim for < 10.`
+      });
+    }
+
+    if (!analysis?.metrics?.hasDocumentation) {
+      suggestions.push({
+        icon: <FaCode />,
+        text: 'Add JSDoc/comment documentation for better code maintainability'
+      });
+    }
+
+    if (analysis?.metrics?.commentPercentage < 5 && analysis.metrics.nonEmptyLines > 20) {
+      suggestions.push({
+        icon: <FaLightbulb />,
+        text: `Consider adding more comments. Current: ${analysis.metrics.commentPercentage}%`
+      });
+    }
+
+    suggestions.push({
+      icon: <FaRocket />,
+      text: 'Follow consistent naming conventions and code style'
+    });
+
+    return suggestions;
+  };
+
+  const score = calculateScore(analysis);
+  const gradeInfo = getGradeInfo(score);
+  const suggestions = getSuggestions(analysis?.issues);
+  const lineCount = code ? code.split(/\r?\n/).length : 0;
+  const totalIssues = analysis?.issues?.length || 0;
 
   return (
     <div className={`code-quality-container ${isDark ? 'dark' : ''}`}>
       <div className="quality-header">
-        <h1>🔍 Code Quality Analyzer</h1>
+        <h1>Code Quality Analysis</h1>
         <p>Analyze your code for quality, performance, and best practices</p>
+        <button 
+          className="history-btn"
+          onClick={() => setShowHistory(!showHistory)}
+          title="View analysis history"
+        >
+          <FaHistory /> History ({analysisHistory.length})
+        </button>
       </div>
-      
-      <div className="quality-main">
+
+      {showHistory && (
+        <div className="history-panel">
+          <div className="history-header">
+            <h3>Analysis History</h3>
+            <button onClick={() => setShowHistory(false)}>✕</button>
+          </div>
+          <div className="history-list">
+            {analysisHistory.length > 0 ? (
+              analysisHistory.map(entry => (
+                <div key={entry.id} className="history-item" onClick={() => loadFromHistory(entry)}>
+                  <div className="history-info">
+                    <div className="history-lang">{entry.language}</div>
+                    <div className="history-time">{entry.timestamp}</div>
+                  </div>
+                  <div className="history-stats">
+                    <span className="score-badge">{entry.score}</span>
+                    <span className="error-count">E:{entry.totalErrors}</span>
+                    <span className="warning-count">W:{entry.totalWarnings}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="no-history">No analysis history yet</p>
+            )}
+          </div>
+        </div>
+      )}
+        <div className="quality-main">
+        {error && (
+          <div className="quality-alert error">
+            <FaExclamationTriangle />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {analysis?.message && !error && (
+          <div className="quality-alert info">
+            <FaLightbulb />
+            <span>{analysis.message}</span>
+          </div>
+        )}
+
         <div className="code-input-panel">
           <div className="panel-header">
-            <h3>📝 Your Code</h3>
+            <h3>Code Input</h3>
             <div className="input-controls">
-              <select value={language} onChange={(e) => setLanguage(e.target.value)}>
-                {languages.map(lang => (
-                  <option key={lang} value={lang}>{lang.toUpperCase()}</option>
-                ))}
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="typescript">TypeScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="c">C</option>
               </select>
-              <button onClick={analyzeCode} disabled={loading} className="analyze-btn">
-                {loading ? '🔄 Analyzing...' : '🚀 Analyze Code'}
-              </button>
             </div>
           </div>
-          
           <textarea
+            className="code-textarea"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="code-textarea"
-            rows={20}
+            placeholder={`Paste your ${language} code here...`}
           />
+          <div className="input-footer">
+            <button
+              className="analyze-btn"
+              onClick={analyzeCode}
+              disabled={loading || !code.trim()}
+            >
+              {loading ? 'Analyzing...' : 'Analyze Code'}
+            </button>
+            <span className="char-count">{code.length} / 50000 characters</span>
+          </div>
         </div>
 
         <div className="analysis-panel">
+          <div className="panel-header">
+            <h3>Analysis Results</h3>
+            {analysis && (
+              <button className="export-btn" onClick={exportReport} title="Export report">
+                <FaDownload /> Export
+              </button>
+            )}
+          </div>
+
           {analysis ? (
             <>
               <div className="score-section">
-                <div className="score-card" style={{ borderColor: getScoreColor(analysis.score) }}>
+                <div className="score-card">
                   <div className="score-display">
-                    <span className="score-number" style={{ color: getScoreColor(analysis.score) }}>
-                      {analysis.score}
-                    </span>
-                    <span className="score-total">/100</span>
+                    <div className="score-number">{score}<span className="score-total">/100</span></div>
                   </div>
                   <div className="grade-display">
-                    <span className="grade-emoji">{getGradeEmoji(analysis.grade)}</span>
-                    <span className="grade-text">Grade {analysis.grade}</span>
+                    <div className="grade-emoji">{gradeInfo.emoji}</div>
+                    <div className="grade-text">{gradeInfo.grade} - {gradeInfo.text}</div>
                   </div>
                 </div>
 
                 <div className="metrics-grid">
                   <div className="metric-card">
-                    <span className="metric-icon">🔧</span>
-                    <span className="metric-value">{analysis.metrics.complexity}</span>
-                    <span className="metric-label">Complexity</span>
+                    <div className="metric-icon">📊</div>
+                    <div className="metric-value">{analysis.totalErrors || 0}</div>
+                    <div className="metric-label">Errors</div>
                   </div>
                   <div className="metric-card">
-                    <span className="metric-icon">🛠️</span>
-                    <span className="metric-value">{analysis.metrics.maintainability}</span>
-                    <span className="metric-label">Maintainability</span>
+                    <div className="metric-icon">⚠️</div>
+                    <div className="metric-value">{analysis.totalWarnings || 0}</div>
+                    <div className="metric-label">Warnings</div>
                   </div>
                   <div className="metric-card">
-                    <span className="metric-icon">📏</span>
-                    <span className="metric-value">{analysis.metrics.linesOfCode}</span>
-                    <span className="metric-label">Lines of Code</span>
+                    <div className="metric-icon">📈</div>
+                    <div className="metric-value">{analysis.metrics?.complexity || 0}</div>
+                    <div className="metric-label">Complexity</div>
                   </div>
                   <div className="metric-card">
-                    <span className="metric-icon">⚡</span>
-                    <span className="metric-value">{analysis.metrics.functions}</span>
-                    <span className="metric-label">Functions</span>
+                    <div className="metric-icon">📏</div>
+                    <div className="metric-value">{lineCount}</div>
+                    <div className="metric-label">Lines</div>
+                  </div>
+                  <div className="metric-card">
+                    <div className="metric-icon">💬</div>
+                    <div className="metric-value">{analysis.metrics?.commentPercentage || 0}%</div>
+                    <div className="metric-label">Comments</div>
+                  </div>
+                  <div className="metric-card">
+                    <div className="metric-icon">🎯</div>
+                    <div className="metric-value">{analysis.metrics?.maintainability || 'N/A'}</div>
+                    <div className="metric-label">Maintainability</div>
                   </div>
                 </div>
               </div>
 
               <div className="tabs-section">
                 <div className="tabs-header">
-                  <button 
+                  <button
                     className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
                     onClick={() => setActiveTab('overview')}
                   >
-                    📊 Overview
+                    Overview
                   </button>
-                  <button 
+                  <button
                     className={`tab ${activeTab === 'issues' ? 'active' : ''}`}
                     onClick={() => setActiveTab('issues')}
                   >
-                    🐛 Issues ({analysis.issues.length})
+                    Issues ({totalIssues})
                   </button>
-                  <button 
+                  <button
+                    className={`tab ${activeTab === 'metrics' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('metrics')}
+                  >
+                    Metrics
+                  </button>
+                  <button
                     className={`tab ${activeTab === 'suggestions' ? 'active' : ''}`}
                     onClick={() => setActiveTab('suggestions')}
                   >
-                    💡 Suggestions
+                    Suggestions
                   </button>
                 </div>
 
@@ -177,16 +388,54 @@ if (x == 5) { // Should use ===
                     <div className="overview-content">
                       <div className="issue-summary">
                         <div className="summary-item error">
-                          <span className="summary-count">{analysis.issues.filter(i => i.type === 'error').length}</span>
-                          <span className="summary-label">Errors</span>
+                          <div className="summary-count">{analysis.totalErrors || 0}</div>
+                          <div className="summary-label">Errors</div>
                         </div>
                         <div className="summary-item warning">
-                          <span className="summary-count">{analysis.issues.filter(i => i.type === 'warning').length}</span>
-                          <span className="summary-label">Warnings</span>
+                          <div className="summary-count">{analysis.totalWarnings || 0}</div>
+                          <div className="summary-label">Warnings</div>
                         </div>
                         <div className="summary-item info">
-                          <span className="summary-count">{analysis.issues.filter(i => i.type === 'info').length}</span>
-                          <span className="summary-label">Info</span>
+                          <div className="summary-count">{analysis.issues?.length || 0}</div>
+                          <div className="summary-label">Total</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'metrics' && (
+                    <div className="metrics-content">
+                      <div className="metric-detail">
+                        <h4>Code Structure Metrics</h4>
+                        <div className="metric-item">
+                          <span>Total Lines:</span>
+                          <strong>{analysis.metrics?.totalLines || 0}</strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Non-Empty Lines:</span>
+                          <strong>{analysis.metrics?.nonEmptyLines || 0}</strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Comment Lines:</span>
+                          <strong>{analysis.metrics?.commentLines || 0}</strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Comment Percentage:</span>
+                          <strong>{analysis.metrics?.commentPercentage || 0}%</strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Cyclomatic Complexity:</span>
+                          <strong>{analysis.metrics?.complexity || 0}</strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Maintainability:</span>
+                          <strong className={`maintainability-${analysis.metrics?.maintainability?.toLowerCase()}`}>
+                            {analysis.metrics?.maintainability || 'N/A'}
+                          </strong>
+                        </div>
+                        <div className="metric-item">
+                          <span>Average Line Length:</span>
+                          <strong>{analysis.metrics?.avgLineLength || 0} chars</strong>
                         </div>
                       </div>
                     </div>
@@ -194,37 +443,68 @@ if (x == 5) { // Should use ===
 
                   {activeTab === 'issues' && (
                     <div className="issues-content">
-                      {analysis.issues.map((issue, index) => (
-                        <div key={index} className={`issue-card ${issue.type}`}>
-                          <div className="issue-header">
-                            <span className="issue-type">{issue.type.toUpperCase()}</span>
-                            <span className="issue-line">Line {issue.line}</span>
+                      {analysis.issues && analysis.issues.length > 0 ? (
+                        analysis.issues.map((issue, index) => (
+                          <div key={index} className={`issue-card ${issue.severity}`}>
+                            <div className="issue-header">
+                              <div className="issue-type">{issue.severity.toUpperCase()}</div>
+                              <div className="issue-line">Line {issue.line}</div>
+                            </div>
+                            <div className="issue-message">{issue.message}</div>
+                            {issue.ruleId && (
+                              <div className="issue-category">{issue.ruleId}</div>
+                            )}
                           </div>
-                          <div className="issue-message">{issue.message}</div>
-                          <div className="issue-category">{issue.category}</div>
+                        ))
+                      ) : (
+                        <div className="no-analysis">
+                          <div className="no-analysis-icon">🎉</div>
+                          <h3>No Issues Found!</h3>
+                          <p>Your code looks clean and follows best practices.</p>
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
 
                   {activeTab === 'suggestions' && (
                     <div className="suggestions-content">
-                      {analysis.suggestions.map((suggestion, index) => (
+                      {suggestions.map((suggestion, index) => (
                         <div key={index} className="suggestion-card">
-                          <span className="suggestion-icon">💡</span>
-                          <span className="suggestion-text">{suggestion}</span>
+                          <div className="suggestion-icon">{suggestion.icon}</div>
+                          <div className="suggestion-text">{suggestion.text}</div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
               </div>
+
+              {analysis?.fixedCode && (
+                <div className="fixed-code-card">
+                  <div className="fixed-code-header">
+                    <div>
+                      <h4>Auto-fixes</h4>
+                      <p className="fixed-code-subtitle">ESLint suggested fixes. Review before applying.</p>
+                    </div>
+                    <button
+                      className="copy-btn"
+                      onClick={() => copyFixedCode(analysis.fixedCode)}
+                      type="button"
+                    >
+                      {copyState}
+                    </button>
+                  </div>
+                  <pre className="fixed-code-block">
+                    <code>{analysis.fixedCode}</code>
+                  </pre>
+                </div>
+              )}
             </>
           ) : (
             <div className="no-analysis">
               <div className="no-analysis-icon">🔍</div>
               <h3>Ready to Analyze</h3>
-              <p>Click "Analyze Code" to get detailed quality insights</p>
+              <p>Paste your code and click "Analyze Code" to get started.</p>
             </div>
           )}
         </div>
