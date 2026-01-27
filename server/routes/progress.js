@@ -132,7 +132,19 @@ router.get('/leaderboard', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
     const timeframe = req.query.timeframe || 'all-time'; // 'weekly', 'monthly', 'all-time'
-    
+
+    if (!validateTimeframe(timeframe)) {
+      logRequest(req, `Invalid timeframe: ${timeframe}`, 'warn');
+      return res.status(400).json({ error: 'Invalid timeframe. Must be one of: weekly, monthly, all-time' });
+    }
+
+    if (!validateLimit(limit.toString())) {
+      logRequest(req, `Invalid limit: ${limit}`, 'warn');
+      return res.status(400).json({ error: 'Invalid limit. Must be an integer between 1 and 100' });
+    }
+
+    logRequest(req, `Fetching leaderboard with limit: ${limit}, timeframe: ${timeframe}`);
+
     let dateFilter = {};
     if (timeframe === 'weekly') {
       dateFilter = { lastActiveAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } };
@@ -145,9 +157,10 @@ router.get('/leaderboard', async (req, res) => {
       .limit(limit)
       .select('userId displayName totalPoints level badges lastActiveAt');
 
+    logRequest(req, `Leaderboard fetched successfully`);
     res.json(leaderboard);
   } catch (error) {
-    console.error('Leaderboard error:', error);
+    logRequest(req, `Leaderboard error: ${error.message}`, 'error');
     res.status(500).json({ error: 'Failed to fetch leaderboard' });
   }
 });
