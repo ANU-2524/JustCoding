@@ -4,30 +4,36 @@
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
+  padding-top: 100px;
 }
 
 .visualizer-header {
   text-align: center;
   margin-bottom: 30px;
   color: white;
+  position: relative;
+  z-index: 1;
 }
 
 .visualizer-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-top: 0;
 }
 
 .visualizer-header p {
   font-size: 1.2rem;
   opacity: 0.9;
+  margin-bottom: 0;
 }
 
 .visualizer-main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 25px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 300px);
+  min-height: 600px;
 }
 
 .code-panel, .visualization-panel {
@@ -276,6 +282,7 @@
   .visualizer-main {
     grid-template-columns: 1fr;
     height: auto;
+    min-height: auto;
   }
   
   .code-panel {
@@ -288,6 +295,10 @@
 }
 
 @media (max-width: 768px) {
+  .visualizer-container {
+    padding-top: 80px;
+  }
+  
   .visualizer-header h1 {
     font-size: 2rem;
   }

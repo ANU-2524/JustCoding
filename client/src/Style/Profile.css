@@ -298,6 +298,55 @@
 .link-item:hover {
   background: rgba(212, 88, 31, 0.15);
   color: #fff;
+}
+
+.link-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dashboard Notice - Guide to Full Dashboard */
+.dashboard-notice {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0 30px 0;
+  text-align: center;
+}
+
+.notice-content h3 {
+  color: #60a5fa;
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.notice-content p {
+  color: #a8b3c1;
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+}
+
+.notice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3b82f6, #8b5ce6);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.notice-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
   transform: translateX(4px);
 }
 
