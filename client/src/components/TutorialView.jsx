@@ -100,7 +100,9 @@ function TutorialView() {
   };
 
   const updateProgress = async (updates) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+return;
+}
 
     try {
       const response = await fetch(`/api/tutorials/${slug}/progress`, {
@@ -123,7 +125,9 @@ function TutorialView() {
   };
 
   const goToStep = (stepNumber) => {
-    if (stepNumber < 1 || stepNumber > tutorial.steps.length) return;
+    if (stepNumber < 1 || stepNumber > tutorial.steps.length) {
+return;
+}
     
     setCurrentStep(stepNumber);
     setShowHints(false);
@@ -172,7 +176,9 @@ function TutorialView() {
   };
 
   const submitQuiz = () => {
-    if (quizAnswer === null) return;
+    if (quizAnswer === null) {
+return;
+}
     
     setShowQuizResult(true);
     const isCorrect = quizAnswer === getCurrentStep().quiz.correctAnswer;
@@ -185,7 +191,9 @@ function TutorialView() {
   };
 
   const getCurrentStep = () => {
-    if (!tutorial || !tutorial.steps) return null;
+    if (!tutorial || !tutorial.steps) {
+return null;
+}
     return tutorial.steps[currentStep - 1];
   };
 
@@ -194,7 +202,9 @@ function TutorialView() {
   };
 
   const getProgressPercentage = () => {
-    if (!tutorial || !progress) return 0;
+    if (!tutorial || !progress) {
+return 0;
+}
     return Math.round((progress.completedSteps?.length || 0) / tutorial.steps.length * 100);
   };
 

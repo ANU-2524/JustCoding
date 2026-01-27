@@ -1,5 +1,5 @@
 // Use backend URL from env with a safe local fallback for builds missing the env var
-const BASE_URL = (import.meta.env.VITE_BACKEND_URL || "http://localhost:4334") + "/api/gpt";
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL || "http://localhost:4334"  }/api/gpt`;
 
 export const getExplanation = async (question) => {
   try {
@@ -30,4 +30,3 @@ export const getDebugSuggestion = async (code, errorMessage) => {
     return "⚠️ AI failed to debug.";
   }
 };
-

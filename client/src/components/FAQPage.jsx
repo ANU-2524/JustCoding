@@ -442,7 +442,6 @@ const FAQPage = () => {
   </div>
 </footer>
 
-
       {/* Add FAQ-specific CSS */}
       <style jsx>{`
         .faq-page {

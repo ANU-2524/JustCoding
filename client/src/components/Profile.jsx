@@ -127,28 +127,42 @@ const Profile = () => {
 
   const normalizeUrl = (value) => {
     const v = String(value || '').trim();
-    if (!v) return '';
-    if (v.startsWith('http://') || v.startsWith('https://')) return v;
+    if (!v) {
+return '';
+}
+    if (v.startsWith('http://') || v.startsWith('https://')) {
+return v;
+}
     return `https://${v}`;
   };
 
   const identityLabel = useMemo(() => {
-    if (currentUser?.email) return currentUser.email;
+    if (currentUser?.email) {
+return currentUser.email;
+}
     return 'Guest (saved in this browser)';
   }, [currentUser]);
 
   const formatDate = (iso) => {
-    if (!iso) return '';
+    if (!iso) {
+return '';
+}
     const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
+    if (Number.isNaN(d.getTime())) {
+return iso;
+}
     return d.toLocaleString();
   };
 
   const formatDuration = (startedAt, endedAt) => {
-    if (!startedAt) return '';
+    if (!startedAt) {
+return '';
+}
     const start = new Date(startedAt).getTime();
     const end = endedAt ? new Date(endedAt).getTime() : Date.now();
-    if (Number.isNaN(start) || Number.isNaN(end)) return '';
+    if (Number.isNaN(start) || Number.isNaN(end)) {
+return '';
+}
     const sec = Math.max(0, Math.floor((end - start) / 1000));
     const min = Math.floor(sec / 60);
     const rem = sec % 60;
@@ -169,7 +183,9 @@ const Profile = () => {
 
   const handleDeleteSnippet = (id) => {
     const ok = window.confirm('Delete this snippet?');
-    if (!ok) return;
+    if (!ok) {
+return;
+}
     deleteSnippet(id);
     refreshData();
   };
@@ -316,7 +332,9 @@ const Profile = () => {
                   target={profile.githubUrl ? "_blank" : undefined}
                   rel={profile.githubUrl ? "noreferrer" : undefined}
                   onClick={(e) => {
-                    if (!profile.githubUrl) e.preventDefault();
+                    if (!profile.githubUrl) {
+e.preventDefault();
+}
                   }}
                 >
                   <FaGithub /> <span>{profile.githubUrl ? 'GitHub' : 'GitHub (not set)'}</span>
@@ -327,7 +345,9 @@ const Profile = () => {
                   target={profile.linkedinUrl ? "_blank" : undefined}
                   rel={profile.linkedinUrl ? "noreferrer" : undefined}
                   onClick={(e) => {
-                    if (!profile.linkedinUrl) e.preventDefault();
+                    if (!profile.linkedinUrl) {
+e.preventDefault();
+}
                   }}
                 >
                   <FaLinkedin /> <span>{profile.linkedinUrl ? 'LinkedIn' : 'LinkedIn (not set)'}</span>
@@ -430,7 +450,9 @@ const Profile = () => {
                             className="dash-btn"
                             onClick={() => {
                               const title = window.prompt('Rename snippet', s.title);
-                              if (!title) return;
+                              if (!title) {
+return;
+}
                               updateSnippet(s.id, { title: title.trim() });
                               refreshData();
                             }}

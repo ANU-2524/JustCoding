@@ -19,7 +19,9 @@ const ScrollToTop = () => {
     });
   };
 
-  if (!visible) return null;
+  if (!visible) {
+return null;
+}
 
   return (
     <button

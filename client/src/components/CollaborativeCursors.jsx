@@ -17,7 +17,9 @@ const CollaborativeCursors = ({ cursors, participants, editorRef }) => {
 
   // Calculate cursor position in editor
   const getCursorStyle = (position) => {
-    if (!editorRef?.current) return { display: 'none' };
+    if (!editorRef?.current) {
+return { display: 'none' };
+}
     
     // This would need to be adapted based on your editor implementation
     // For Monaco editor or CodeMirror, you'd use their APIs

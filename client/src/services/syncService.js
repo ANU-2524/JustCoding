@@ -8,7 +8,9 @@ export async function syncProfileToBackend(userId, profile) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(profile)
         });
-        if (!response.ok) throw new Error('Failed to sync profile');
+        if (!response.ok) {
+throw new Error('Failed to sync profile');
+}
         const data = await response.json();
         return data.success ? data.data : null;
     } catch (error) {
@@ -21,7 +23,9 @@ export async function syncProfileToBackend(userId, profile) {
 export async function fetchProfileFromBackend(userId) {
     try {
         const response = await fetch(`${API_BASE}/api/user/profile/${userId}`);
-        if (!response.ok) throw new Error('Failed to fetch profile');
+        if (!response.ok) {
+throw new Error('Failed to fetch profile');
+}
         const data = await response.json();
         return data.success ? data.data : null;
     } catch (error) {
@@ -34,7 +38,9 @@ export async function fetchProfileFromBackend(userId) {
 export async function fetchSnippetsFromBackend(userId) {
     try {
         const response = await fetch(`${API_BASE}/api/user/snippets/${userId}`);
-        if (!response.ok) throw new Error('Failed to fetch snippets');
+        if (!response.ok) {
+throw new Error('Failed to fetch snippets');
+}
         const data = await response.json();
         return Array.isArray(data) ? data : [];
     } catch (error) {
@@ -51,7 +57,9 @@ export async function createSnippetOnBackend(userId, snippet) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, ...snippet })
         });
-        if (!response.ok) throw new Error('Failed to create snippet');
+        if (!response.ok) {
+throw new Error('Failed to create snippet');
+}
         const data = await response.json();
         return data ? data : null;
     } catch (error) {
@@ -68,7 +76,9 @@ export async function updateSnippetOnBackend(snippetId, userId, updates) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, ...updates })
         });
-        if (!response.ok) throw new Error('Failed to update snippet');
+        if (!response.ok) {
+throw new Error('Failed to update snippet');
+}
         const data = await response.json();
         return data.success ? data.data : null;
     } catch (error) {
@@ -83,7 +93,9 @@ export async function deleteSnippetOnBackend(snippetId, userId) {
         const response = await fetch(`${API_BASE}/api/user/snippets/${snippetId}?userId=${userId}`, {
             method: 'DELETE'
         });
-        if (!response.ok) throw new Error('Failed to delete snippet');
+        if (!response.ok) {
+throw new Error('Failed to delete snippet');
+}
         const data = await response.json();
         return data.success;
     } catch (error) {
@@ -100,7 +112,9 @@ export async function syncLocalSnippetsToBackend(userId, snippets) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, snippets })
         });
-        if (!response.ok) throw new Error('Failed to sync snippets');
+        if (!response.ok) {
+throw new Error('Failed to sync snippets');
+}
         const data = await response.json();
         return data.success ? data.synced : 0;
     } catch (error) {

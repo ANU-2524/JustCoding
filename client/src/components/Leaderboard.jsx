@@ -26,9 +26,15 @@ const Leaderboard = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <FaCrown className="rank-icon gold" />;
-    if (rank === 2) return <FaTrophy className="rank-icon silver" />;
-    if (rank === 3) return <FaMedal className="rank-icon bronze" />;
+    if (rank === 1) {
+return <FaCrown className="rank-icon gold" />;
+}
+    if (rank === 2) {
+return <FaTrophy className="rank-icon silver" />;
+}
+    if (rank === 3) {
+return <FaMedal className="rank-icon bronze" />;
+}
     return <span className="rank-number">#{rank}</span>;
   };
 

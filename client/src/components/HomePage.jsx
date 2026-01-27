@@ -352,7 +352,6 @@ const HomePage = () => {
   </div>
 </motion.section>
 
-
       {/* How It Works Section */}
       <HowItWorks />
 
@@ -466,7 +465,6 @@ const HomePage = () => {
 
   </div>
 </footer>
-
 
     </div>
   );
