@@ -82,10 +82,7 @@ router.post('/analyze', async (req, res) => {
 
     // Only support JavaScript and TypeScript for now
     if (!['javascript', 'typescript'].includes(language)) {
-      return res.json({
-        issues: [],
-        message: `Code quality analysis not available for ${language}`,
-      });
+      return res.json([]);
     }
 
     // Create ESLint instance with appropriate config
