@@ -13,6 +13,12 @@ import {
   updateSnippet,
 } from '../services/localStore';
 
+/**
+ * UserDashboard Component - Comprehensive User Dashboard
+ * Features: Analytics, Achievements, Portfolio View, Snippet Library, Collaboration History
+ * 
+ * For a simple profile card view, use Profile component instead
+ */
 const UserDashboard = () => {
   const { currentUser } = useAuth();
   const [profile, setProfile] = useState({

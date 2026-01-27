@@ -35,7 +35,7 @@ const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
 
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
-
+const CodeQuality = lazy(() => import("./components/CodeQuality"));
 const Analytics = lazy(() => import("./components/Analytics"));
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
 
@@ -126,8 +126,7 @@ function App() {
                 <Route path="/community" element={<CommunityPage />} />
 
                 <Route path="/admin/rooms" element={<RoomManagement />} />
-
-
+                <Route path="/code-quality" element={<CodeQuality />} />
               </Routes>
             </Suspense>
             <ScrollToTop />

@@ -60,6 +60,7 @@ const Navbar = () => {
     { path: '/contests', label: 'Contests', icon: <FaTrophy /> },
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
     { path: '/analytics', label: 'Analytics', icon: <FaChartLine /> },
+    { path: '/code-quality', label: 'Code Quality', icon: <FaBug /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/community', label: 'Community', icon: <FaComments /> },
     // { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },

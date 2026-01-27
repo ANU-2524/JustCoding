@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight } from 'react-icons/fa';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
 import {
@@ -14,6 +14,10 @@ import {
   updateSnippet,
 } from '../services/localStore';
 
+/**
+ * Profile Component - User Profile Card with Basic Snippet Management
+ * For comprehensive analytics and dashboard features, use UserDashboard component
+ */
 const Profile = () => {
   const { isDark, theme } = useTheme();
   const { currentUser } = useAuth();
@@ -330,6 +334,20 @@ const Profile = () => {
                 </a>
               </div>
             )}
+          </div>
+
+          {/* Dashboard Redirect Notice */}
+          <div className="dashboard-notice">
+            <div className="notice-content">
+              <h3>Want More Analytics?</h3>
+              <p>Visit the <strong>Dashboard</strong> to see detailed statistics, achievements, portfolio view, and collaboration history.</p>
+              <button 
+                className="notice-btn"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                <FaArrowRight /> Go to Dashboard
+              </button>
+            </div>
           </div>
 
           <div className="dashboard">
