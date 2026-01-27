@@ -4,6 +4,11 @@ const router = express.Router();
 const { validate } = require('../middleware/validation');
 dotenv.config();
 
+// Import async handler and error utilities
+const { asyncHandler } = require("../middleware/async");
+const { BadRequestError, ExternalServiceError } = require("../utils/ErrorResponse");
+const { logExternalService } = require("../services/logger");
+
 // Node-fetch for CommonJS
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -49,7 +54,6 @@ router.post("/explain", validate('gptExplain'), async (req, res) => {
     console.error("❌ Error fetching explanation from OpenRouter:", err);
     res.status(500).json({ success: false, error: "Failed to get explanation." });
   }
-});
 
 /**
  * POST /api/gpt/debug
@@ -90,6 +94,10 @@ router.post("/debug", validate('gptDebug'), async (req, res) => {
     console.error("❌ Error fetching debug help from OpenRouter:", err);
     res.status(500).json({ success: false, error: "Failed to get debug help." });
   }
-});
+
+  logExternalService('OpenRouter', 'debug', true);
+  const reply = data.choices[0].message.content.trim();
+  res.json({ debugHelp: reply });
+}));
 
 module.exports = router;

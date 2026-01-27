@@ -46,7 +46,7 @@ const server = http.createServer(app);
 connectDB();
 
 // Initialize badges on startup
-BadgeService.initializeBadges().catch(console.error);
+BadgeService.initializeBadges().catch(err => logger.warn('Badge initialization failed', { error: err.message }));
 
 // ============================================
 // Security Middleware
@@ -115,16 +115,9 @@ app.use("/api/user", userRoute);
 app.post('/api/visualizer/visualize', codeLimiter, validate('visualizer'), (req, res) => {
   const { code, language } = req.body;
 
-  try {
-    const result = visualizerService.visualize(code, language);
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
+  const result = visualizerService.visualize(code, language);
+  res.json({ success: true, ...result });
+}));
 
 /**
  * GET /api/visualizer/languages
@@ -190,32 +183,23 @@ app.post('/compile', codeLimiter, validate('compile'), async (req, res) => {
 
   const langInfo = languageMap[language];
   if (!langInfo) {
-    return res.status(400).json({
-      error: 'Unsupported language',
-      supportedLanguages: Object.keys(languageMap)
-    });
+    throw new BadRequestError(`Unsupported language. Supported: ${Object.keys(languageMap).join(', ')}`);
   }
 
-  try {
-    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
-      language,
-      version: langInfo.version,
-      stdin: stdin || '',
-      files: [{ name: `main.${langInfo.ext}`, content: code }],
-    });
+  const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+    language,
+    version: langInfo.version,
+    stdin: stdin || '',
+    files: [{ name: `main.${langInfo.ext}`, content: code }],
+  }).catch(err => {
+    throw new ExternalServiceError('Code execution service unavailable. Please try again.');
+  });
 
-    const output = response.data.run.stdout || response.data.run.stderr || "No output";
-    const sanitizedOutput = output.substring(0, 5000);
+  const output = response.data.run.stdout || response.data.run.stderr || "No output";
+  const sanitizedOutput = output.substring(0, 5000);
 
-    res.json({ output: sanitizedOutput });
-  } catch (error) {
-    console.error("Compile Error:", error.message);
-    res.status(500).json({
-      error: 'Code execution failed. Please try again.',
-      tip: 'Check your code for syntax errors.'
-    });
-  }
-});
+  res.json({ success: true, output: sanitizedOutput });
+}));
 
 // ============================================
 // Health Check & Info Endpoints

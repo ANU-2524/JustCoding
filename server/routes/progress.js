@@ -92,8 +92,7 @@ router.post('/event', validate('progressEvent'), async (req, res) => {
       return res.json({
         success: false,
         event: null,
-        newBadges: [],
-        fallback: true
+        newBadges: []
       });
     }
 
@@ -111,8 +110,7 @@ router.post('/event', validate('progressEvent'), async (req, res) => {
     res.json({
       success: false,
       event: null,
-      newBadges: [],
-      fallback: true
+      newBadges: []
     });
   }
 });
