@@ -107,8 +107,7 @@ router.post('/event', async (req, res) => {
       logRequest(req, 'Database not available, returning fallback', 'warn');
       return res.json({
         event: null,
-        newBadges: [],
-        fallback: true
+        newBadges: []
       });
     }
 
@@ -124,8 +123,7 @@ router.post('/event', async (req, res) => {
     logRequest(req, `Event recording error: ${error.message}`, 'error');
     res.json({
       event: null,
-      newBadges: [],
-      fallback: true
+      newBadges: []
     });
   }
 });

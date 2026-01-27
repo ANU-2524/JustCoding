@@ -116,11 +116,17 @@ router.post('/analyze', async (req, res) => {
       });
     }
 
+
+    // Only support JavaScript and TypeScript for now
+    if (!['javascript', 'typescript'].includes(language)) {
+      return res.json([]);
+
     if (!validateLanguage(language)) {
       logRequest(req, `Unsupported language: ${language}`, 'warn');
       return res.status(400).json({
         error: 'Supported languages: JavaScript, TypeScript, Python, Java, C++, C',
       });
+
     }
 
     // Calculate metrics for all languages
