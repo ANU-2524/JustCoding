@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const AnalyticsService = require('../services/AnalyticsService');
 const BadgeService = require('../services/BadgeService');
 const User = require('../models/User');
@@ -50,7 +51,7 @@ router.get('/dashboard/:userId', async (req, res) => {
     logRequest(req, `Fetching dashboard for user: ${userId}`);
 
     // Check if MongoDB is available
-    if (!require('mongoose').connection.readyState) {
+    if (!mongoose.connection.readyState) {
       logRequest(req, 'Database not available, returning fallback', 'warn');
       return res.status(503).json({
         error: 'Database not available',
@@ -102,7 +103,7 @@ router.post('/event', async (req, res) => {
     logRequest(req, `Recording event: ${eventType} for user: ${userId}`);
 
     // Check if MongoDB is available
-    if (!require('mongoose').connection.readyState) {
+    if (!mongoose.connection.readyState) {
       logRequest(req, 'Database not available, returning fallback', 'warn');
       return res.json({
         event: null,

@@ -3,20 +3,26 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const http = require("http");
-const { Server } = require("socket.io");
+const http = require('http');
+const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 const BadgeService = require('./services/BadgeService');
+const Room = require('./models/Room');
+
 const {
-  generalLimiter, 
-  aiLimiter, 
-  codeLimiter, 
-  rateLimitLogger 
+  generalLimiter,
+  aiLimiter,
+  codeLimiter,
+  rateLimitLogger
 } = require('./middleware/simpleRateLimiter');
-const gptRoute = require("./routes/gptRoute.js");
-const codeQualityRoute = require("./routes/codeQuality.js");
-const progressRoute = require("./routes/progress.js");
-const challengesRoute = require("./routes/challenges.js");
+const gptRoute = require('./routes/gptRoute');
+const codeQualityRoute = require('./routes/codeQuality');
+const progressRoute = require('./routes/progress');
+const challengesRoute = require('./routes/challenges');
+const roomRoute = require('./routes/room');
+const userRoute = require('./routes/user');
+const tutorialsRoute = require('./routes/tutorials');
 
 // Multi-Language Visualizer Service
 const visualizerService = require('./services/visualizer');
@@ -31,6 +37,7 @@ connectDB();
 BadgeService.initializeBadges().catch(console.error);
 
 const userMap = {};
+const roomTimers = {};
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://just-coding-theta.vercel.app";
 const allowedOrigins = [
@@ -61,15 +68,45 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
 
-  socket.on("join-room", ({ roomId, username }) => {
-    socket.join(roomId);
-    console.log(`${username} joined room ${roomId}`);
-    userMap[socket.id] = { username, roomId };
-    socket.to(roomId).emit("user-joined", `${username} joined the room`);
+  socket.on("join-room", async ({ roomId, username }) => {
+    try {
+      socket.join(roomId);
+
+      let room = await Room.findOne({ roomId });
+      if (!room) {
+        room = await Room.create({
+          roomId,
+          code: "//Welcome to JustCoding",
+          language: "javascript",
+        });
+      }
+
+      console.log(`${username} joined room ${roomId}`);
+      userMap[socket.id] = { username, roomId };
+
+      socket.emit('code-update', room.code);
+
+      socket.to(roomId).emit("user-joined", `${username} joined the room`);
+    } catch (error) {
+      console.error('Error joining room:', error);
+    }
   });
 
   socket.on("code-change", ({ roomId, code }) => {
     socket.to(roomId).emit("code-update", code);
+
+    if (roomTimers[roomId]) {
+      clearTimeout(roomTimers[roomId]);
+    }
+
+    roomTimers[roomId] = setTimeout(async () => {
+      try {
+        await Room.updateOne({ roomId }, { code });
+        delete roomTimers[roomId];
+      } catch (error) {
+        console.error('Error updating room code:', error);
+      }
+    }, 2000);
   });
 
   socket.on("send-chat", ({ roomId, username, message }) => {
@@ -94,15 +131,15 @@ io.on("connection", (socket) => {
 // Language map for code execution - ALL LANGUAGES
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
-  python:     { ext: 'py', version: '3.10.0' },
-  java:       { ext: 'java', version: '15.0.2' },
-  cpp:        { ext: 'cpp', version: '10.2.0' },
-  c:          { ext: 'c', version: '10.2.0' },
-  go:         { ext: 'go', version: '1.16.2' },
-  ruby:       { ext: 'rb', version: '3.0.1' },
-  php:        { ext: 'php', version: '8.2.3' },
-  swift:      { ext: 'swift', version: '5.3.3' },
-  rust:       { ext: 'rs', version: '1.68.2' },
+  python: { ext: 'py', version: '3.10.0' },
+  java: { ext: 'java', version: '15.0.2' },
+  cpp: { ext: 'cpp', version: '10.2.0' },
+  c: { ext: 'c', version: '10.2.0' },
+  go: { ext: 'go', version: '1.16.2' },
+  ruby: { ext: 'rb', version: '3.0.1' },
+  php: { ext: 'php', version: '8.2.3' },
+  swift: { ext: 'swift', version: '5.3.3' },
+  rust: { ext: 'rs', version: '1.68.2' },
 };
 
 // AI routes with security
@@ -110,25 +147,32 @@ app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
 app.use("/api/progress", progressRoute);
 app.use("/api/challenges", challengesRoute);
+app.use("/api/tutorials", tutorialsRoute);
+
+// Room routes 
+app.use("/api/room", roomRoute);
+
+// User data sync routes (profile + snippets)
+app.use("/api/user", userRoute);
 
 // Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
 app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
   const { code, language } = req.body;
-  
+
   if (!code || !language) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Missing required fields: code and language' 
+    return res.status(400).json({
+      success: false,
+      error: 'Missing required fields: code and language'
     });
   }
-  
+
   try {
     const result = visualizerService.visualize(code, language);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ 
-      success: false, 
-      error: error.message 
+    res.status(400).json({
+      success: false,
+      error: error.message
     });
   }
 });
@@ -144,28 +188,28 @@ app.get('/api/visualizer/languages', (req, res) => {
 // Code execution endpoint with security
 app.post('/compile', codeLimiter, async (req, res) => {
   const { language, code, stdin } = req.body;
-  
+
   if (!language || !code) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: language and code' 
+    return res.status(400).json({
+      error: 'Missing required fields: language and code'
     });
   }
-  
+
   if (code.length > 10000) {
-    return res.status(400).json({ 
-      error: 'Code too long. Maximum 10,000 characters allowed.' 
+    return res.status(400).json({
+      error: 'Code too long. Maximum 10,000 characters allowed.'
     });
   }
-  
+
   if (stdin && stdin.length > 1000) {
-    return res.status(400).json({ 
-      error: 'Input too long. Maximum 1,000 characters allowed.' 
+    return res.status(400).json({
+      error: 'Input too long. Maximum 1,000 characters allowed.'
     });
   }
-  
+
   const langInfo = languageMap[language];
   if (!langInfo) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Unsupported language',
       supportedLanguages: Object.keys(languageMap)
     });
@@ -181,11 +225,11 @@ app.post('/compile', codeLimiter, async (req, res) => {
 
     const output = response.data.run.stdout || response.data.run.stderr || "No output";
     const sanitizedOutput = output.substring(0, 5000);
-    
+
     res.json({ output: sanitizedOutput });
   } catch (error) {
     console.error("Compile Error:", error.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Code execution failed. Please try again.',
       tip: 'Check your code for syntax errors.'
     });
@@ -203,3 +247,4 @@ app.get('/test', (req, res) => {
 });
 
 server.listen(process.env.PORT || 4334, () => console.log(`JustCode Server running on port ${process.env.PORT || 4334}`));
+// BACKEND: index.js

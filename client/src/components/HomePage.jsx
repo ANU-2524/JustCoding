@@ -3,9 +3,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, animate } from "framer-motion";
 import "../Style/HomePage.css";
-import { FaRobot, FaCode, FaUsers, FaFilePdf, FaTwitter, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
+import { FaRobot, FaCode, FaUsers, FaFilePdf, FaGithub, FaLinkedin, FaCodeBranch, FaChartLine, FaShareAlt, FaSyncAlt, FaShieldAlt, FaCogs } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import CardSwap, { Card } from './CardSwap';
 import HowItWorks from './HowItWorks';
+import FeaturedTutorials from './FeaturedTutorials';
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
@@ -270,6 +272,8 @@ const HomePage = () => {
         </div>
       </motion.section>
 
+      {/* Featured Tutorials Section */}
+      <FeaturedTutorials />
 
 {/* Use Cases Section */}
 <motion.section
@@ -405,6 +409,15 @@ const HomePage = () => {
       </ul>
     </div>
 
+    {/* Legal */}
+    <div className="footer-links">
+      <h4>Legal</h4>
+      <ul>
+        <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
+        <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
+      </ul>
+    </div>
+
     {/* Feedback & Rating */}
     <div className="footer-feedback">
       <h4>Feedback</h4>
@@ -428,19 +441,32 @@ const HomePage = () => {
     {/* Social Links */}
     <div className="footer-social">
       <h4>Connect</h4>
-      <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
-        <FaTwitter /> Twitter
+      <a
+        href="https://x.com/_Anuuu_Soniii_"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FaXTwitter /> Twitter
       </a>
-      <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/ANU-2524/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <FaGithub /> GitHub
       </a>
-      <a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://www.linkedin.com/in/anu--soni/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <FaLinkedin /> LinkedIn
       </a>
     </div>
 
   </div>
 </footer>
+
 
     </div>
   );
