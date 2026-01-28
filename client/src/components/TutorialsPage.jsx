@@ -172,14 +172,20 @@ function TutorialsPage() {
 
   const getTutorialProgress = (tutorial) => {
     const progress = userProgress[tutorial._id];
-    if (!progress) return { percentage: 0, status: 'not-started' };
+    if (!progress) {
+return { percentage: 0, status: 'not-started' };
+}
     
     const completed = progress.completedSteps.length;
     const total = tutorial.steps?.length || 1;
     const percentage = Math.round((completed / total) * 100);
     
-    if (progress.completedAt) return { percentage: 100, status: 'completed' };
-    if (completed > 0) return { percentage, status: 'in-progress' };
+    if (progress.completedAt) {
+return { percentage: 100, status: 'completed' };
+}
+    if (completed > 0) {
+return { percentage, status: 'in-progress' };
+}
     return { percentage: 0, status: 'not-started' };
   };
 

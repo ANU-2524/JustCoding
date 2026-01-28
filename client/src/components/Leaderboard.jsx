@@ -16,7 +16,8 @@ const Leaderboard = () => {
       setLoading(true);
       const response = await fetch(`http://localhost:4334/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
       const data = await response.json();
-      setLeaderboard(data || []);
+      // Handle new response format with success field
+      setLeaderboard(data.leaderboard || data || []);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       setLeaderboard([]);
@@ -26,9 +27,15 @@ const Leaderboard = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <FaCrown className="rank-icon gold" />;
-    if (rank === 2) return <FaTrophy className="rank-icon silver" />;
-    if (rank === 3) return <FaMedal className="rank-icon bronze" />;
+    if (rank === 1) {
+return <FaCrown className="rank-icon gold" />;
+}
+    if (rank === 2) {
+return <FaTrophy className="rank-icon silver" />;
+}
+    if (rank === 3) {
+return <FaMedal className="rank-icon bronze" />;
+}
     return <span className="rank-number">#{rank}</span>;
   };
 

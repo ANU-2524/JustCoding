@@ -272,7 +272,6 @@ const Challenges = () => {
   const [showProblemPopup, setShowProblemPopup] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
 
-
   const [challenges, setChallenges] = useState(leetCodeProblems);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({

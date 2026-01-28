@@ -25,12 +25,22 @@ const LoginPage = () => {
 
   // Password Strength Logic
   const strengthScore = useMemo(() => {
-    if (!password) return 0;
+    if (!password) {
+return 0;
+}
     let score = 0;
-    if (password.length > 7) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
+    if (password.length > 7) {
+score++;
+}
+    if (/[A-Z]/.test(password)) {
+score++;
+}
+    if (/[0-9]/.test(password)) {
+score++;
+}
+    if (/[^A-Za-z0-9]/.test(password)) {
+score++;
+}
     return score;
   }, [password]);
 
@@ -39,16 +49,23 @@ const LoginPage = () => {
     try {
       await signInWithPopup(auth, socialProvider);
       navigate(from);
-    } catch (err) { alert(err.message); }
+    } catch (err) {
+ alert(err.message); 
+}
   };
 
   const handleSubmit = async (e, type) => {
     e.preventDefault();
     try {
-      if (type === 'login') await signInWithEmailAndPassword(auth, email, password);
-      else await createUserWithEmailAndPassword(auth, email, password);
+      if (type === 'login') {
+await signInWithEmailAndPassword(auth, email, password);
+} else {
+await createUserWithEmailAndPassword(auth, email, password);
+}
       navigate(from);
-    } catch (error) { alert(error.message); }
+    } catch (error) {
+ alert(error.message); 
+}
   };
 
   return (

@@ -9,5 +9,7 @@ createRoot(rootEl).render(<App />)
 
 // Remove preloader after first paint
 requestAnimationFrame(() => {
-  if (preloader) preloader.remove()
+  if (preloader) {
+preloader.remove()
+}
 })

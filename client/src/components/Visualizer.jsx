@@ -83,7 +83,9 @@ print(result)`);
   };
 
   const playVisualization = () => {
-    if (!visualization) return;
+    if (!visualization) {
+return;
+}
     setIsPlaying(true);
     const interval = setInterval(() => {
       setCurrentStep(prev => {

@@ -53,7 +53,9 @@ const ChallengeSolve = () => {
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/api/challenges/${slug}`);
-      if (!res.ok) throw new Error('Challenge not found');
+      if (!res.ok) {
+throw new Error('Challenge not found');
+}
       const data = await res.json();
       setChallenge(data);
       setCode(data.starterCode?.[language] || '// Write your solution here');

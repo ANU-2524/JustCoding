@@ -175,7 +175,7 @@ router.delete('/snippets/:snippetId', async (req, res) => {
             return res.status(404).json({ error: 'Snippet not found' });
         }
 
-        res.json({ message: 'Snippet deleted' });
+        res.json({ deleted: true, snippetId });
     } catch (error) {
         console.error('Delete snippet error:', error);
         res.status(500).json({ error: 'Failed to delete snippet' });
