@@ -4,6 +4,7 @@ import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
@@ -39,14 +40,15 @@ const NotFound = lazy(() => import("./components/NotFound"));
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <div className="app-container">
-            <Cursor />
-            <Navbar />
-            <Suspense fallback={<div>Loading...</div>}>
-              <Routes>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="app-container">
+              <Cursor />
+              <Navbar />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/blog" element={<BlogPage />} />
@@ -132,7 +134,7 @@ function App() {
         </Router>
       </AuthProvider>
     </ThemeProvider>
-
+    </ErrorBoundary>
   );
 }
 
