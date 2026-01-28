@@ -21,6 +21,7 @@ const ChallengeSolve = lazy(() => import("./components/ChallengeSolve"));
 const Contests = lazy(() => import("./components/Contests"));
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"));
+const ContributingPage = lazy(() => import("./components/ContributingPage"));
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
 const ContestDetail = lazy(() => import("./components/ContestDetail"));
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/contributing" element={<ContributingPage />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 {/* Main personal editor */}
                 <Route
