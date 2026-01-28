@@ -63,7 +63,7 @@ const Navbar = () => {
     { path: '/code-quality', label: 'Code Quality', icon: <FaBug /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/contributing', label: 'Contributing', icon: <FaGithub /> },
-    // { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
+    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
   ];
   

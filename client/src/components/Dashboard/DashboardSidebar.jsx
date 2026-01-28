@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaChartLine, FaCode, FaFolder, FaStar, FaUser, FaUsers, FaCog } from 'react-icons/fa';
+import { FaChartLine, FaCode, FaFolder, FaStar, FaUser, FaUsers, FaCog, FaQuestionCircle, FaGithub } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import '../../Style/UserDashboard.css';
 
 const DashboardSidebar = ({ 
@@ -11,6 +12,7 @@ const DashboardSidebar = ({
   sidebarCollapsed, 
   setSidebarCollapsed 
 }) => {
+  const navigate = useNavigate();
   return (
     <div className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
       <div className={`sidebar-profile ${sidebarCollapsed ? 'compact' : ''}`}>
@@ -85,6 +87,26 @@ const DashboardSidebar = ({
           {!sidebarCollapsed && <span>Settings</span>}
         </button>
       </nav>
+
+      {/* Quick Links Section */}
+      <div className="sidebar-quick-links">
+        <button
+          className="quick-link-item"
+          onClick={() => navigate('/faq')}
+          data-tooltip="FAQ"
+        >
+          <span className="nav-item-icon"><FaQuestionCircle /></span>
+          {!sidebarCollapsed && <span>FAQ</span>}
+        </button>
+        <button
+          className="quick-link-item"
+          onClick={() => navigate('/contributing')}
+          data-tooltip="Contributing"
+        >
+          <span className="nav-item-icon"><FaGithub /></span>
+          {!sidebarCollapsed && <span>Contributing</span>}
+        </button>
+      </div>
       
       <button 
         className="sidebar-toggle-btn"
