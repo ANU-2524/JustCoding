@@ -1,9 +1,26 @@
 // src/components/FAQPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaQuestionCircle, FaCode, FaUsers, FaRobot, FaLock, FaShieldAlt, FaGlobe, FaTerminal, FaRegFileCode, FaDownload, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaQuestionCircle,
+  FaCode,
+  FaUsers,
+  FaRobot,
+  FaLock,
+  FaShieldAlt,
+  FaGlobe,
+  FaTerminal,
+  FaRegFileCode,
+  FaDownload,
+  FaGithub,
+  FaLinkedin,
+} from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const FAQPage = () => {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -82,161 +99,6 @@ const FAQPage = () => {
   return (
     <div className="homepage faq-page">
       
-      {/* Hero Section for FAQ */}
-      <motion.section
-        className="hero-section faq-hero"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <div className="hero-content">
-          <motion.h1
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Frequently Asked <span className="highlight">Questions</span>
-          </motion.h1>
-          <motion.p
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Find answers to common questions about JustCoding - the AI-powered code editor and collaboration platform.
-          </motion.p>
-        </div>
-
-        {/* Floating shapes */}
-        <motion.div
-          className="floating-shape shape1"
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 5, 0]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        ></motion.div>
-        <motion.div
-          className="floating-shape shape2"
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, -5, 0]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        ></motion.div>
-        <motion.div
-          className="floating-shape shape3"
-          animate={{
-            y: [0, -25, 0],
-            rotate: [0, 3, 0]
-          }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        ></motion.div>
-      </motion.section>
-
-      {/* Stats Section */}
-      <motion.section
-        className="features-section-enhanced faq-stats"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="features-grid-static" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <motion.div 
-            className="feature-static stat-box"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <div className="feature-icon-wrapper-small">
-              <FaCode />
-            </div>
-            <h4>15+</h4>
-            <p>Programming Languages</p>
-          </motion.div>
-          
-          <motion.div 
-            className="feature-static stat-box"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <div className="feature-icon-wrapper-small">
-              <FaUsers />
-            </div>
-            <h4>10K+</h4>
-            <p>Active Developers</p>
-          </motion.div>
-          
-          <motion.div 
-            className="feature-static stat-box"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <div className="feature-icon-wrapper-small">
-              <FaShieldAlt />
-            </div>
-            <h4>99.9%</h4>
-            <p>Uptime</p>
-          </motion.div>
-          
-          <motion.div 
-            className="feature-static stat-box"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <div className="feature-icon-wrapper-small">
-              <FaGlobe />
-            </div>
-            <h4>24/7</h4>
-            <p>Support</p>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Filter Buttons */}
-      <motion.section
-        className="faq-filter-section"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="faq-filter-container">
-          {["all", "general", "features", "collaboration", "security"].map((filter) => (
-            <motion.button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`faq-filter-btn ${activeFilter === filter ? 'active' : ''}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </motion.button>
-          ))}
-        </div>
-      </motion.section>
-
       {/* FAQ List */}
       <motion.section
         className="faq-list-section"
@@ -245,15 +107,16 @@ const FAQPage = () => {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <div className="faq-list-container">
+        <div className="faq-list-container" style={{ maxWidth: "800px", margin: "8rem auto 6rem" }}>
+          <h2 style={{ textAlign: "center", marginBottom: "2rem", fontSize: "2.5rem" }}>Frequently Asked Questions</h2>
           <AnimatePresence>
-            {filteredFAQs.map((faq, index) => (
+            {faqs.map((faq, index) => (
               <motion.div
                 key={index}
                 className="faq-item-card"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 whileHover={{ scale: 1.02 }}
               >
                 <button
@@ -294,109 +157,6 @@ const FAQPage = () => {
           </AnimatePresence>
         </div>
       </motion.section>
-
-      {/* Contact Section */}
-      <motion.section
-        className="cta-section faq-cta"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          Still have questions?
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-        >
-          Can't find what you're looking for? Our support team is here to help you get the answers you need.
-        </motion.p>
-        <motion.button
-          className="btn-primary"
-          onClick={() => window.open("https://github.com/ANU-2524/JustCoding/issues", "_blank")}
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-          whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.5)" }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Contact Support
-        </motion.button>
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          viewport={{ once: true }}
-          style={{ marginTop: "1rem", color: "#94a3b8", fontSize: "0.9rem" }}
-        >
-          Or visit our <a href="https://github.com/ANU-2524/JustCoding" style={{ color: "#6366f1", textDecoration: "none" }} target="_blank" rel="noopener noreferrer">GitHub repository</a> for more information
-        </motion.p>
-      </motion.section>
-
-      {/* Footer */}
-      <motion.footer
-        className="footer"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          &copy; {new Date().getFullYear()} JustCoding. Built with love, learning, and late nights by Anu 💌🌸.
-        </motion.p>
-        <motion.div
-          className="social-icons"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <motion.a
-            href="https://x.com/_Anuuu_Soniii_"
-            aria-label="Twitter"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaTwitter />
-          </motion.a>
-          <motion.a
-            href="https://github.com/ANU-2524/"
-            aria-label="GitHub"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaGithub />
-          </motion.a>
-          <motion.a
-            href="https://www.linkedin.com/in/anu--soni/"
-            aria-label="LinkedIn"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FaLinkedin />
-          </motion.a>
-        </motion.div>
-      </motion.footer>
 
       {/* Add FAQ-specific CSS */}
       <style jsx>{`

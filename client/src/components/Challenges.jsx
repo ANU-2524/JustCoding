@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaCode, FaTrophy, FaFire, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine } from 'react-icons/fa';
+import { FaCode, FaTrophy, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine, FaTimes } from 'react-icons/fa';
 import '../Style/Challenges.css';
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
 
 const difficultyColors = {
   easy: '#4caf50',
@@ -270,6 +268,10 @@ const leetCodeProblems = [
 ];
 
 const Challenges = () => {
+
+  const [showProblemPopup, setShowProblemPopup] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
+
   const [challenges, setChallenges] = useState(leetCodeProblems);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -277,7 +279,6 @@ const Challenges = () => {
     category: '',
     search: ''
   });
-  const [userProgress, setUserProgress] = useState(null);
   const [activeTab, setActiveTab] = useState('challenges');
 
   useEffect(() => {
@@ -311,43 +312,28 @@ const Challenges = () => {
     filterChallenges();
   };
 
+//   const handleChallengeClick = (challenge) => {
+//   setSelectedChallenge(challenge);
+//   setShowProblemPopup(true);
+// };
+
+  const handleChallengeClick = (challenge) => {
+    setSelectedChallenge(challenge);
+    setShowProblemPopup(true);
+  };
+
+  const closeProblemPopup = () => {
+    setShowProblemPopup(false);
+    setSelectedChallenge(null);
+  };
+
   return (
     <div className="challenges-container">
-      {/* Hero Section */}
       <div className="challenges-hero">
         <h1><FaCode /> Coding Challenges</h1>
         <p>Sharpen your skills with curated programming problems</p>
-        
-        {/* Stats Bar */}
-        {userProgress && (
-          <div className="user-stats-bar">
-            <div className="stat-item">
-              <FaTrophy className="stat-icon gold" />
-              <span className="stat-value">{userProgress.totalSolved}</span>
-              <span className="stat-label">Solved</span>
-            </div>
-            <div className="stat-item">
-              <FaStar className="stat-icon" />
-              <span className="stat-value">{userProgress.totalPoints}</span>
-              <span className="stat-label">Points</span>
-            </div>
-            <div className="stat-item easy">
-              <span className="stat-value">{userProgress.byDifficulty?.easy || 0}</span>
-              <span className="stat-label">Easy</span>
-            </div>
-            <div className="stat-item medium">
-              <span className="stat-value">{userProgress.byDifficulty?.medium || 0}</span>
-              <span className="stat-label">Medium</span>
-            </div>
-            <div className="stat-item hard">
-              <span className="stat-value">{userProgress.byDifficulty?.hard || 0}</span>
-              <span className="stat-label">Hard</span>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Tabs */}
       <div className="challenges-tabs">
         <button 
           className={`tab-btn ${activeTab === 'challenges' ? 'active' : ''}`}
@@ -371,7 +357,6 @@ const Challenges = () => {
 
       {activeTab === 'challenges' && (
         <>
-          {/* Filters */}
           <div className="filters-section">
             <form onSubmit={handleSearch} className="search-form">
               <div className="search-input-wrapper">
@@ -396,7 +381,6 @@ const Challenges = () => {
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
-                <option value="expert">Expert</option>
               </select>
 
               <select
@@ -418,7 +402,6 @@ const Challenges = () => {
             </div>
           </div>
 
-          {/* Challenges List */}
           <div className="challenges-list">
             {loading ? (
               <div className="loading-state">
@@ -435,6 +418,7 @@ const Challenges = () => {
                 <div
                   key={challenge.id}
                   className="challenge-card"
+                   onClick={() => handleChallengeClick(challenge)}
                 >
                   <div className="challenge-header">
                     <span className="category-icon">{categoryIcons[challenge.category] || '💡'}</span>
@@ -489,31 +473,112 @@ const Challenges = () => {
       {activeTab === 'leaderboard' && (
         <GlobalLeaderboard />
       )}
+
+      {showProblemPopup && selectedChallenge && (
+        <div className="problem-popup-overlay">
+          <div className="problem-popup">
+            <div className="popup-header">
+              <h2>{selectedChallenge.title}</h2>
+              <button className="close-popup-btn" onClick={closeProblemPopup}>
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="popup-difficulty-category">
+              <span 
+                className="difficulty-badge"
+                style={{ backgroundColor: difficultyColors[selectedChallenge.difficulty] }}
+              >
+                {selectedChallenge.difficulty}
+              </span>
+              <span className="category-badge">
+                {categoryIcons[selectedChallenge.category]} {selectedChallenge.category}
+              </span>
+              <span className="points-badge">
+                <FaStar /> {selectedChallenge.points} points
+              </span>
+            </div>
+
+            <div className="popup-content">
+              <div className="problem-description">
+                <h3>Description</h3>
+                <p>{selectedChallenge.description}</p>
+              </div>
+
+              {selectedChallenge.examples && selectedChallenge.examples.length > 0 && (
+                <div className="problem-examples">
+                  <h3>Examples</h3>
+                  {selectedChallenge.examples.map((example, index) => (
+                    <div key={index} className="example-card">
+                      <div className="example-input">
+                        <strong>Input:</strong> {example.input}
+                      </div>
+                      <div className="example-output">
+                        <strong>Output:</strong> {example.output}
+                      </div>
+                      {example.explanation && (
+                        <div className="example-explanation">
+                          <strong>Explanation:</strong> {example.explanation}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {selectedChallenge.constraints && selectedChallenge.constraints.length > 0 && (
+                <div className="problem-constraints">
+                  <h3>Constraints</h3>
+                  <ul>
+                    {selectedChallenge.constraints.map((constraint, index) => (
+                      <li key={index}>{constraint}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="problem-tags">
+                <h3>Tags</h3>
+                <div className="tags-container">
+                  {selectedChallenge.tags?.map((tag, index) => (
+                    <span key={index} className="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="problem-stats">
+                <div className="stat-item">
+                  <FaUsers /> {selectedChallenge.solvedCount} solved
+                </div>
+                <div className="stat-item">
+                  <span className="success-rate">{selectedChallenge.successRate}% success rate</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="popup-footer">
+              <button className="close-btn" onClick={closeProblemPopup}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-// Contests List Component
 const ContestsList = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchContests();
-  }, []);
-
-  const fetchContests = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/challenges/contests/list`);
-      const data = await res.json();
-      setContests(data.contests || []);
-    } catch (error) {
-      console.error('Error fetching contests:', error);
-    } finally {
+    setTimeout(() => {
+      setContests(mockContests);
       setLoading(false);
-    }
-  };
+    }, 500);
+  }, []);
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -568,24 +633,27 @@ const ContestsList = () => {
   );
 };
 
-// Global Leaderboard Component
 const GlobalLeaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch real leaderboard data from API
-    const fetchLeaderboard = async () => {
-      try {
-        // For now, show empty state - will populate from actual submissions
-        setLeaderboard([]);
-      } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLeaderboard();
+    setTimeout(() => {
+      const mockLeaderboard = [
+        { id: 1, name: 'CodingMaster', points: 3850, solved: 156 },
+        { id: 2, name: 'AlgorithmNinja', points: 3720, solved: 148 },
+        { id: 3, name: 'DataStructPro', points: 3640, solved: 142 },
+        { id: 4, name: 'PythonWizard', points: 3510, solved: 138 },
+        { id: 5, name: 'JavaChampion', points: 3420, solved: 132 },
+        { id: 6, name: 'CodeWarrior', points: 3350, solved: 128 },
+        { id: 7, name: 'BinarySearcher', points: 3280, solved: 124 },
+        { id: 8, name: 'RecursionKing', points: 3210, solved: 120 },
+        { id: 9, name: 'DynamicProgrammer', points: 3150, solved: 118 },
+        { id: 10, name: 'GraphExplorer', points: 3080, solved: 115 }
+      ];
+      setLeaderboard(mockLeaderboard);
+      setLoading(false);
+    }, 500);
   }, []);
 
   if (loading) {
@@ -610,7 +678,7 @@ const GlobalLeaderboard = () => {
           {leaderboard.map((user, index) => (
             <div key={index} className={`leaderboard-row ${index < 3 ? 'top-three' : ''}`}>
               <span className="rank">
-                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : user.rank}
+                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
               </span>
               <span className="name">{user.name}</span>
               <span className="points">{user.points}</span>

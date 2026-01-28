@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.secret-stack
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist
+build
+.next
+.cache
+
+# Logs
+logs
+*.log
+
+# Testing
+coverage
+.nyc_output
+
+# Documentation (optional - uncomment if you don't want docs in image)
+# README.md
+# CONTRIBUTING.md
+# CODE_OF_CONDUCT.md
+# TODO.md
+# TODO_FIX.md
+# VISUALIZER_FEATURE.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

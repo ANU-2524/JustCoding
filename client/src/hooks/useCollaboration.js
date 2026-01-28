@@ -48,7 +48,9 @@ export const useCollaboration = (options = {}) => {
 
   // Set up collaboration event handlers
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+return;
+}
 
     // User joined
     socket.on('collab:user-joined', (participant) => {
@@ -130,7 +132,9 @@ export const useCollaboration = (options = {}) => {
   // Create a new session
   const createSession = useCallback((sessionOptions = {}) => {
     return new Promise((resolve, reject) => {
-      if (!socket) return reject(new Error('Not connected'));
+      if (!socket) {
+return reject(new Error('Not connected'));
+}
 
       socket.emit('collab:create', sessionOptions, (response) => {
         if (response.success) {
@@ -147,7 +151,9 @@ export const useCollaboration = (options = {}) => {
   // Join existing session
   const joinSession = useCallback((sessionId, userInfo = {}) => {
     return new Promise((resolve, reject) => {
-      if (!socket) return reject(new Error('Not connected'));
+      if (!socket) {
+return reject(new Error('Not connected'));
+}
 
       socket.emit('collab:join', { sessionId, userInfo }, (response) => {
         if (response.success) {
@@ -165,7 +171,9 @@ export const useCollaboration = (options = {}) => {
 
   // Send operation
   const sendOperation = useCallback((type, position, data) => {
-    if (!socket || !session) return;
+    if (!socket || !session) {
+return;
+}
 
     const operation = { type, position, data };
     pendingOps.current.push(operation);
@@ -178,7 +186,9 @@ export const useCollaboration = (options = {}) => {
 
   // Send cursor position
   const sendCursor = useCallback((position, selection = null) => {
-    if (!socket || !session) return;
+    if (!socket || !session) {
+return;
+}
 
     socket.emit('collab:cursor', { position, selection });
   }, [socket, session]);
@@ -186,7 +196,9 @@ export const useCollaboration = (options = {}) => {
   // Start recording
   const startRecording = useCallback(() => {
     return new Promise((resolve, reject) => {
-      if (!socket) return reject(new Error('Not connected'));
+      if (!socket) {
+return reject(new Error('Not connected'));
+}
 
       socket.emit('collab:start-recording', (response) => {
         if (response.success) {
@@ -201,7 +213,9 @@ export const useCollaboration = (options = {}) => {
   // Stop recording
   const stopRecording = useCallback(() => {
     return new Promise((resolve, reject) => {
-      if (!socket) return reject(new Error('Not connected'));
+      if (!socket) {
+return reject(new Error('Not connected'));
+}
 
       socket.emit('collab:stop-recording', (response) => {
         if (response.success) {
@@ -215,13 +229,17 @@ export const useCollaboration = (options = {}) => {
 
   // Send debug state
   const sendDebugState = useCallback((debugState) => {
-    if (!socket || !session) return;
+    if (!socket || !session) {
+return;
+}
     socket.emit('collab:debug-state', debugState);
   }, [socket, session]);
 
   // Leave session
   const leaveSession = useCallback(() => {
-    if (!socket) return;
+    if (!socket) {
+return;
+}
     
     socket.emit('collab:leave');
     setSession(null);
