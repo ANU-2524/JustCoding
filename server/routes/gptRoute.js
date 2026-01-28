@@ -1,7 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const router = express.Router();
+const { validate } = require('../middleware/validation');
 dotenv.config();
+
+// Import async handler and error utilities
+const { asyncHandler } = require("../middleware/async");
+const { BadRequestError, ExternalServiceError } = require("../utils/ErrorResponse");
+const { logExternalService } = require("../services/logger");
 
 // Node-fetch for CommonJS
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -9,25 +15,13 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 // ✅ RECOMMENDED OpenRouter model
 const MODEL_NAME = "mistralai/mistral-7b-instruct";
 
-router.post("/explain", async (req, res) => {
+/**
+ * POST /api/gpt/explain
+ * Get AI explanation for programming question
+ * Returns: { success, explanation }
+ */
+router.post("/explain", validate('gptExplain'), async (req, res) => {
   const { question } = req.body;
-
-  // Enhanced input validation
-  if (!question) {
-    return res.status(400).json({ error: "❌ Missing 'question' in request body." });
-  }
-  
-  if (typeof question !== 'string') {
-    return res.status(400).json({ error: "❌ 'question' must be a string." });
-  }
-  
-  if (question.length > 2000) {
-    return res.status(400).json({ error: "❌ Question too long. Maximum 2000 characters allowed." });
-  }
-  
-  if (question.trim().length === 0) {
-    return res.status(400).json({ error: "❌ Question cannot be empty." });
-  }
 
   try {
     const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -51,44 +45,23 @@ router.post("/explain", async (req, res) => {
 
     if (!data || !data.choices || !data.choices[0]?.message?.content) {
       console.error("❌ Invalid OpenRouter response:", JSON.stringify(data, null, 2));
-      return res.json({ explanation: "💡 No explanation available." });
+      return res.json({ success: false, explanation: "💡 No explanation available." });
     }
 
     const reply = data.choices[0].message.content.trim();
-    res.json({ explanation: reply });
+    res.json({ success: true, explanation: reply });
   } catch (err) {
     console.error("❌ Error fetching explanation from OpenRouter:", err);
-    res.status(500).json({ error: "Failed to get explanation." });
+    res.status(500).json({ success: false, error: "Failed to get explanation." });
   }
-});
 
-router.post("/debug", async (req, res) => {
+/**
+ * POST /api/gpt/debug
+ * Get AI debugging assistance for code
+ * Returns: { success, debugHelp }
+ */
+router.post("/debug", validate('gptDebug'), async (req, res) => {
   const { code, errorMessage } = req.body;
-
-  // Enhanced input validation
-  if (!code) {
-    return res.status(400).json({ error: "❌ Missing 'code' in request body." });
-  }
-  
-  if (typeof code !== 'string') {
-    return res.status(400).json({ error: "❌ 'code' must be a string." });
-  }
-  
-  if (code.length > 10000) {
-    return res.status(400).json({ error: "❌ Code too long. Maximum 10,000 characters allowed." });
-  }
-  
-  if (code.trim().length === 0) {
-    return res.status(400).json({ error: "❌ Code cannot be empty." });
-  }
-  
-  if (errorMessage && typeof errorMessage !== 'string') {
-    return res.status(400).json({ error: "❌ 'errorMessage' must be a string." });
-  }
-  
-  if (errorMessage && errorMessage.length > 5000) {
-    return res.status(400).json({ error: "❌ Error message too long. Maximum 5,000 characters allowed." });
-  }
 
   try {
     const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -112,15 +85,19 @@ router.post("/debug", async (req, res) => {
 
     if (!data || !data.choices || !data.choices[0]?.message?.content) {
       console.error("❌ Invalid OpenRouter debug response:", JSON.stringify(data, null, 2));
-      return res.json({ debugHelp: "🐞 No debugging help available." });
+      return res.json({ success: false, debugHelp: "🐞 No debugging help available." });
     }
 
     const reply = data.choices[0].message.content.trim();
-    res.json({ debugHelp: reply });
+    res.json({ success: true, debugHelp: reply });
   } catch (err) {
     console.error("❌ Error fetching debug help from OpenRouter:", err);
-    res.status(500).json({ error: "Failed to get debug help." });
+    res.status(500).json({ success: false, error: "Failed to get debug help." });
   }
-});
+
+  logExternalService('OpenRouter', 'debug', true);
+  const reply = data.choices[0].message.content.trim();
+  res.json({ debugHelp: reply });
+}));
 
 module.exports = router;

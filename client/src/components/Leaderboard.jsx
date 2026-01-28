@@ -16,7 +16,8 @@ const Leaderboard = () => {
       setLoading(true);
       const response = await fetch(`http://localhost:4334/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
       const data = await response.json();
-      setLeaderboard(data || []);
+      // Handle new response format with success field
+      setLeaderboard(data.leaderboard || data || []);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       setLeaderboard([]);
