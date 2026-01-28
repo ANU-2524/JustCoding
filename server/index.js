@@ -1,42 +1,36 @@
-﻿/**
- * JustCoding Backend Server
- * Modular, secure Express.js application
- */
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const http = require('http');
-const helmet = require('helmet');
+﻿// BACKEND: server.js (or index.js)
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+import connectDB from './config/database.js';
+import BadgeService from './services/BadgeService.js';
+import Room from './models/Room.js';
 
-// Database and Services
-const connectDB = require('./config/database');
-const BadgeService = require('./services/BadgeService');
-
-// Security and Middleware
-const { applySecurityMiddleware } = require('./config/security');
-const {
+import {
   generalLimiter,
   aiLimiter,
   codeLimiter,
   rateLimitLogger
-} = require('./middleware/simpleRateLimiter');
-const { validate } = require('./middleware/validation');
-
-// Routes
-const gptRoute = require('./routes/gptRoute');
-const codeQualityRoute = require('./routes/codeQuality');
-const progressRoute = require('./routes/progress');
-const challengesRoute = require('./routes/challenges');
-const roomRoute = require('./routes/room');
-const userRoute = require('./routes/user');
-const tutorialsRoute = require('./routes/tutorials');
+} from './middleware/simpleRateLimiter.js';
+import gptRoute from './routes/gptRoute.js';
+import codeQualityRoute from './routes/codeQuality.js';
+import progressRoute from './routes/progress.js';
+import challengesRoute from './routes/challenges.js';
+import roomRoute from './routes/room.js';
+import userRoute from './routes/user.js';
+import communityRoute from './routes/community.js';
 
 // Socket.IO (modularized)
 const { initializeSocket, cleanup: socketCleanup } = require('./socket');
 
 // Multi-Language Visualizer Service
-const visualizerService = require('./services/visualizer');
+import visualizerServicePkg from './services/visualizer/index.js';
+const visualizerService = visualizerServicePkg;
 
 // Initialize Express app and HTTP server
 const app = express();
@@ -96,7 +90,7 @@ app.use("/api/progress", progressRoute);
 
 // Challenges routes
 app.use("/api/challenges", challengesRoute);
-app.use("/api/tutorials", tutorialsRoute);
+app.use("/api/community", communityRoute);
 
 // Room routes
 app.use("/api/room", roomRoute);
