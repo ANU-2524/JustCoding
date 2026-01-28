@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { FaTrophy, FaClock, FaUsers, FaCalendarAlt, FaPlay, FaStop, FaCheckCircle, FaCode, FaStar } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/ContestDetail.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
@@ -109,6 +110,13 @@ const ContestDetail = () => {
 
   return (
     <div className="contest-detail-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Contests', path: '/contests' },
+          { label: contest.title, path: null }
+        ]}
+      />
+
       <div className="contest-detail-header">
         <div className="contest-status-badge">
           {getStatusIcon(contest.status)}

@@ -17,6 +17,7 @@ import {
   FaTrophy,
   FaUser
 } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/TutorialsPage.css';
 
 const difficultyColors = {
@@ -311,6 +312,12 @@ return { percentage, status: 'in-progress' };
 
   return (
     <div className="tutorials-page">
+      <Breadcrumb 
+        items={[
+          { label: 'Tutorials', path: null }
+        ]}
+      />
+
       <div className="tutorials-container">
         {/* Header */}
         <div className="tutorials-header">

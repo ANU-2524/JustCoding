@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaTrophy, FaClock, FaUsers, FaCalendarAlt, FaPlay, FaStop, FaCheckCircle } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/Contests.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
@@ -53,6 +54,12 @@ const Contests = () => {
 
   return (
     <div className="contests-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Contests', path: null }
+        ]}
+      />
+
       <div className="contests-header">
         <h1><FaTrophy /> Coding Contests</h1>
         <p>Compete with developers worldwide and showcase your skills</p>
