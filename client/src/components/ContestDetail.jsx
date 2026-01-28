@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext';
 import { FaTrophy, FaClock, FaUsers, FaCalendarAlt, FaPlay, FaStop, FaCheckCircle, FaCode, FaStar } from 'react-icons/fa';
 import '../Style/ContestDetail.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const ContestDetail = () => {
   const { slug } = useParams();
   const { currentUser } = useAuth();
@@ -19,7 +21,7 @@ const ContestDetail = () => {
   const fetchContest = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:4334/api/challenges/contests/${slug}`);
+      const response = await fetch(`${BACKEND_URL}/api/challenges/contests/${slug}`);
       const data = await response.json();
       setContest(data);
       
@@ -42,7 +44,7 @@ const ContestDetail = () => {
 
     try {
       setJoining(true);
-      const response = await fetch(`http://localhost:4334/api/challenges/contests/${slug}/join`, {
+      const response = await fetch(`${BACKEND_URL}/api/challenges/contests/${slug}/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

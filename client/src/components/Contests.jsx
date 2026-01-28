@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { FaTrophy, FaClock, FaUsers, FaCalendarAlt, FaPlay, FaStop, FaCheckCircle } from 'react-icons/fa';
 import '../Style/Contests.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const Contests = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const Contests = () => {
   const fetchContests = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:4334/api/challenges/contests/list');
+      const response = await fetch(`${BACKEND_URL}/api/challenges/contests/list`);
       const data = await response.json();
       setContests(data.contests || []);
     } catch (error) {

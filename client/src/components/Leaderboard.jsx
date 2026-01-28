@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FaTrophy, FaMedal, FaAward, FaCrown } from 'react-icons/fa';
 import '../Style/Leaderboard.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [timeframe, setTimeframe] = useState('all-time');
@@ -14,7 +16,7 @@ const Leaderboard = () => {
   const fetchLeaderboard = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:4334/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
+      const response = await fetch(`${BACKEND_URL}/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
       const data = await response.json();
       // Handle new response format with success field
       setLeaderboard(data.leaderboard || data || []);
