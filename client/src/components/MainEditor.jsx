@@ -67,7 +67,9 @@ const MainEditor = () => {
   const [code, setCode] = useState(() => {
     const savedLang = localStorage.getItem("lang") || "javascript";
     const savedCode = localStorage.getItem(`code-${savedLang}`);
-    if (savedCode) return savedCode;
+    if (savedCode) {
+return savedCode;
+}
 
     return savedLang === "javascript"
       ? `// 🔍 Try the Visualizer with this code!
@@ -155,11 +157,15 @@ if (isAdult) {
 
   // Auto-save effect
   useEffect(() => {
-    if (!editorSettings.autoSave) return;
+    if (!editorSettings.autoSave) {
+return;
+}
 
     const saveIfChanged = () => {
       const activeFile = projectFiles.find(f => f.id === activeFileId);
-      if (!activeFile) return;
+      if (!activeFile) {
+return;
+}
 
       const currentContent = activeFile.content;
       const lastSavedContent = lastSavedContentRef.current[activeFileId];
@@ -407,7 +413,9 @@ if (isAdult) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: questionText }),
       }, 60000);
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) {
+throw new Error(`Server error: ${res.status}`);
+}
       const data = await res.json();
       setExplanation(data.explanation);
       localStorage.setItem('question', questionText);
@@ -434,7 +442,9 @@ if (isAdult) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: activeFile.content, errorMessage: output }),
       }, 60000);
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) {
+throw new Error(`Server error: ${res.status}`);
+}
       const data = await res.json();
       setDebugResult(data.debugHelp);
       localStorage.setItem("debugHelp", data.debugHelp);
@@ -475,7 +485,9 @@ if (isAdult) {
       });
       clearTimeout(warningTimeoutRef.current);
       warningTimeoutRef.current = null;
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      if (!res.ok) {
+throw new Error(`Server error: ${res.status}`);
+}
       setLoadingMessage("Processing code...");
       const result = await res.json();
       setOutput(result.output || "No output");
@@ -539,7 +551,9 @@ if (isAdult) {
       y += 8;
       const qLines = doc.splitTextToSize(question, 180);
       qLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -548,13 +562,17 @@ if (isAdult) {
 
     const explanationText = localStorage.getItem("explanation");
     if (explanationText) {
-      if (y > 250) { doc.addPage(); y = 10; }
+      if (y > 250) {
+ doc.addPage(); y = 10; 
+}
       doc.setFontSize(12);
       doc.text("Explanation:", 10, y);
       y += 8;
       const eLines = doc.splitTextToSize(explanationText, 180);
       eLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -563,13 +581,17 @@ if (isAdult) {
 
     // Export all files in the project
     projectFiles.forEach((file, index) => {
-      if (y > 250) { doc.addPage(); y = 10; }
+      if (y > 250) {
+ doc.addPage(); y = 10; 
+}
       doc.setFontSize(12);
       doc.text(`File: ${file.name}`, 10, y);
       y += 8;
       const codeLines = doc.splitTextToSize(file.content, 180);
       codeLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -583,7 +605,9 @@ if (isAdult) {
       y += 8;
       const inputLines = doc.splitTextToSize(userInput, 180);
       inputLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -596,7 +620,9 @@ if (isAdult) {
       y += 8;
       const outputLines = doc.splitTextToSize(output, 180);
       outputLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -610,7 +636,9 @@ if (isAdult) {
       y += 8;
       const dLines = doc.splitTextToSize(debugHelp, 180);
       dLines.forEach(line => {
-        if (y > 280) { doc.addPage(); y = 10; }
+        if (y > 280) {
+ doc.addPage(); y = 10; 
+}
         doc.text(line, 10, y);
         y += 7;
       });
@@ -631,7 +659,9 @@ if (isAdult) {
   // Universal Visualizer - works with all languages
   const visualizeCode = async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
+    if (!activeFile) {
+return;
+}
 
     setVisualizerLoading(true);
 
@@ -650,7 +680,7 @@ if (isAdult) {
         setCurrentStep(0);
         setShowVisualizer(true);
       } else {
-        alert('Visualization: ' + (data.error || 'Not supported for this language'));
+        alert(`Visualization: ${  data.error || 'Not supported for this language'}`);
       }
     } catch (error) {
       console.error('Visualization failed:', error);
@@ -661,10 +691,14 @@ if (isAdult) {
 
   const saveCurrentAsSnippet = () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
+    if (!activeFile) {
+return;
+}
 
     const title = window.prompt('Snippet title');
-    if (!title) return;
+    if (!title) {
+return;
+}
     addSnippet({ title: title.trim(), language, code: activeFile.content });
     touchLastActive();
     alert('Saved to Profile → Snippets');
@@ -673,7 +707,9 @@ if (isAdult) {
   // Multi-file project functions
   const addNewFile = () => {
     const fileName = window.prompt('Enter file name (with extension):', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
-    if (!fileName) return;
+    if (!fileName) {
+return;
+}
 
     const newFile = {
       id: `file-${Date.now()}`,
@@ -714,7 +750,9 @@ if (isAdult) {
     setProjectFiles(prev => {
       const file = prev.find(f => f.id === fileId);
       const newName = window.prompt('Enter new file name:', file.name);
-      if (!newName || newName === file.name) return prev;
+      if (!newName || newName === file.name) {
+return prev;
+}
 
       return prev.map(f =>
         f.id === fileId ? { ...f, name: newName, path: newName } : f
@@ -792,7 +830,9 @@ Visit https://justcoding.onrender.com for more information.`;
 
   const exportSingleFile = () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
-    if (!activeFile) return;
+    if (!activeFile) {
+return;
+}
     
     const blob = new Blob([activeFile.content], { type: 'text/plain' });
     saveAs(blob, activeFile.name);
@@ -863,7 +903,6 @@ Visit https://justcoding.onrender.com for more information.`;
   return (
     <div className="workspace">
       {loading && <Loader message={loadingMessage || "Running code..."} />}
-
 
       {/* Main Content */}
       <main className="workspace-main">
@@ -1416,8 +1455,6 @@ Visit https://justcoding.onrender.com for more information.`;
                       ✕
                     </button>
                   </div>
-
-
 
                   {currentState && (
                     <div className="state-info">

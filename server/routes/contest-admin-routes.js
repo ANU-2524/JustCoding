@@ -77,7 +77,7 @@ router.delete('/contests/:slug', async (req, res) => {
       return res.status(404).json({ error: 'Contest not found' });
     }
 
-    res.json({ message: 'Contest deleted successfully' });
+    res.json({ deleted: true, slug: req.params.slug });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

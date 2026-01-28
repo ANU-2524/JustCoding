@@ -106,7 +106,9 @@ export function addSnippet({ title, language, code }) {
 export function updateSnippet(id, patch) {
   const state = loadState();
   const idx = state.snippets.findIndex((s) => s.id === id);
-  if (idx < 0) return null;
+  if (idx < 0) {
+return null;
+}
 
   const now = getNowIso();
   state.snippets[idx] = {
@@ -154,11 +156,17 @@ export function startSession({ roomId, username }) {
 }
 
 export function endSession(sessionId) {
-  if (!sessionId) return;
+  if (!sessionId) {
+return;
+}
   const state = loadState();
   const idx = state.sessions.findIndex((s) => s.id === sessionId);
-  if (idx < 0) return;
-  if (state.sessions[idx].endedAt) return;
+  if (idx < 0) {
+return;
+}
+  if (state.sessions[idx].endedAt) {
+return;
+}
 
   const now = getNowIso();
   state.sessions[idx] = { ...state.sessions[idx], endedAt: now };
