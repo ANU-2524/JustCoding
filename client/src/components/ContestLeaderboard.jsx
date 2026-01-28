@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { FaTrophy, FaMedal, FaAward, FaCrown, FaArrowLeft } from 'react-icons/fa';
 import '../Style/ContestLeaderboard.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const ContestLeaderboard = () => {
   const { slug } = useParams();
   const [leaderboard, setLeaderboard] = useState([]);
@@ -19,8 +21,8 @@ const ContestLeaderboard = () => {
       
       // Fetch contest details and leaderboard
       const [contestResponse, leaderboardResponse] = await Promise.all([
-        fetch(`http://localhost:4334/api/challenges/contests/${slug}`),
-        fetch(`http://localhost:4334/api/challenges/contests/${slug}/leaderboard`)
+        fetch(`${BACKEND_URL}/api/challenges/contests/${slug}`),
+        fetch(`${BACKEND_URL}/api/challenges/contests/${slug}/leaderboard`)
       ]);
 
       const contestData = await contestResponse.json();
