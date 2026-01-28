@@ -107,7 +107,7 @@ const FAQPage = () => {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <div className="faq-list-container" style={{ maxWidth: "800px", margin: "4rem auto 6rem" }}>
+        <div className="faq-list-container" style={{ maxWidth: "800px", margin: "8rem auto 6rem" }}>
           <h2 style={{ textAlign: "center", marginBottom: "2rem", fontSize: "2.5rem" }}>Frequently Asked Questions</h2>
           <AnimatePresence>
             {faqs.map((faq, index) => (
@@ -157,46 +157,6 @@ const FAQPage = () => {
           </AnimatePresence>
         </div>
       </motion.section>
-
-      {/* Footer */}
-      <footer className="footer animate-on-scroll">
-        <div className="footer-container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h4>Quick Links</h4>
-              <ul>
-                <li onClick={() => navigate("/")}>Home</li>
-                <li onClick={() => navigate("/editor")}>Editor</li>
-                <li onClick={() => navigate("/challenges")}>Challenges</li>
-                <li onClick={() => navigate("/tutorials")}>Tutorials</li>
-                <li onClick={() => navigate("/faq")}>FAQ</li>
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h4>Legal</h4>
-              <ul>
-                <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
-                <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
-                <li onClick={() => navigate("/contributing")}>Contributing</li>
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h4>Connect</h4>
-              <ul className="social-links">
-                <li><a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer"><FaXTwitter /> Twitter</a></li>
-                <li><a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer"><FaGithub /> GitHub</a></li>
-                <li><a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer"><FaLinkedin /> LinkedIn</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
 
       {/* Add FAQ-specific CSS */}
       <style jsx>{`
