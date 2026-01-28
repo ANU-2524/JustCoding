@@ -49,91 +49,91 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsAndConditions />} />
-                <Route path="/contributing" element={<ContributingPage />} />
-                <Route path="/faq" element={<FAQPage />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                {/* Main personal editor */}
-                <Route
-                  path="/editor"
-                  element={
-                    <ProtectedRoute>
-                      <MainEditor />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsAndConditions />} />
+                  <Route path="/contributing" element={<ContributingPage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  {/* Main personal editor */}
+                  <Route
+                    path="/editor"
+                    element={
+                      <ProtectedRoute>
+                        <MainEditor />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Profile route */}
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Profile route */}
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* User Dashboard route */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <UserDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* User Dashboard route */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <UserDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Collaborative editor */}
-                <Route
-                  path="/live"
-                  element={
-                    <JoinRoom />
-                  }
-                />
-                <Route
-                  path="/live/:roomId"
-                  element={
-                    <LiveRoom />
-                  }
-                />
+                  {/* Collaborative editor */}
+                  <Route
+                    path="/live"
+                    element={
+                      <JoinRoom />
+                    }
+                  />
+                  <Route
+                    path="/live/:roomId"
+                    element={
+                      <LiveRoom />
+                    }
+                  />
 
-                {/* Coding Challenges */}
-                <Route path="/challenges" element={<Challenges />} />
-                <Route path="/challenges/:slug" element={<ChallengeSolve />} />
-                
-                {/* Tutorials */}
-                <Route path="/tutorials" element={<TutorialsPage />} />
-                <Route path="/tutorials/:slug" element={<TutorialView />} />
-                
-                {/* Contests */}
-                <Route path="/contests" element={<Contests />} />
-                <Route path="/contests/:slug" element={<ContestDetail />} />
-                <Route path="/contests/:slug/leaderboard" element={<ContestLeaderboard />} />
-                <Route path="/admin/contests" element={<ContestManagement />} />
-                
-                {/* Analytics/Progress */}
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/progress" element={<Analytics />} />
-                <Route path="/export" element={<ProgressExport />} />
-                <Route path="/badges" element={<BadgesPage />} />
-                <Route path="/debug" element={<DebugHelper />} />
+                  {/* Coding Challenges */}
+                  <Route path="/challenges" element={<Challenges />} />
+                  <Route path="/challenges/:slug" element={<ChallengeSolve />} />
+                  
+                  {/* Tutorials */}
+                  <Route path="/tutorials" element={<TutorialsPage />} />
+                  <Route path="/tutorials/:slug" element={<TutorialView />} />
+                  
+                  {/* Contests */}
+                  <Route path="/contests" element={<Contests />} />
+                  <Route path="/contests/:slug" element={<ContestDetail />} />
+                  <Route path="/contests/:slug/leaderboard" element={<ContestLeaderboard />} />
+                  <Route path="/admin/contests" element={<ContestManagement />} />
+                  
+                  {/* Analytics/Progress */}
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/progress" element={<Analytics />} />
+                  <Route path="/export" element={<ProgressExport />} />
+                  <Route path="/badges" element={<BadgesPage />} />
+                  <Route path="/debug" element={<DebugHelper />} />
 
-                <Route path="/admin/rooms" element={<RoomManagement />} />
-                <Route path="/code-quality" element={<CodeQuality />} />
-                
-                {/* Catch-all route for undefined paths */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-            <ScrollToTop />
-          </div>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+                  <Route path="/admin/rooms" element={<RoomManagement />} />
+                  <Route path="/code-quality" element={<CodeQuality />} />
+                  
+                  {/* Catch-all route for undefined paths */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+              <ScrollToTop />
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
