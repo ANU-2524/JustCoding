@@ -2,7 +2,7 @@
  * Security Configuration Module
  * Centralizes all security-related middleware and configurations
  */
-const helmet = require('helmet');
+import helmet from 'helmet';
 
 // CORS Configuration
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://just-coding-theta.vercel.app";
@@ -107,7 +107,7 @@ function applySecurityMiddleware(app, cors, express) {
   app.set('trust proxy', 1);
 }
 
-module.exports = {
+export {
   corsOptions,
   socketCorsOptions,
   helmetOptions,

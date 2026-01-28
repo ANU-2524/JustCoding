@@ -1,7 +1,9 @@
-const express = require('express');
-const { ESLint } = require('eslint');
+import express from 'express';
+import { ESLint } from 'eslint';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const router = express.Router();
-const { validate, logRequest } = require('../middleware/validation');
+import { validate, logRequest } from '../middleware/validation.js';
 
 // Calculate cyclomatic complexity
 function calculateComplexity(code) {
@@ -196,13 +198,14 @@ router.post('/analyze', validate('codeQuality'), async (req, res) => {
         });
       }
 
-    res.json({
-      success: true,
-      issues,
-      fixedCode,
-      totalErrors,
-      totalWarnings
-    });
+      res.json({
+        success: true,
+        issues: basicIssues,
+        fixedCode: code,
+        totalErrors: basicIssues.filter((i) => i.severity === 'error').length,
+        totalWarnings: basicIssues.filter((i) => i.severity === 'warning').length
+      });
+    }
   } catch (error) {
     logRequest(req, `Unexpected error: ${error.message}`, 'error');
     res.status(500).json({
@@ -213,4 +216,4 @@ router.post('/analyze', validate('codeQuality'), async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

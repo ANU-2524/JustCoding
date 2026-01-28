@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema({
   title: { type: String, required: true, maxlength: 200 },
@@ -161,9 +161,15 @@ reputationSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = {
-  Post: mongoose.model('Post', postSchema),
-  Comment: mongoose.model('Comment', commentSchema),
-  Vote: mongoose.model('Vote', voteSchema),
-  Reputation: mongoose.model('Reputation', reputationSchema)
+const Post = mongoose.model('Post', postSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+const Vote = mongoose.model('Vote', voteSchema);
+const Reputation = mongoose.model('Reputation', reputationSchema);
+
+export { Post, Comment, Vote, Reputation };
+export default {
+  Post,
+  Comment,
+  Vote,
+  Reputation
 };

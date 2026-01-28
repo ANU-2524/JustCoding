@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const snippetSchema = new mongoose.Schema({
   userId: { type: String, required: true, index: true },
@@ -14,4 +14,4 @@ snippetSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Snippet', snippetSchema);
+export default mongoose.model('Snippet', snippetSchema);

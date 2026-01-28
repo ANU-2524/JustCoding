@@ -2,9 +2,9 @@
  * Socket.IO Configuration and Event Handlers
  * Extracted from main index.js for better modularity
  */
-const { Server } = require('socket.io');
-const Room = require('../models/Room');
-const { socketCorsOptions } = require('../config/security');
+import { Server } from 'socket.io';
+import Room from '../models/Room.js';
+import { socketCorsOptions } from '../config/security.js';
 
 // In-memory user tracking
 const userMap = {};
@@ -188,7 +188,7 @@ function cleanup() {
   });
 }
 
-module.exports = {
+export default {
   initializeSocket,
   getRoomUsers,
   cleanup

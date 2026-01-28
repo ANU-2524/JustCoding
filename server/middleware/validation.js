@@ -251,7 +251,7 @@ function logRequest(req, message, level = 'info') {
   console[level](JSON.stringify(logData));
 }
 
-module.exports = {
+export {
   ValidationError,
   validators,
   schemas,

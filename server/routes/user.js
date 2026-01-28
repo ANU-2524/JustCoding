@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const User = require('../models/User');
-const Snippet = require('../models/Snippet');
+import User from '../models/User.js';
+import Snippet from '../models/Snippet.js';
 
 // ============ PROFILE ENDPOINTS ============
 
@@ -227,4 +227,4 @@ router.post('/snippets/sync', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

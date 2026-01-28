@@ -10,6 +10,8 @@ import mongoose from 'mongoose';
 import connectDB from './config/database.js';
 import BadgeService from './services/BadgeService.js';
 import Room from './models/Room.js';
+import { applySecurityMiddleware } from './config/security.js';
+import { logger } from './services/logger.js';
 
 import {
   generalLimiter,
@@ -17,6 +19,8 @@ import {
   codeLimiter,
   rateLimitLogger
 } from './middleware/simpleRateLimiter.js';
+import { validate } from './middleware/validation.js';
+import { BadRequestError, ExternalServiceError } from './utils/ErrorResponse.js';
 import gptRoute from './routes/gptRoute.js';
 import codeQualityRoute from './routes/codeQuality.js';
 import progressRoute from './routes/progress.js';
@@ -26,7 +30,8 @@ import userRoute from './routes/user.js';
 import communityRoute from './routes/community.js';
 
 // Socket.IO (modularized)
-const { initializeSocket, cleanup: socketCleanup } = require('./socket');
+import socketModule from './socket/index.js';
+const { initializeSocket, cleanup: socketCleanup } = socketModule;
 
 // Multi-Language Visualizer Service
 import visualizerServicePkg from './services/visualizer/index.js';
@@ -111,7 +116,7 @@ app.post('/api/visualizer/visualize', codeLimiter, validate('visualizer'), (req,
 
   const result = visualizerService.visualize(code, language);
   res.json({ success: true, ...result });
-}));
+});
 
 /**
  * GET /api/visualizer/languages
@@ -193,7 +198,7 @@ app.post('/compile', codeLimiter, validate('compile'), async (req, res) => {
   const sanitizedOutput = output.substring(0, 5000);
 
   res.json({ success: true, output: sanitizedOutput });
-}));
+});
 
 // ============================================
 // Health Check & Info Endpoints
@@ -281,4 +286,4 @@ server.listen(PORT, () => {
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-module.exports = { app, server, io };
+export { app, server, io };

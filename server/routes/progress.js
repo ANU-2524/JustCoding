@@ -1,9 +1,9 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const AnalyticsService = require('../services/AnalyticsService');
-const BadgeService = require('../services/BadgeService');
-const User = require('../models/User');
-const { validators, validate, logRequest } = require('../middleware/validation');
+import express from 'express';
+import mongoose from 'mongoose';
+import AnalyticsService from '../services/AnalyticsService.js';
+import BadgeService from '../services/BadgeService.js';
+import User from '../models/User.js';
+import { validators, validate, logRequest } from '../middleware/validation.js';
 const router = express.Router();
 
 // Local validation helpers for route-specific params
@@ -203,4 +203,4 @@ router.get('/export/:userId', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
