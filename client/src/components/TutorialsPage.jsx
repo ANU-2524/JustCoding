@@ -75,7 +75,7 @@ function TutorialsPage() {
     if (currentUser) {
       fetchUserProgress();
     }
-  }, [currentPage, selectedDifficulty, selectedCategory, selectedLanguage, searchTerm]);
+  }, [currentPage, selectedDifficulty, selectedCategory, selectedLanguage, searchTerm, currentUser]);
 
   const fetchTutorials = async () => {
     try {
@@ -113,6 +113,12 @@ function TutorialsPage() {
   };
 
   const fetchUserProgress = async () => {
+    // Guard: only fetch if user is logged in
+    if (!currentUser) {
+      setUserProgress({});
+      return;
+    }
+
     try {
       const response = await fetch('/api/tutorials/user/progress', {
         headers: {
