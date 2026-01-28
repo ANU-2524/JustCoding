@@ -9,11 +9,11 @@
  * - Variable lifecycle tracking
  */
 
-const JavaScriptParser = require('./parsers/javascript');
-const PythonParser = require('./parsers/python');
-const JavaParser = require('./parsers/java');
-const CppParser = require('./parsers/cpp');
-const GoParser = require('./parsers/go');
+import JavaScriptParser from './parsers/javascript.js';
+import PythonParser from './parsers/python.js';
+import JavaParser from './parsers/java.js';
+import CppParser from './parsers/cpp.js';
+import GoParser from './parsers/go.js';
 
 class VisualizerService {
   constructor() {
@@ -108,4 +108,4 @@ class VisualizerService {
 }
 
 // Export singleton instance
-module.exports = new VisualizerService();
+export default new VisualizerService();

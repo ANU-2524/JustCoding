@@ -1,6 +1,6 @@
-const Achievement = require('../models/Achievement');
-const User = require('../models/User');
-const LearningEvent = require('../models/LearningEvent');
+import Achievement from '../models/Achievement.js';
+import User from '../models/User.js';
+import LearningEvent from '../models/LearningEvent.js';
 
 class BadgeService {
   static async initializeBadges() {
@@ -148,4 +148,4 @@ class BadgeService {
   }
 }
 
-module.exports = BadgeService;
+export default BadgeService;

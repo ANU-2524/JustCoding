@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
-const Contest = require('../models/Contest');
-const ChallengeService = require('../services/ChallengeService');
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
+import Contest from '../models/Contest.js';
+import ChallengeService from '../services/ChallengeService.js';
 
 // Utility function to escape regex to prevent ReDoS
 function escapeRegex(string) {
@@ -377,4 +377,4 @@ router.get('/contests/:slug/leaderboard', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

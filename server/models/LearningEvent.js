@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const learningEventSchema = new mongoose.Schema({
   userId: { type: String, required: true, index: true },
@@ -18,4 +18,4 @@ const learningEventSchema = new mongoose.Schema({
 learningEventSchema.index({ userId: 1, timestamp: -1 });
 learningEventSchema.index({ eventType: 1, timestamp: -1 });
 
-module.exports = mongoose.model('LearningEvent', learningEventSchema);
+export default mongoose.model('LearningEvent', learningEventSchema);
