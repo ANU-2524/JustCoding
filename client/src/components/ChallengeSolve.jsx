@@ -35,6 +35,7 @@ const ChallengeSolve = () => {
   const [showHints, setShowHints] = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [useCustomInput, setUseCustomInput] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
   const odId = localStorage.getItem('odId') || `user-${Date.now()}`;
   const odName = localStorage.getItem('odName') || 'Anonymous';
@@ -91,7 +92,33 @@ throw new Error('Challenge not found');
     }
   };
 
+  const validateCode = (codeToValidate) => {
+    if (!codeToValidate || codeToValidate.trim() === '') {
+      setValidationError('Please write some code before submitting.');
+      return false;
+    }
+    
+    // Check if code is only comments/whitespace
+    const codeLines = codeToValidate.split('\n');
+    const hasActualCode = codeLines.some(line => {
+      const trimmed = line.trim();
+      return trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('/*') && !trimmed.startsWith('*');
+    });
+    
+    if (!hasActualCode) {
+      setValidationError('Please write actual code (not just comments).');
+      return false;
+    }
+    
+    setValidationError(null);
+    return true;
+  };
+
   const runCode = async () => {
+    if (!validateCode(code)) {
+      return;
+    }
+
     setRunning(true);
     setResults(null);
     
@@ -117,6 +144,10 @@ throw new Error('Challenge not found');
   };
 
   const submitCode = async () => {
+    if (!validateCode(code)) {
+      return;
+    }
+
     setSubmitting(true);
     setResults(null);
     
@@ -442,6 +473,18 @@ throw new Error('Challenge not found');
               </button>
             </div>
           </div>
+
+          {validationError && (
+            <div className="validation-error-banner">
+              <span>{validationError}</span>
+              <button 
+                className="error-close-btn"
+                onClick={() => setValidationError(null)}
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           <div className="code-editor-wrapper">
             <CodeMirror

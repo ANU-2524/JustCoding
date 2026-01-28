@@ -436,6 +436,50 @@
   flex-shrink: 0;
 }
 
+.validation-error-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  background: rgba(244, 67, 54, 0.1);
+  border: 2px solid #f44336;
+  border-radius: 8px;
+  color: #ff7043;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+}
+
+.validation-error-message span {
+  flex: 1;
+}
+
+.error-close-btn {
+  background: none;
+  border: none;
+  color: #ff7043;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+  transition: color 0.2s;
+}
+
+.error-close-btn:hover {
+  color: #f44336;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Quiz Section */
 .quiz-section {
   margin-bottom: 2rem;

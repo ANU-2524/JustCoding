@@ -34,6 +34,7 @@ function TutorialView() {
   const [showQuizResult, setShowQuizResult] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
   const [startTime, setStartTime] = useState(null);
+  const [validationError, setValidationError] = useState(null);
   const stepContentRef = useRef(null);
 
   useEffect(() => {
@@ -152,6 +153,30 @@ return;
   };
 
   const completeStep = () => {
+    const currentStepData = getCurrentStep();
+    
+    // Validate code if interactive section is enabled
+    if (currentStepData?.interactive?.enabled) {
+      if (!userCode || userCode.trim() === '') {
+        setValidationError('Please write some code to complete this step.');
+        return;
+      }
+      
+      // Check if code is only comments/whitespace
+      const codeLines = userCode.split('\n');
+      const hasActualCode = codeLines.some(line => {
+        const trimmed = line.trim();
+        return trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('/*') && !trimmed.startsWith('*');
+      });
+      
+      if (!hasActualCode) {
+        setValidationError('Please write actual code (not just comments).');
+        return;
+      }
+    }
+    
+    setValidationError(null);
+
     if (!currentUser) {
       // Allow guest users to navigate
       if (currentStep < tutorial.steps.length) {
@@ -369,6 +394,18 @@ return 0;
                       language={currentStepData.codeExample?.language || 'javascript'}
                       height="300px"
                     />
+
+                    {validationError && (
+                      <div className="validation-error-message">
+                        <span>{validationError}</span>
+                        <button 
+                          className="error-close-btn"
+                          onClick={() => setValidationError(null)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
 
                     {currentStepData.interactive.hints?.length > 0 && (
                       <div className="hints-section">
