@@ -15,7 +15,9 @@ export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
         // Check localStorage first, then system preference
         const saved = localStorage.getItem('justcode-theme');
-        if (saved) return saved;
+        if (saved) {
+return saved;
+}
 
         // Default to dark theme for code editors
         return 'dark';

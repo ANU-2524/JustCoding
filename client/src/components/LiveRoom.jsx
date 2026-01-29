@@ -12,6 +12,8 @@ import { eclipse } from '@uiw/codemirror-theme-eclipse';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { getExplanation, getDebugSuggestion } from './OpenAIService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCopy, FaPlay, FaSignOutAlt, FaBug, FaMagic, FaUsers, FaVideo, FaCommentAlt, FaTerminal } from 'react-icons/fa';
 import '../Style/LiveRoom.css';
 import { endSession, incrementStat, startSession, touchLastActive } from '../services/localStore';
 
@@ -74,7 +76,6 @@ const LiveRoom = () => {
 
   const messagesEndRef = useRef(null);
 
-
   // Initialize socket and join room
   useEffect(() => {
     sessionIdRef.current = startSession({ roomId, username });
@@ -82,14 +83,14 @@ const LiveRoom = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
     socket.current = io(backendUrl);
-    
+
     // Assign color based on username hash
     const colorIndex = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % USER_COLORS.length;
     setMyColor(USER_COLORS[colorIndex]);
 
     // Join room with user info
-    socket.current.emit("join-room", { 
-      roomId, 
+    socket.current.emit("join-room", {
+      roomId,
       username,
       color: USER_COLORS[colorIndex]
     });
@@ -115,7 +116,9 @@ const LiveRoom = () => {
       setSystemMsg(`${newUser} joined the room`);
       setTimeout(() => setSystemMsg(''), 3000);
       setParticipants(prev => {
-        if (prev.find(p => p.username === newUser)) return prev;
+        if (prev.find(p => p.username === newUser)) {
+return prev;
+}
         return [...prev, { username: newUser, color, isActive: true }];
       });
     });
@@ -207,9 +210,9 @@ const LiveRoom = () => {
       isRemoteUpdate.current = false;
       return;
     }
-    
+
     setCode(value);
-    
+
     // Broadcast code to other users
     if (socket.current) {
       socket.current.emit("code-change", { roomId, code: value });
@@ -219,7 +222,7 @@ const LiveRoom = () => {
     if (viewUpdate?.state) {
       const selection = viewUpdate.state.selection.main;
       sendCursorPosition(
-        selection.head, 
+        selection.head,
         selection.from !== selection.to ? { from: selection.from, to: selection.to } : null
       );
     }
@@ -230,7 +233,7 @@ const LiveRoom = () => {
     if (viewUpdate?.state && viewUpdate.selectionSet) {
       const selection = viewUpdate.state.selection.main;
       sendCursorPosition(
-        selection.head, 
+        selection.head,
         selection.from !== selection.to ? { from: selection.from, to: selection.to } : null
       );
     }
@@ -238,12 +241,16 @@ const LiveRoom = () => {
 
   // Recording controls (host only)
   const startRecording = useCallback(() => {
-    if (!isHost) return;
+    if (!isHost) {
+return;
+}
     socket.current.emit("start-recording", { roomId });
   }, [isHost, roomId]);
 
   const stopRecording = useCallback(() => {
-    if (!isHost) return;
+    if (!isHost) {
+return;
+}
     socket.current.emit("stop-recording", { roomId });
   }, [isHost, roomId]);
 
@@ -252,7 +259,6 @@ const LiveRoom = () => {
     socket.current.emit("debug-state", { roomId, state });
     setDebugState(state);
   }, [roomId]);
-
 
   // Chat functions
   const handleSendMessage = () => {
@@ -275,21 +281,21 @@ const LiveRoom = () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
       setOutput("Compiling and running your code...");
       incrementStat('runs', 1);
-      
+
       const res = await fetch(`${backendUrl}/compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ language: backendLanguage, code, stdin: userInput }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
       }
-      
+
       const result = await res.json();
       setOutput(result.output || "No output");
-      
+
       // Share output with collaborators
       shareDebugState({ type: 'output', output: result.output, timestamp: Date.now() });
     } catch (err) {
@@ -299,7 +305,9 @@ const LiveRoom = () => {
 
   // AI functions
   const explainQuestion = async () => {
-    if (!questionText.trim()) return;
+    if (!questionText.trim()) {
+return;
+}
     setIsExplaining(true);
     incrementStat('aiExplains', 1);
     const result = await getExplanation(questionText);
@@ -313,7 +321,7 @@ const LiveRoom = () => {
     const result = await getDebugSuggestion(code, output);
     setDebugResult(result);
     setDebugLoading(false);
-    
+
     // Share debug result with collaborators
     shareDebugState({ type: 'debug', result, timestamp: Date.now() });
   };
@@ -335,7 +343,7 @@ const LiveRoom = () => {
     const lines = codeUpToPosition.split('\n');
     const lineNumber = lines.length - 1;
     const columnNumber = lines[lines.length - 1].length;
-    
+
     // CodeMirror line height is typically ~19-20px, char width ~7.8px for monospace
     return {
       top: lineNumber * 19 + 4, // +4 for padding
@@ -343,33 +351,59 @@ const LiveRoom = () => {
     };
   };
 
-
   return (
     <div className="live-room-container">
       {/* Top Bar */}
-      <div className="top-bar">
+      <motion.div
+        className="top-bar"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <h2 className="room-title">👨‍💻 DevZone: <span>{roomId}</span></h2>
+
         <div className="top-bar-actions">
-          {isRecording && <span className="recording-badge">🔴 Recording</span>}
-          <span className="participant-count">👥 {participants.length + 1}</span>
-          <button 
+          {isRecording && (
+            <motion.span
+              className="recording-badge"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              <FaVideo /> Recording
+            </motion.span>
+          )}
+
+          <div className="participant-count">
+            <FaUsers /> {participants.length + 1}
+          </div>
+
+          <motion.button
             className="share-btn"
             onClick={() => {
               navigator.clipboard.writeText(roomId);
-              setSystemMsg('Room code copied! Share it with others to join.');
+              setSystemMsg('Room ID copied to clipboard!');
               setTimeout(() => setSystemMsg(''), 3000);
             }}
-            title="Copy room code"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            📋 Share Code
+            <FaCopy /> {systemMsg === 'Room ID copied to clipboard!' ? 'Copied!' : 'Copy ID'}
+          </motion.button>
+
+          <button className="leave-btn" onClick={() => setShowModal(true)}>
+            <FaSignOutAlt /> Leave Room
           </button>
-          <button className="leave-btn" onClick={() => setShowModal(true)}>🚪 Leave</button>
         </div>
-      </div>
+      </motion.div>
 
       <div className="main-content">
         {/* Left Panel - Editor */}
-        <div className="editor-panel">
+        <motion.div
+          className="editor-panel"
+          initial={{ x: -30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
           <div className="toolbar">
             <select value={language} onChange={(e) => {
               const lang = e.target.value;
@@ -380,18 +414,21 @@ const LiveRoom = () => {
                 <option key={key} value={key}>{val.name}</option>
               ))}
             </select>
-            <button onClick={runCode}>▶️ Run</button>
+
+            <button className="run-btn" onClick={runCode}>
+              ▶ Run Code
+            </button>
+
             {isHost && (
-              <button 
+              <button
                 onClick={isRecording ? stopRecording : startRecording}
                 className={isRecording ? 'recording-active' : ''}
               >
-                {isRecording ? '⏹️ Stop Recording' : '🔴 Record'}
+                {isRecording ? '⏹ Stop' : '🔴 Record'}
               </button>
             )}
           </div>
 
-          {/* Editor with Remote Cursors */}
           <div className="editor-wrapper" style={{ position: 'relative' }}>
             <CodeMirror
               ref={editorRef}
@@ -400,134 +437,145 @@ const LiveRoom = () => {
               theme={eclipse}
               onChange={handleCodeChange}
               onUpdate={handleEditorUpdate}
-              height="350px"
+              minHeight="400px"
             />
-            
+
             {/* Remote Cursors Overlay */}
             <div className="remote-cursors-overlay">
-              {Object.entries(remoteCursors).map(([user, cursor]) => {
-                const pos = getCursorPixelPosition(cursor.position);
-                return (
-                  <div
-                    key={user}
-                    className="remote-cursor"
-                    style={{
-                      position: 'absolute',
-                      left: `${pos.left}px`,
-                      top: `${pos.top}px`,
-                      pointerEvents: 'none',
-                      zIndex: 1000
-                    }}
-                  >
-                    <div 
-                      className="cursor-caret"
-                      style={{ backgroundColor: cursor.color }}
-                    />
-                    <span 
-                      className="cursor-name-tag"
-                      style={{ backgroundColor: cursor.color }}
+              <AnimatePresence>
+                {Object.entries(remoteCursors).map(([user, cursor]) => {
+                  const pos = getCursorPixelPosition(cursor.position);
+                  return (
+                    <motion.div
+                      key={user}
+                      className="remote-cursor"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{
+                        position: 'absolute',
+                        left: `${pos.left}px`,
+                        top: `${pos.top}px`,
+                        pointerEvents: 'none',
+                        zIndex: 1000
+                      }}
                     >
-                      {cursor.username}
-                    </span>
-                    {cursor.selection && (
-                      <div 
-                        className="cursor-selection"
-                        style={{
-                          backgroundColor: `${cursor.color}30`,
-                          width: `${(cursor.selection.to - cursor.selection.from) * 8}px`
-                        }}
+                      <div
+                        className="cursor-caret"
+                        style={{ backgroundColor: cursor.color }}
                       />
-                    )}
-                  </div>
-                );
-              })}
+                      <span
+                        className="cursor-name-tag"
+                        style={{ backgroundColor: cursor.color }}
+                      >
+                        {cursor.username}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           </div>
 
-          {/* Output & Debug */}
+          {/* AI sections - unified container */}
           <div className="ai-sections">
-            <div className="ai-box">
-              <h4>📤 Output</h4>
+            <div className="ai-box outputs">
+              <h4><FaTerminal /> Output</h4>
               <textarea
-                placeholder="Enter input for your program..."
+                placeholder="Standard input (stdin)..."
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                rows={2}
               />
-              <pre className="output-box">{output || 'Run your code to see output'}</pre>
+              <pre className="output-box">{output || 'Execution output will appear here...'}</pre>
             </div>
 
-            <div className="ai-box">
-              <h4>❓ Ask AI</h4>
+            <div className="ai-box assistant">
+              <h4><FaMagic /> AI Assistant</h4>
               <textarea
-                placeholder="Paste your question..."
+                placeholder="Ask anything about this code..."
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
-                rows={2}
               />
               <button onClick={explainQuestion} disabled={isExplaining}>
-                {isExplaining ? "Thinking..." : "Ask"}
+                {isExplaining ? "Analyzing..." : "Ask Assistant"}
               </button>
-              {explanation && <pre className="ai-response">{explanation}</pre>}
+              {explanation && <div className="ai-response">{explanation}</div>}
             </div>
 
-            <div className="ai-box">
-              <h4>🐞 Debug</h4>
+            <div className="ai-box debug">
+              <h4><FaBug /> Debugger</h4>
               <button onClick={debugCode} disabled={debugLoading}>
-                {debugLoading ? "Analyzing..." : "Debug Code"}
+                {debugLoading ? "Hunting bugs..." : "Analyze Bugs"}
               </button>
-              {debugResult && <pre className="ai-response">{debugResult}</pre>}
+              {debugResult && <div className="ai-response">{debugResult}</div>}
               {debugState?.type === 'debug' && debugState.result && (
                 <div className="shared-debug">
-                  <small>Shared debug result:</small>
+                  <small>Team Debug Insight:</small>
                   <pre>{debugState.result}</pre>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Right Panel - Chat & Participants */}
-        <div className="chat-panel">
+        {/* Right Panel - Sidebar */}
+        <motion.div
+          className="chat-panel"
+          initial={{ x: 30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {/* Participants List */}
           <div className="participants-section">
-            <h4>👥 Collaborators ({participants.length + 1})</h4>
-            <ul className="participants-list">
-              <li className="participant-item">
-                <span className="participant-dot" style={{ backgroundColor: myColor }} />
+            <h4>Online Collaborators</h4>
+            <div className="participants-list">
+              <div className="participant-item">
+                <span className="participant-dot" style={{ backgroundColor: myColor, color: myColor }} />
                 <span>{username} (You)</span>
                 {isHost && <span className="host-badge">Host</span>}
-              </li>
+              </div>
               {participants.map((p) => (
-                <li key={p.username} className="participant-item">
-                  <span className="participant-dot" style={{ backgroundColor: p.color }} />
+                <div key={p.username} className="participant-item">
+                  <span className="participant-dot" style={{ backgroundColor: p.color, color: p.color }} />
                   <span>{p.username}</span>
                   {p.isHost && <span className="host-badge">Host</span>}
                   <span className={`status-dot ${p.isActive ? 'active' : 'idle'}`} />
-                </li>
+                </div>
               ))}
-            </ul>
-            
-            {/* Recording Info */}
-            {recordingId && (
-              <div className="recording-info">
-                <small>📹 Last Recording: {recordingId}</small>
-              </div>
-            )}
+            </div>
           </div>
 
-          {/* Chat */}
-          <h3 className="chat-heading">💬 Team Chat</h3>
+          <div className="chat-header">
+            <h4><FaCommentAlt /> Team Chat</h4>
+          </div>
+
           <div className="chat-messages">
-            {systemMsg && <div className="system-message">{systemMsg}</div>}
-            {messages.map((msg, i) => (
-              <div key={i} className={`message ${msg.username === 'You' ? 'own-message' : ''}`}>
-                <strong>{msg.username}:</strong> {msg.message}
-              </div>
-            ))}
+            <AnimatePresence>
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`message ${msg.username === 'You' ? 'own-message' : ''}`}
+                >
+                  <strong>{msg.username}</strong>
+                  <span>{msg.message}</span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
-          {typingNotification && <p className="typing-notification">{typingNotification}</p>}
+
+          {typingNotification && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="typing-notification"
+            >
+              {typingNotification}
+            </motion.p>
+          )}
+
           <div className="chat-input-area">
             <input
               type="text"
@@ -537,26 +585,33 @@ const LiveRoom = () => {
                 socket.current.emit("typing", { roomId, username });
               }}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              placeholder="Type a message..."
+              placeholder="Chat with team..."
             />
             <button onClick={handleSendMessage}>Send</button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Leave Modal */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3>Leave Session?</h3>
-            <p>Are you sure you want to leave this collaboration session?</p>
-            <div className="modal-actions">
-              <button onClick={leaveRoom} className="modal-btn leave">Yes, Leave</button>
-              <button onClick={() => setShowModal(false)} className="modal-btn cancel">Stay</button>
-            </div>
+      <AnimatePresence>
+        {showModal && (
+          <div className="modal-overlay">
+            <motion.div
+              className="modal-box"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <h3>Leave Session?</h3>
+              <p>Your work will be saved, but you'll disconnect from the team.</p>
+              <div className="modal-actions">
+                <button onClick={leaveRoom} className="modal-btn leave">Exit Session</button>
+                <button onClick={() => setShowModal(false)} className="modal-btn cancel">Cancel</button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };

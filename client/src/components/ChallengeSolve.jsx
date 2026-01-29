@@ -35,6 +35,7 @@ const ChallengeSolve = () => {
   const [showHints, setShowHints] = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [useCustomInput, setUseCustomInput] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
   const odId = localStorage.getItem('odId') || `user-${Date.now()}`;
   const odName = localStorage.getItem('odName') || 'Anonymous';
@@ -53,7 +54,9 @@ const ChallengeSolve = () => {
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/api/challenges/${slug}`);
-      if (!res.ok) throw new Error('Challenge not found');
+      if (!res.ok) {
+throw new Error('Challenge not found');
+}
       const data = await res.json();
       setChallenge(data);
       setCode(data.starterCode?.[language] || '// Write your solution here');
@@ -89,7 +92,33 @@ const ChallengeSolve = () => {
     }
   };
 
+  const validateCode = (codeToValidate) => {
+    if (!codeToValidate || codeToValidate.trim() === '') {
+      setValidationError('Please write some code before submitting.');
+      return false;
+    }
+    
+    // Check if code is only comments/whitespace
+    const codeLines = codeToValidate.split('\n');
+    const hasActualCode = codeLines.some(line => {
+      const trimmed = line.trim();
+      return trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('/*') && !trimmed.startsWith('*');
+    });
+    
+    if (!hasActualCode) {
+      setValidationError('Please write actual code (not just comments).');
+      return false;
+    }
+    
+    setValidationError(null);
+    return true;
+  };
+
   const runCode = async () => {
+    if (!validateCode(code)) {
+      return;
+    }
+
     setRunning(true);
     setResults(null);
     
@@ -115,6 +144,10 @@ const ChallengeSolve = () => {
   };
 
   const submitCode = async () => {
+    if (!validateCode(code)) {
+      return;
+    }
+
     setSubmitting(true);
     setResults(null);
     
@@ -440,6 +473,18 @@ const ChallengeSolve = () => {
               </button>
             </div>
           </div>
+
+          {validationError && (
+            <div className="validation-error-banner">
+              <span>{validationError}</span>
+              <button 
+                className="error-close-btn"
+                onClick={() => setValidationError(null)}
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           <div className="code-editor-wrapper">
             <CodeMirror
