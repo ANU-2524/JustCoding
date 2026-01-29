@@ -5,7 +5,7 @@ dotenv.config();
 
 import Challenge from '../models/Challenge.js';
 
-const sampleChallenges = [
+export const sampleChallenges = [
   {
     title: 'Two Sum',
     slug: 'two-sum',
