@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaBook, FaBug, FaGithub, FaLightbulb, FaSave, FaRoad } from 'react-icons/fa'; // Added FaBook, FaGithub, FaLightbulb, FaSave, and FaRoad
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaBook, FaBug, FaGithub, FaLightbulb, FaSave, FaRoad  , FaComments } from 'react-icons/fa'; // Added FaBook, FaGithub, FaLightbulb, FaSave, and FaRoad
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
