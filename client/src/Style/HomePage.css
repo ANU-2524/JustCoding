@@ -20,37 +20,38 @@ body {
 /* ================= Hero Section ================= */
 .hero-section {
   position: relative;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: linear-gradient(135deg, #4f46e5, #3b82f6); /* Blue to purple gradient */
   color: white;
-  padding: 8rem 2rem 6rem;
+  padding: 12rem 2rem 10rem;
   text-align: center;
-  overflow: hidden;
-  min-height: 80vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.hero-content {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-section h1 {
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
   font-weight: 900;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   font-family: 'Playfair Display', serif;
+  color: #ffffff;
   letter-spacing: -1px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+}
+
+.hero-section p {
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  max-width: 750px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  color: #e0e7ff;
 }
 
 .hero-section .highlight {
-  background: linear-gradient(135deg, #ff7043, #ffab91);
+  background: linear-gradient(135deg, #ff7043, #ffab91); /* Orange gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -59,30 +60,49 @@ body {
   letter-spacing: -0.5px;
 }
 
-.hero-section p {
-  font-size: clamp(1.1rem, 4vw, 1.6rem);
-  max-width: 700px;
-  margin: 0 auto 3rem;
-  line-height: 1.5;
-}
-
 .hero-buttons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 2rem;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
-.hero-buttons a,
 .hero-buttons button {
-  margin: 0;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  background-color: white;
+  color: #4f46e5; /* Blue text */
+  border: 2px solid #4f46e5;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-buttons button:hover {
+  background-color: #4f46e5; /* Blue background on hover */
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 12px 25px rgba(79, 70, 229, 0.6);
+}
+
+.hero-buttons a {
+  background-color: white;
+  color: #4f46e5; /* Blue text */
+  border: 2px solid #4f46e5;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.4s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-buttons a:hover {
+  background-color: #4f46e5; /* Blue background on hover */
+  color: white;
+  transform: scale(1.08);
 }
 
 /* Mobile responsiveness */
