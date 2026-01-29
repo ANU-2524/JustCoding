@@ -34,6 +34,12 @@ const contestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Indexes for optimized queries
+contestSchema.index({ slug: 1 }, { unique: true });
+contestSchema.index({ status: 1, startTime: -1 });
+contestSchema.index({ startTime: 1, endTime: 1 });
+contestSchema.index({ 'participants.odId': 1 });
+
 // Update status based on time
 contestSchema.methods.updateStatus = function() {
   const now = new Date();

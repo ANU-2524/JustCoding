@@ -27,8 +27,11 @@ const submissionSchema = new mongoose.Schema({
   submittedAt: { type: Date, default: Date.now }
 });
 
-// Index for leaderboard queries
+// Optimized indexes for leaderboard queries
 submissionSchema.index({ challengeId: 1, status: 1, executionTime: 1 });
 submissionSchema.index({ odId: 1, challengeId: 1 });
+submissionSchema.index({ challengeId: 1, submittedAt: 1 });
+submissionSchema.index({ odId: 1, challengeId: 1, points: -1, submittedAt: 1 });
+submissionSchema.index({ challengeId: 1, odId: 1, status: 1, points: -1 });
 
 module.exports = mongoose.model('Submission', submissionSchema);
