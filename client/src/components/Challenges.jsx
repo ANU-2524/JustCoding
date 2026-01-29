@@ -1,27 +1,43 @@
+
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaCode,
+  FaTrophy,
+  FaSearch,
+  FaFilter,
+  FaStar,
+  FaUsers,
+  FaChartLine,
+  FaTimes,
+} from "react-icons/fa";
+import "../Style/Challenges.css";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCode, FaTrophy, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine, FaTimes } from 'react-icons/fa';
 import Breadcrumb from './Breadcrumb';
 import '../Style/Challenges.css';
 
+
 const difficultyColors = {
-  easy: '#4caf50',
-  medium: '#ff9800',
-  hard: '#f44336',
-  expert: '#9c27b0'
+  easy: "#4caf50",
+  medium: "#ff9800",
+  hard: "#f44336",
+  expert: "#9c27b0",
 };
 
 const categoryIcons = {
-  arrays: '📊',
-  strings: '📝',
-  'linked-lists': '🔗',
-  trees: '🌳',
-  graphs: '🕸️',
-  dp: '🧮',
-  sorting: '📈',
-  searching: '🔍',
-  math: '➗',
-  other: '💡'
+  arrays: "📊",
+  strings: "📝",
+  "linked-lists": "🔗",
+  trees: "🌳",
+  graphs: "🕸️",
+  dp: "🧮",
+  sorting: "📈",
+  searching: "🔍",
+  math: "➗",
+  other: "💡",
 };
 
 // Static list of popular LeetCode problems
@@ -36,7 +52,7 @@ const leetCodeProblems = [
     solvedCount: 2456789,
     successRate: 45.2,
     leetCodeUrl: "https://leetcode.com/problems/two-sum/",
-    tags: ["array", "hash-table"]
+    tags: ["array", "hash-table"],
   },
   {
     id: 2,
@@ -48,7 +64,7 @@ const leetCodeProblems = [
     solvedCount: 1234567,
     successRate: 32.1,
     leetCodeUrl: "https://leetcode.com/problems/add-two-numbers/",
-    tags: ["linked-list", "math"]
+    tags: ["linked-list", "math"],
   },
   {
     id: 3,
@@ -60,7 +76,7 @@ const leetCodeProblems = [
     solvedCount: 987654,
     successRate: 28.7,
     leetCodeUrl: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
-    tags: ["string", "sliding-window"]
+    tags: ["string", "sliding-window"],
   },
   {
     id: 4,
@@ -72,7 +88,7 @@ const leetCodeProblems = [
     solvedCount: 567890,
     successRate: 25.3,
     leetCodeUrl: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-    tags: ["array", "binary-search", "divide-and-conquer"]
+    tags: ["array", "binary-search", "divide-and-conquer"],
   },
   {
     id: 5,
@@ -84,7 +100,7 @@ const leetCodeProblems = [
     solvedCount: 876543,
     successRate: 27.8,
     leetCodeUrl: "https://leetcode.com/problems/longest-palindromic-substring/",
-    tags: ["string", "dynamic-programming"]
+    tags: ["string", "dynamic-programming"],
   },
   {
     id: 6,
@@ -96,7 +112,7 @@ const leetCodeProblems = [
     solvedCount: 654321,
     successRate: 35.6,
     leetCodeUrl: "https://leetcode.com/problems/zigzag-conversion/",
-    tags: ["string"]
+    tags: ["string"],
   },
   {
     id: 7,
@@ -108,7 +124,7 @@ const leetCodeProblems = [
     solvedCount: 1234567,
     successRate: 25.8,
     leetCodeUrl: "https://leetcode.com/problems/reverse-integer/",
-    tags: ["math"]
+    tags: ["math"],
   },
   {
     id: 8,
@@ -120,7 +136,7 @@ const leetCodeProblems = [
     solvedCount: 789012,
     successRate: 15.2,
     leetCodeUrl: "https://leetcode.com/problems/string-to-integer-atoi/",
-    tags: ["string", "parsing"]
+    tags: ["string", "parsing"],
   },
   {
     id: 9,
@@ -132,7 +148,7 @@ const leetCodeProblems = [
     solvedCount: 1456789,
     successRate: 48.9,
     leetCodeUrl: "https://leetcode.com/problems/palindrome-number/",
-    tags: ["math"]
+    tags: ["math"],
   },
   {
     id: 10,
@@ -144,7 +160,7 @@ const leetCodeProblems = [
     solvedCount: 345678,
     successRate: 25.1,
     leetCodeUrl: "https://leetcode.com/problems/regular-expression-matching/",
-    tags: ["string", "dynamic-programming", "recursion"]
+    tags: ["string", "dynamic-programming", "recursion"],
   },
   {
     id: 11,
@@ -156,7 +172,7 @@ const leetCodeProblems = [
     solvedCount: 678901,
     successRate: 45.6,
     leetCodeUrl: "https://leetcode.com/problems/container-with-most-water/",
-    tags: ["array", "two-pointers"]
+    tags: ["array", "two-pointers"],
   },
   {
     id: 12,
@@ -168,7 +184,7 @@ const leetCodeProblems = [
     solvedCount: 567890,
     successRate: 52.3,
     leetCodeUrl: "https://leetcode.com/problems/integer-to-roman/",
-    tags: ["math", "string"]
+    tags: ["math", "string"],
   },
   {
     id: 13,
@@ -180,7 +196,7 @@ const leetCodeProblems = [
     solvedCount: 1234567,
     successRate: 55.7,
     leetCodeUrl: "https://leetcode.com/problems/roman-to-integer/",
-    tags: ["math", "string"]
+    tags: ["math", "string"],
   },
   {
     id: 14,
@@ -192,7 +208,7 @@ const leetCodeProblems = [
     solvedCount: 987654,
     successRate: 38.9,
     leetCodeUrl: "https://leetcode.com/problems/longest-common-prefix/",
-    tags: ["string"]
+    tags: ["string"],
   },
   {
     id: 15,
@@ -204,7 +220,7 @@ const leetCodeProblems = [
     solvedCount: 789012,
     successRate: 24.5,
     leetCodeUrl: "https://leetcode.com/problems/3sum/",
-    tags: ["array", "two-pointers", "sorting"]
+    tags: ["array", "two-pointers", "sorting"],
   },
   {
     id: 16,
@@ -216,7 +232,7 @@ const leetCodeProblems = [
     solvedCount: 456789,
     successRate: 42.1,
     leetCodeUrl: "https://leetcode.com/problems/3sum-closest/",
-    tags: ["array", "two-pointers", "sorting"]
+    tags: ["array", "two-pointers", "sorting"],
   },
   {
     id: 17,
@@ -228,7 +244,7 @@ const leetCodeProblems = [
     solvedCount: 678901,
     successRate: 43.2,
     leetCodeUrl: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
-    tags: ["string", "backtracking"]
+    tags: ["string", "backtracking"],
   },
   {
     id: 18,
@@ -240,7 +256,7 @@ const leetCodeProblems = [
     solvedCount: 345678,
     successRate: 31.4,
     leetCodeUrl: "https://leetcode.com/problems/4sum/",
-    tags: ["array", "two-pointers", "sorting"]
+    tags: ["array", "two-pointers", "sorting"],
   },
   {
     id: 19,
@@ -252,7 +268,7 @@ const leetCodeProblems = [
     solvedCount: 567890,
     successRate: 35.6,
     leetCodeUrl: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
-    tags: ["linked-list", "two-pointers"]
+    tags: ["linked-list", "two-pointers"],
   },
   {
     id: 20,
@@ -264,23 +280,23 @@ const leetCodeProblems = [
     solvedCount: 1456789,
     successRate: 38.7,
     leetCodeUrl: "https://leetcode.com/problems/valid-parentheses/",
-    tags: ["string", "stack"]
-  }
+    tags: ["string", "stack"],
+  },
 ];
 
 const Challenges = () => {
-
   const [showProblemPopup, setShowProblemPopup] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
 
   const [challenges, setChallenges] = useState(leetCodeProblems);
   const [loading, setLoading] = useState(false);
+
   const [filters, setFilters] = useState({
-    difficulty: '',
-    category: '',
-    search: ''
+    difficulty: "",
+    category: "",
+    search: "",
   });
-  const [activeTab, setActiveTab] = useState('challenges');
+  const [activeTab, setActiveTab] = useState("challenges");
 
   useEffect(() => {
     filterChallenges();
@@ -290,18 +306,19 @@ const Challenges = () => {
     let filtered = leetCodeProblems;
 
     if (filters.difficulty) {
-      filtered = filtered.filter(challenge => challenge.difficulty === filters.difficulty);
+      filtered = filtered.filter((challenge) => challenge.difficulty === filters.difficulty);
     }
 
     if (filters.category) {
-      filtered = filtered.filter(challenge => challenge.category === filters.category);
+      filtered = filtered.filter((challenge) => challenge.category === filters.category);
     }
 
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(challenge =>
-        challenge.title.toLowerCase().includes(searchTerm) ||
-        challenge.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+      filtered = filtered.filter(
+        (challenge) =>
+          challenge.title.toLowerCase().includes(searchTerm) ||
+          challenge.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
       );
     }
 
@@ -313,14 +330,31 @@ const Challenges = () => {
     filterChallenges();
   };
 
-//   const handleChallengeClick = (challenge) => {
-//   setSelectedChallenge(challenge);
-//   setShowProblemPopup(true);
-// };
-
-  const handleChallengeClick = (challenge) => {
+  //   const handleChallengeClick = (challenge) => {
+  //   setSelectedChallenge(challenge);
+  //   setShowProblemPopup(true);
+  // };
+  const handleChallengeClick = async (challenge) => {
+    // 1. Open popup immediately with basic data
     setSelectedChallenge(challenge);
     setShowProblemPopup(true);
+
+    try {
+      // 2. Fetch full challenge from backend
+      const res = await fetch(`${BACKEND_URL}/api/challenges/${challenge.slug}`);
+
+      if (!res.ok) return; // silently fail
+
+      const fullData = await res.json();
+
+      // 3. Merge backend data into popup
+      setSelectedChallenge((prev) => ({
+        ...prev,
+        ...fullData,
+      }));
+    } catch (err) {
+      console.error("Backend fetch failed, using static data");
+    }
   };
 
   const closeProblemPopup = () => {
@@ -337,32 +371,34 @@ const Challenges = () => {
       />
 
       <div className="challenges-hero">
-        <h1><FaCode /> Coding Challenges</h1>
+        <h1>
+          <FaCode /> Coding Challenges
+        </h1>
         <p>Sharpen your skills with curated programming problems</p>
       </div>
 
       <div className="challenges-tabs">
-        <button 
-          className={`tab-btn ${activeTab === 'challenges' ? 'active' : ''}`}
-          onClick={() => setActiveTab('challenges')}
+        <button
+          className={`tab-btn ${activeTab === "challenges" ? "active" : ""}`}
+          onClick={() => setActiveTab("challenges")}
         >
           <FaCode /> Problems
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'contests' ? 'active' : ''}`}
-          onClick={() => setActiveTab('contests')}
+        <button
+          className={`tab-btn ${activeTab === "contests" ? "active" : ""}`}
+          onClick={() => setActiveTab("contests")}
         >
           <FaTrophy /> Contests
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'leaderboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('leaderboard')}
+        <button
+          className={`tab-btn ${activeTab === "leaderboard" ? "active" : ""}`}
+          onClick={() => setActiveTab("leaderboard")}
         >
           <FaChartLine /> Leaderboard
         </button>
       </div>
 
-      {activeTab === 'challenges' && (
+      {activeTab === "challenges" && (
         <>
           <div className="filters-section">
             <form onSubmit={handleSearch} className="search-form">
@@ -375,7 +411,9 @@ const Challenges = () => {
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 />
               </div>
-              <button type="submit" className="search-btn">Search</button>
+              <button type="submit" className="search-btn">
+                Search
+              </button>
             </form>
 
             <div className="filter-buttons">
@@ -425,10 +463,12 @@ const Challenges = () => {
                 <div
                   key={challenge.id}
                   className="challenge-card"
-                   onClick={() => handleChallengeClick(challenge)}
+                  onClick={() => handleChallengeClick(challenge)}
                 >
                   <div className="challenge-header">
-                    <span className="category-icon">{categoryIcons[challenge.category] || '💡'}</span>
+                    <span className="category-icon">
+                      {categoryIcons[challenge.category] || "💡"}
+                    </span>
                     <h3>{challenge.title}</h3>
                     <span
                       className="difficulty-badge"
@@ -445,14 +485,14 @@ const Challenges = () => {
                     <span className="solved-count">
                       <FaUsers /> {challenge.solvedCount} solved
                     </span>
-                    <span className="success-rate">
-                      {challenge.successRate}% success
-                    </span>
+                    <span className="success-rate">{challenge.successRate}% success</span>
                   </div>
 
                   <div className="challenge-tags">
                     {challenge.tags?.slice(0, 3).map((tag, i) => (
-                      <span key={i} className="tag">{tag}</span>
+                      <span key={i} className="tag">
+                        {tag}
+                      </span>
                     ))}
                   </div>
 
@@ -473,13 +513,9 @@ const Challenges = () => {
         </>
       )}
 
-      {activeTab === 'contests' && (
-        <ContestsList />
-      )}
+      {activeTab === "contests" && <ContestsList />}
 
-      {activeTab === 'leaderboard' && (
-        <GlobalLeaderboard />
-      )}
+      {activeTab === "leaderboard" && <GlobalLeaderboard />}
 
       {showProblemPopup && selectedChallenge && (
         <div className="problem-popup-overlay">
@@ -490,9 +526,9 @@ const Challenges = () => {
                 <FaTimes />
               </button>
             </div>
-            
+
             <div className="popup-difficulty-category">
-              <span 
+              <span
                 className="difficulty-badge"
                 style={{ backgroundColor: difficultyColors[selectedChallenge.difficulty] }}
               >
@@ -509,7 +545,11 @@ const Challenges = () => {
             <div className="popup-content">
               <div className="problem-description">
                 <h3>Description</h3>
-                <p>{selectedChallenge.description}</p>
+                <pre>
+                  {selectedChallenge.description?.trim()
+                    ? selectedChallenge.description
+                    : "Description not available."}
+                </pre>
               </div>
 
               {selectedChallenge.examples && selectedChallenge.examples.length > 0 && (
@@ -533,13 +573,15 @@ const Challenges = () => {
                 </div>
               )}
 
-              {selectedChallenge.constraints && selectedChallenge.constraints.length > 0 && (
+              {selectedChallenge.constraints && (
                 <div className="problem-constraints">
                   <h3>Constraints</h3>
                   <ul>
-                    {selectedChallenge.constraints.map((constraint, index) => (
-                      <li key={index}>{constraint}</li>
-                    ))}
+                    {Array.isArray(selectedChallenge.constraints)
+                      ? selectedChallenge.constraints.map((c, i) => <li key={i}>{c}</li>)
+                      : selectedChallenge.constraints
+                          .split("\n")
+                          .map((c, i) => <li key={i}>{c}</li>)}
                   </ul>
                 </div>
               )}
@@ -548,7 +590,9 @@ const Challenges = () => {
                 <h3>Tags</h3>
                 <div className="tags-container">
                   {selectedChallenge.tags?.map((tag, index) => (
-                    <span key={index} className="tag">{tag}</span>
+                    <span key={index} className="tag">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -558,7 +602,9 @@ const Challenges = () => {
                   <FaUsers /> {selectedChallenge.solvedCount} solved
                 </div>
                 <div className="stat-item">
-                  <span className="success-rate">{selectedChallenge.successRate}% success rate</span>
+                  <span className="success-rate">
+                    {selectedChallenge.successRate}% success rate
+                  </span>
                 </div>
               </div>
             </div>
@@ -589,15 +635,19 @@ const ContestsList = () => {
 
   const getStatusBadge = (status) => {
     const badges = {
-      upcoming: { text: 'Upcoming', color: '#2196f3' },
-      active: { text: 'Live Now', color: '#4caf50' },
-      ended: { text: 'Ended', color: '#9e9e9e' }
+      upcoming: { text: "Upcoming", color: "#2196f3" },
+      active: { text: "Live Now", color: "#4caf50" },
+      ended: { text: "Ended", color: "#9e9e9e" },
     };
     return badges[status] || badges.upcoming;
   };
 
   if (loading) {
-    return <div className="loading-state"><div className="spinner"></div></div>;
+    return (
+      <div className="loading-state">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   return (
@@ -624,13 +674,16 @@ const ContestsList = () => {
                 <span>⏱️ {contest.duration} min</span>
                 <span>👥 {contest.participantCount} joined</span>
               </div>
-              <button 
+              <button
                 className="join-contest-btn"
                 onClick={() => navigate(`/contests/${contest.slug}`)}
-                disabled={contest.status === 'ended'}
+                disabled={contest.status === "ended"}
               >
-                {contest.status === 'active' ? 'Enter Contest' : 
-                 contest.status === 'upcoming' ? 'View Details' : 'View Results'}
+                {contest.status === "active"
+                  ? "Enter Contest"
+                  : contest.status === "upcoming"
+                    ? "View Details"
+                    : "View Results"}
               </button>
             </div>
           );
@@ -647,16 +700,16 @@ const GlobalLeaderboard = () => {
   useEffect(() => {
     setTimeout(() => {
       const mockLeaderboard = [
-        { id: 1, name: 'CodingMaster', points: 3850, solved: 156 },
-        { id: 2, name: 'AlgorithmNinja', points: 3720, solved: 148 },
-        { id: 3, name: 'DataStructPro', points: 3640, solved: 142 },
-        { id: 4, name: 'PythonWizard', points: 3510, solved: 138 },
-        { id: 5, name: 'JavaChampion', points: 3420, solved: 132 },
-        { id: 6, name: 'CodeWarrior', points: 3350, solved: 128 },
-        { id: 7, name: 'BinarySearcher', points: 3280, solved: 124 },
-        { id: 8, name: 'RecursionKing', points: 3210, solved: 120 },
-        { id: 9, name: 'DynamicProgrammer', points: 3150, solved: 118 },
-        { id: 10, name: 'GraphExplorer', points: 3080, solved: 115 }
+        { id: 1, name: "CodingMaster", points: 3850, solved: 156 },
+        { id: 2, name: "AlgorithmNinja", points: 3720, solved: 148 },
+        { id: 3, name: "DataStructPro", points: 3640, solved: 142 },
+        { id: 4, name: "PythonWizard", points: 3510, solved: 138 },
+        { id: 5, name: "JavaChampion", points: 3420, solved: 132 },
+        { id: 6, name: "CodeWarrior", points: 3350, solved: 128 },
+        { id: 7, name: "BinarySearcher", points: 3280, solved: 124 },
+        { id: 8, name: "RecursionKing", points: 3210, solved: 120 },
+        { id: 9, name: "DynamicProgrammer", points: 3150, solved: 118 },
+        { id: 10, name: "GraphExplorer", points: 3080, solved: 115 },
       ];
       setLeaderboard(mockLeaderboard);
       setLoading(false);
@@ -664,7 +717,11 @@ const GlobalLeaderboard = () => {
   }, []);
 
   if (loading) {
-    return <div className="loading-state"><div className="spinner"></div></div>;
+    return (
+      <div className="loading-state">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   return (
@@ -683,9 +740,9 @@ const GlobalLeaderboard = () => {
             <span>Solved</span>
           </div>
           {leaderboard.map((user, index) => (
-            <div key={index} className={`leaderboard-row ${index < 3 ? 'top-three' : ''}`}>
+            <div key={index} className={`leaderboard-row ${index < 3 ? "top-three" : ""}`}>
               <span className="rank">
-                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
               </span>
               <span className="name">{user.name}</span>
               <span className="points">{user.points}</span>
