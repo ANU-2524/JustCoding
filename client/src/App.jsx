@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -8,6 +9,9 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
+
+const GuestNotes = lazy(() => import("./components/GuestNotes"));
+const CodeGallery = lazy(() => import("./components/CodeGallery"));
 
 const LoginPage = lazy(() => import("./components/LoginPage"));
 const MainEditor = lazy(() => import("./components/MainEditor"));
@@ -44,6 +48,8 @@ const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
+
+const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
@@ -61,6 +67,12 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Guest Notes / Coding Journal */}
+                  <Route path="/notes" element={<GuestNotes />} />
+                  {/* Public Code Gallery */}
+                  <Route path="/code-gallery" element={<CodeGallery />} />
+                  {/* Portfolio Builder (guest-friendly) */}
+                  <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/blog" element={<BlogPage />} />
