@@ -80,6 +80,7 @@ const Navbar = () => {
 
   const communityItems = [
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaChartLine /> },
+    { path: '/advanced-leaderboard', label: 'Advanced Leaderboard', icon: <FaTrophy /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/community', label: 'Community', icon: <FaComments /> },
     { path: '/daily-prompt', label: 'Daily Coding Prompt', icon: <FaLightbulb /> },
