@@ -37,6 +37,7 @@ const RoomManagement = lazy(() => import("./components/RoomManagement"));
 const CodeQuality = lazy(() => import("./components/CodeQuality"));
 const CodeExplainer = lazy(() => import("./components/CodeExplainer"));
 const SnippetsManager = lazy(() => import("./components/SnippetsManager"));
+const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
@@ -110,6 +111,10 @@ function App() {
                   {/* Tutorials */}
                   <Route path="/tutorials" element={<TutorialsPage />} />
                   <Route path="/tutorials/:slug" element={<TutorialView />} />
+                  
+                  {/* Learning Paths */}
+                  <Route path="/learning-paths" element={<LearningPaths />} />
+                  <Route path="/learning-paths/:pathId" element={<LearningPaths />} />
                   
                   {/* Contests */}
                   <Route path="/contests" element={<Contests />} />
