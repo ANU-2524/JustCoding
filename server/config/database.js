@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
 
 const connectDB = async () => {
-  if (!process.env.MONGODB_URI) {
-    console.error("❌ MONGODB_URI missing in .env file");
-    process.exit(1);
-  }
-
+  const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/justcoding";
+  
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(MONGODB_URI);
     console.log("MongoDB connected ✅");
   } catch (error) {
-    console.error("MongoDB error:", error.message);
-    process.exit(1);
+    console.warn("MongoDB connection warning:", error.message);
+    console.log("⚠️  Running in fallback mode without database persistence");
   }
 };
 

@@ -1,4 +1,4 @@
-﻿// BACKEND: server.js (or index.js)
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -33,14 +33,42 @@ const {
   aiLimiter,
   codeLimiter,
   rateLimitLogger
+
 } = require('./middleware/simpleRateLimiter');
 const gptRoute = require('./routes/gptRoute');
 const codeQualityRoute = require('./routes/codeQuality');
+
+
+} = require('./middleware/simpleRateLimiter');
+const gptRoute = require('./routes/gptRoute');
+const codeQualityRoute = require('./routes/codeQuality');
+const analysisRoute = require('./routes/analysis');
+
 const progressRoute = require('./routes/progress');
 const challengesRoute = require('./routes/challenges');
 const roomRoute = require('./routes/room');
 const userRoute = require('./routes/user');
 const executionRoute = require('./routes/execution');
+
+
+} from './middleware/simpleRateLimiter.js';
+import { validate } from './middleware/validation.js';
+import { BadRequestError, ExternalServiceError } from './utils/ErrorResponse.js';
+import gptRoute from './routes/gptRoute.js';
+import codeQualityRoute from './routes/codeQuality.js';
+import progressRoute from './routes/progress.js';
+import challengesRoute from './routes/challenges.js';
+import roomRoute from './routes/room.js';
+import userRoute from './routes/user.js';
+import communityRoute from './routes/community.js';
+import tutorialsRoute from './routes/tutorials.js';
+import authRoute from './routes/auth.routes.js';
+
+// Socket.IO (modularized)
+import socketModule from './socket/index.js';
+const { initializeSocket, cleanup: socketCleanup } = socketModule;
+
+
 
 // Multi-Language Visualizer Service
 import visualizerServicePkg from './services/visualizer/index.js';
@@ -245,18 +273,23 @@ const languageMap = {
 // API Routes
 // ============================================
 
+// Auth routes
+app.use("/api/auth", authRoute);
+
 // AI routes with security and rate limiting
 app.use("/api/gpt", aiLimiter, gptRoute);
 
 // Code quality route
 app.use("/api/code-quality", codeQualityRoute);
-
-// Progress and analytics routes
+app.use("/api/analysis", analysisRoute); // New pluggable code quality analysis system
 app.use("/api/progress", progressRoute);
 
 // Challenges routes
 app.use("/api/challenges", challengesRoute);
 app.use("/api/community", communityRoute);
+
+// Tutorials routes
+app.use("/api/tutorials", tutorialsRoute);
 
 // Room routes
 app.use("/api/room", roomRoute);

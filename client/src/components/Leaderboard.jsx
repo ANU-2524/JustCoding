@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaTrophy, FaMedal, FaAward, FaCrown } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/Leaderboard.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
@@ -43,6 +44,12 @@ return <FaMedal className="rank-icon bronze" />;
 
   return (
     <div className="leaderboard-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Leaderboard', path: null }
+        ]}
+      />
+
       <div className="leaderboard-header">
         <h1><FaTrophy /> Global Leaderboard</h1>
         <p>Top performers on JustCode platform</p>

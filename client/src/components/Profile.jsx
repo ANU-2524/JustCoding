@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
 import {
@@ -202,6 +203,12 @@ return;
 
   return (
     <div className="profile-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Profile', path: null }
+        ]}
+      />
+
       <div className="profile-card">
         <div className="profile-header">
           <div className="back-button-container">
