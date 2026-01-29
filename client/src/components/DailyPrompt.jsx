@@ -57,17 +57,36 @@ export default function DailyPrompt() {
   const [submissions, setSubmissions] = useState(getSubmissions());
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [plagiarismWarning, setPlagiarismWarning] = useState("");
 
   useEffect(() => {
     setPrompt(getPromptOfTheDay());
     setSubmissions(getSubmissions());
   }, []);
 
+
+  // Simple plagiarism check: Jaccard similarity on token sets
+  function jaccardSimilarity(a, b) {
+    const setA = new Set(a.split(/\W+/).map(s => s.toLowerCase()).filter(Boolean));
+    const setB = new Set(b.split(/\W+/).map(s => s.toLowerCase()).filter(Boolean));
+    const intersection = new Set([...setA].filter(x => setB.has(x)));
+    const union = new Set([...setA, ...setB]);
+    return intersection.size / union.size;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setPlagiarismWarning("");
     if (!solution.trim() || !name.trim()) {
       setError("Name and solution required.");
       return;
+    }
+    // Check for plagiarism
+    const existing = getSubmissions();
+    const threshold = 0.8; // 80% similarity
+    const similar = existing.find(sub => jaccardSimilarity(sub.solution, solution) >= threshold);
+    if (similar) {
+      setPlagiarismWarning("Possible Duplicate: Your solution is highly similar to an existing submission. Please ensure your work is original.");
     }
     saveSubmission({ name, solution, votes: 0 });
     setSubmissions(getSubmissions());
@@ -109,6 +128,7 @@ export default function DailyPrompt() {
         />
         {error && <div className="prompt-error">{error}</div>}
         <button className="prompt-btn" type="submit">Submit Solution</button>
+        {plagiarismWarning && <div className="prompt-warning">{plagiarismWarning}</div>}
       </form>
       <div className="prompt-submissions">
         <h4>Public Submissions</h4>
