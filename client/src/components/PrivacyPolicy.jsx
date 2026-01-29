@@ -123,81 +123,40 @@ const PrivacyPolicy = () => {
 
       <footer className="footer animate-on-scroll">
         <div className="footer-container">
+          <div className="footer-content">
+            <div className="footer-section">
+              <h4>Quick Links</h4>
+              <ul>
+                <li onClick={() => navigate("/")}>Home</li>
+                <li onClick={() => navigate("/editor")}>Editor</li>
+                <li onClick={() => navigate("/challenges")}>Challenges</li>
+                <li onClick={() => navigate("/tutorials")}>Tutorials</li>
+                <li onClick={() => navigate("/faq")}>FAQ</li>
+              </ul>
+            </div>
 
-          {/* Brand */}
-          <div className="footer-brand">
-            <p>
-              &copy; {new Date().getFullYear()} JustCoding. Built with love, learning,
-              and late nights by Anu 💌🌸.
-            </p>
-          </div>
+            <div className="footer-section">
+              <h4>Legal</h4>
+              <ul>
+                <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
+                <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
+                <li onClick={() => navigate("/contributing")}>Contributing</li>
+              </ul>
+            </div>
 
-          {/* Quick Links */}
-          <div className="footer-links">
-            <h4>Quick Links</h4>
-            <ul>
-              <li onClick={() => navigate("/")}>Home</li>
-              <li onClick={() => navigate("/editor")}>Editor</li>
-              <li onClick={() => navigate("/live")}>Collaborate</li>
-              <li onClick={() => navigate("/profile")}>Profile</li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div className="footer-links">
-            <h4>Legal</h4>
-            <ul>
-              <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
-              <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
-            </ul>
-          </div>
-
-          {/* Feedback & Rating */}
-          <div className="footer-feedback">
-            <h4>Feedback</h4>
-
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSeVYOjh-QcmfOkOHtprYlMoKiKG_Tl6bZuA9c1A8JVdUhHbKA/viewform?usp=publish-editor"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="feedback-btn"
-              title="Help us improve JustCoding 💛"
-            >
-              Give Feedback
-            </a>
-
-            <div className="rating">
-              <span>Rate Us:</span>
-              <div className="stars">★ ★ ★ ★ ★</div>
+            <div className="footer-section">
+              <h4>Connect</h4>
+              <ul className="social-links">
+                <li><a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer"><FaXTwitter /> Twitter</a></li>
+                <li><a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer"><FaGithub /> GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer"><FaLinkedin /> LinkedIn</a></li>
+              </ul>
             </div>
           </div>
 
-          {/* Social Links */}
-          <div className="footer-social">
-            <h4>Connect</h4>
-            <a
-              href="https://x.com/_Anuuu_Soniii_"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaXTwitter /> Twitter
-            </a>
-            <a
-              href="https://github.com/ANU-2524/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaGithub /> GitHub
-            </a>
-            <a
-              href="https://www.linkedin.com/in/anu--soni/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaLinkedin /> LinkedIn
-            </a>
+          <div className="footer-bottom">
+            <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
           </div>
-
         </div>
       </footer>
 

@@ -35,7 +35,7 @@ const asyncHandlerWithTransform = (fn, errorTransformer) => (req, res, next) => 
   });
 };
 
-module.exports = {
+export {
   asyncHandler,
   asyncHandlerAll,
   asyncHandlerWithTransform

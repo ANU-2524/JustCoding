@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy } from 'react-icons/fa'; // Added FaTrophy
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaComments, FaBook, FaBug } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -55,11 +55,14 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
+    { path: '/tutorials', label: 'Tutorials', icon: <FaBook /> },
     { path: '/challenges', label: 'Challenges', icon: <FaTrophy /> },
     { path: '/contests', label: 'Contests', icon: <FaTrophy /> },
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
     { path: '/analytics', label: 'Analytics', icon: <FaChartLine /> },
+    { path: '/code-quality', label: 'Code Quality', icon: <FaBug /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
+    { path: '/community', label: 'Community', icon: <FaComments /> },
     // { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
   ];
@@ -106,7 +109,6 @@ const Navbar = () => {
               )}
             </Link>
           ))}
-          
 
         </div>
 
@@ -249,7 +251,6 @@ const Navbar = () => {
                     </Link>
                   </motion.div>
                 ))}
-                
 
               </div>
               

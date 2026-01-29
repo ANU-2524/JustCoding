@@ -24,7 +24,9 @@ const BlogPage = React.memo(() => {
 
   const handleMouseMove = (e, index) => {
     const card = cardRefs.current[index];
-    if (!card) return;
+    if (!card) {
+return;
+}
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -410,7 +412,9 @@ const SlowComponent = () => {
   // Keyboard navigation logic
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (activeArticle) return; // Don't navigate while reading
+      if (activeArticle) {
+return;
+} // Don't navigate while reading
 
       switch(e.key) {
         case 'ArrowRight':

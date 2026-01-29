@@ -43,8 +43,10 @@ const userRoute = require('./routes/user');
 const executionRoute = require('./routes/execution');
 
 // Multi-Language Visualizer Service
-const visualizerService = require('./services/visualizer');
+import visualizerServicePkg from './services/visualizer/index.js';
+const visualizerService = visualizerServicePkg;
 
+// Initialize Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
 
@@ -54,27 +56,12 @@ connectDB();
 // Initialize badges on startup
 BadgeService.initializeBadges().catch(err => logger.warn('Badge initialization failed', { error: err.message }));
 
-const userMap = {};
-const roomTimers = {};
+// ============================================
+// Security Middleware
+// ============================================
+applySecurityMiddleware(app, cors, express);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://just-coding-theta.vercel.app";
-const allowedOrigins = [
-  "http://localhost:5173",
-  FRONTEND_URL
-];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
-
-// Security: Request size limiting - increased for code submissions
-app.use(express.json({ limit: '50kb' }));
-
-// HTTP Request Logging
-app.use(httpLogger);
-
-// Security: Rate limiting
+// Rate limiting middleware
 app.use(rateLimitLogger);
 app.use(generalLimiter);
 
@@ -235,26 +222,12 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("send-chat", ({ roomId, username, message }) => {
-    socket.to(roomId).emit("receive-chat", { username, message });
-  });
+// Make io accessible to routes if needed
+app.set('io', io);
 
-  socket.on("typing", ({ roomId, username }) => {
-    socket.to(roomId).emit("show-typing", `${username} is typing...`);
-  });
-
-  socket.on("disconnect", () => {
-    const user = userMap[socket.id];
-    if (user) {
-      const { username, roomId } = user;
-      socket.to(roomId).emit("user-left", `${username} left the room`);
-      delete userMap[socket.id];
-    }
-    logger.info("User disconnected", { odId: socket.id });
-  });
-});
-
-// Language map for code execution - ALL LANGUAGES
+// ============================================
+// Language Configuration for Code Execution
+// ============================================
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
   python: { ext: 'py', version: '3.10.0' },
@@ -268,13 +241,24 @@ const languageMap = {
   rust: { ext: 'rs', version: '1.68.2' },
 };
 
-// AI routes with security
-app.use("/api/gpt", aiLimiter, gptRoute);
-app.use("/api/code-quality", codeQualityRoute);
-app.use("/api/progress", progressRoute);
-app.use("/api/challenges", challengesRoute);
+// ============================================
+// API Routes
+// ============================================
 
-// Room routes 
+// AI routes with security and rate limiting
+app.use("/api/gpt", aiLimiter, gptRoute);
+
+// Code quality route
+app.use("/api/code-quality", codeQualityRoute);
+
+// Progress and analytics routes
+app.use("/api/progress", progressRoute);
+
+// Challenges routes
+app.use("/api/challenges", challengesRoute);
+app.use("/api/community", communityRoute);
+
+// Room routes
 app.use("/api/room", roomRoute);
 
 // User data sync routes (profil
@@ -283,19 +267,25 @@ app.use("/api/room", roomRoute);
 app.use("/api/execution", executionRoute);e + snippets)
 app.use("/api/user", userRoute);
 
-// Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
-app.post('/api/visualizer/visualize', codeLimiter, asyncHandler(async (req, res) => {
-  const { code, language } = req.body;
+// ============================================
+// Visualizer Endpoints
+// ============================================
 
-  if (!code || !language) {
-    throw new BadRequestError('Missing required fields: code and language');
-  }
+/**
+ * POST /api/visualizer/visualize
+ * Visualize code execution step-by-step
+ */
+app.post('/api/visualizer/visualize', codeLimiter, validate('visualizer'), (req, res) => {
+  const { code, language } = req.body;
 
   const result = visualizerService.visualize(code, language);
   res.json({ success: true, ...result });
-}));
+});
 
-// Get supported languages for visualizer
+/**
+ * GET /api/visualizer/languages
+ * Get supported languages for visualizer
+ */
 app.get('/api/visualizer/languages', (req, res) => {
   res.json({
     success: true,
@@ -307,8 +297,13 @@ app.get('/api/visualizer/languages', (req, res) => {
 app.post('/compile', codeLimiter, asyncHandler(async (req, res) => {
   const { language, code, stdin, roomId, userId, username, correlationId } = req.body;
 
-  if (!language || !code) {
-    throw new BadRequestError('Missing required fields: language and code');
+  const langInfo = languageMap[language];
+  if (!langInfo) {
+    return res.status(400).json({
+      success: false,
+      error: 'Unsupported language',
+      supportedLanguages: Object.keys(languageMap)
+    });
   }
 
   // Generate correlation ID if not provided
@@ -356,13 +351,13 @@ app.get('/', (req, res) => {
   res.json({ 
     name: 'JustCoding API',
     version: '1.0.0',
-    status: 'running'
+    status: 'running',
+    features: ['Multi-Language Code Execution', 'Code Visualizer', 'AI Assistance', 'Real-time Collaboration']
   });
 });
 
 app.get('/health', (req, res) => {
   res.json({ 
-    success: true,
     status: 'OK', 
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
@@ -370,23 +365,68 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Server is working!', port: process.env.PORT || 4334 });
+  res.json({ 
+    message: 'Server is working!', 
+    port: process.env.PORT || 4334 
+  });
 });
 
-// 404 Handler - must be after all routes
-app.use(notFoundHandler);
+// ============================================
+// Error Handling Middleware
+// ============================================
 
-// Global Error Handler - must be last
-app.use(errorHandler);
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Cannot ${req.method} ${req.path}`
+  });
+});
 
-// Start server
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  
+  // Don't leak error details in production
+  const isDev = process.env.NODE_ENV === 'development';
+  
+  res.status(err.statusCode || 500).json({
+    error: err.message || 'Internal Server Error',
+    ...(isDev && { stack: err.stack })
+  });
+});
+
+// ============================================
+// Graceful Shutdown
+// ============================================
+
+function gracefulShutdown(signal) {
+  console.log(`\n${signal} received. Shutting down gracefully...`);
+  
+  server.close(() => {
+    console.log('HTTP server closed.');
+    socketCleanup();
+    process.exit(0);
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error('Could not close connections in time, forcefully shutting down');
+    process.exit(1);
+  }, 10000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// ============================================
+// Start Server
+// ============================================
+
 const PORT = process.env.PORT || 4334;
 server.listen(PORT, () => {
-  logger.info(`🚀 JustCoding Server running on port ${PORT}`);
-  logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 JustCoding Server running on port ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-// Setup unhandled rejection handler
-setupUnhandledRejectionHandler(server);
-
-module.exports = { app, server };
+export { app, server, io };

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/use.js"; 
+import User from "../models/User.js"; 
 import { transporter } from "../config/mail.js";
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is missing in environment variables");
@@ -11,7 +11,7 @@ export const register = async (req, res) => {
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
+    return res.status(400).json({ error: "User already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
     `,
   });
 
-  res.status(201).json({ message: "User registered successfully" });
+  res.status(201).json({ registered: true, userId: user._id });
 };
 
 /* LOGIN */
@@ -43,12 +43,12 @@ export const login = async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ message: "Invalid credentials" });
+    return res.status(400).json({ error: "Invalid credentials" });
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
+    return res.status(400).json({ error: "Invalid credentials" });
   }
 
   const token = jwt.sign(
@@ -64,19 +64,23 @@ export const login = async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  res.json({ message: "Login successful" });
+  res.json({
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email
+    }
+  });
 };
 
 /* LOGOUT */
 export const logout = (req, res) => {
   res.clearCookie("token");
-  res.json({ message: "Logged out" });
+  res.json({ loggedOut: true });
 };
 
 /* PROFILE */
 export const profile = (req, res) => {
-  res.json({
-    message: "Protected route accessed",
-    user: req.user,
-  });
+  res.json(req.user);
 };

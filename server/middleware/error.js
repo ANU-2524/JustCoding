@@ -2,8 +2,8 @@
  * Global Error Handling Middleware
  * Catches all errors and sends uniform JSON responses
  */
-const { ErrorResponse } = require('../utils/ErrorResponse');
-const { logger, logError } = require('../services/logger');
+import { ErrorResponse } from '../utils/ErrorResponse.js';
+import { logger, logError } from '../services/logger.js';
 
 /**
  * Handle Mongoose CastError (invalid ObjectId)
@@ -198,7 +198,7 @@ const setupUncaughtExceptionHandler = () => {
   });
 };
 
-module.exports = {
+export {
   errorHandler,
   notFoundHandler,
   setupUnhandledRejectionHandler,
