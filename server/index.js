@@ -36,6 +36,7 @@ const {
 } = require('./middleware/simpleRateLimiter');
 const gptRoute = require('./routes/gptRoute');
 const codeQualityRoute = require('./routes/codeQuality');
+const analysisRoute = require('./routes/analysis');
 const progressRoute = require('./routes/progress');
 const challengesRoute = require('./routes/challenges');
 const roomRoute = require('./routes/room');
@@ -271,6 +272,7 @@ const languageMap = {
 // AI routes with security
 app.use("/api/gpt", aiLimiter, gptRoute);
 app.use("/api/code-quality", codeQualityRoute);
+app.use("/api/analysis", analysisRoute); // New pluggable code quality analysis system
 app.use("/api/progress", progressRoute);
 app.use("/api/challenges", challengesRoute);
 
