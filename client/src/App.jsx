@@ -47,6 +47,8 @@ const Analytics = lazy(() => import("./components/Analytics"));
 
 
 const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
+
+const CodeReviewWall = lazy(() => import("./components/CodeReviewWall"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
@@ -158,6 +160,8 @@ function App() {
                   {/* Community */}
                   <Route path="/community" element={<CommunityPage />} />
                   <Route path="/community/posts/:id" element={<CommunityPostDetail />} />
+                  {/* Public Code Review Wall */}
+                  <Route path="/code-review-wall" element={<CodeReviewWall />} />
                   
                   {/* Catch-all route for undefined paths */}
                   <Route path="*" element={<NotFound />} />
