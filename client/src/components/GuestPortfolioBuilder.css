@@ -1,0 +1,202 @@
+.portfolio-builder-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2rem 2.5rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.portfolio-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2d3748;
+}
+.portfolio-section {
+  margin-bottom: 2.5rem;
+}
+.bio-section textarea {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  margin-bottom: 0.7rem;
+  resize: vertical;
+}
+.portfolio-bio-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.portfolio-bio-display p {
+  margin: 0;
+  flex: 1;
+  color: #4a5568;
+}
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.skill-chip {
+  background: #e2e8f0;
+  color: #2d3748;
+  border-radius: 16px;
+  padding: 0.3rem 0.9rem 0.3rem 0.7rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+.remove-skill-btn {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  font-size: 1.1rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
+.add-skill-row {
+  display: flex;
+  gap: 0.7rem;
+}
+.portfolio-input {
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+  flex: 1;
+  color: #222;
+  background: #fff;
+}
+
+/* Ensure textarea and input text is visible in dark mode */
+.portfolio-input, .bio-section textarea, .project-form input, .project-form textarea {
+  color: #222;
+  background: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .portfolio-input, .bio-section textarea, .project-form input, .project-form textarea {
+    color: #fff;
+    background: #23272f;
+    border: 1px solid #3b4252;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    transition: background 0.2s, color 0.2s;
+  }
+  .portfolio-input::placeholder, .bio-section textarea::placeholder, .project-form input::placeholder, .project-form textarea::placeholder {
+    color: #bfc7d5;
+    opacity: 1;
+  }
+}
+.portfolio-btn {
+  background: #edf2f7;
+  color: #2d3748;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 0.2rem;
+  transition: background 0.2s;
+}
+.portfolio-btn.primary {
+  background: #3182ce;
+  color: #fff;
+}
+.portfolio-btn.danger {
+  background: #e53e3e;
+  color: #fff;
+}
+.portfolio-btn:hover {
+  background: #cbd5e1;
+}
+.portfolio-btn.primary:hover {
+  background: #2563eb;
+}
+.portfolio-btn.danger:hover {
+  background: #c53030;
+}
+.projects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+.project-card {
+  background: #f7fafc;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 1rem 1.2rem;
+  min-width: 220px;
+  max-width: 320px;
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.project-card.preview {
+  box-shadow: none;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+.project-image {
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.7rem;
+}
+.project-info h3, .project-info h4 {
+  margin: 0 0 0.3rem 0;
+  color: #2b6cb0;
+}
+.project-info p {
+  margin: 0 0 0.5rem 0;
+  color: #4a5568;
+}
+.project-info a {
+  color: #3182ce;
+  text-decoration: underline;
+  font-size: 0.98rem;
+}
+.project-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.project-form {
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-top: 1rem;
+  max-width: 400px;
+}
+.project-form input, .project-form textarea {
+  width: 100%;
+  margin-bottom: 0.7rem;
+}
+.preview-section {
+  background: #f7fafc;
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+}
+.portfolio-preview h3 {
+  margin-top: 0.7rem;
+  color: #2d3748;
+}
+@media (max-width: 700px) {
+  .portfolio-builder-container {
+    padding: 1rem 0.5rem;
+  }
+  .projects-list {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .project-card, .project-form {
+    max-width: 100%;
+    min-width: 0;
+  }
+}

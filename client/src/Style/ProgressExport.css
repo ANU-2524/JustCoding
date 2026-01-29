@@ -1,12 +1,15 @@
 .progress-export {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 2rem 3rem 2rem;
+  background: #f6f8fa;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(60,60,60,0.07);
 }
 
 .export-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
 }
 
 .export-header h1 {
@@ -26,13 +29,17 @@
 .export-preview {
   background: white;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 12px 0 rgba(60,60,60,0.04);
 }
 
 .preview-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .preview-section:last-child {
@@ -165,16 +172,17 @@
 .badges-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .badge-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px 0 rgba(60,60,60,0.03);
 }
 
 .badge-icon {
@@ -215,10 +223,12 @@
   justify-content: space-between;
   align-items: center;
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
   border: 2px solid #e5e7eb;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  margin-top: 2.5rem;
+  box-shadow: 0 2px 12px 0 rgba(60,60,60,0.04);
 }
 
 .format-selector {
@@ -244,14 +254,15 @@
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.7rem;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.08rem;
+  box-shadow: 0 2px 8px 0 rgba(60,60,60,0.07);
 }
 
 .export-btn:hover:not(:disabled) {
