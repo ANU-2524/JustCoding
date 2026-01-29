@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -8,6 +9,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
+
+const CodeGallery = lazy(() => import("./components/CodeGallery"));
 
 const LoginPage = lazy(() => import("./components/LoginPage"));
 const MainEditor = lazy(() => import("./components/MainEditor"));
@@ -60,6 +63,8 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Public Code Gallery */}
+                  <Route path="/code-gallery" element={<CodeGallery />} />
                   {/* Portfolio Builder (guest-friendly) */}
                   <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />

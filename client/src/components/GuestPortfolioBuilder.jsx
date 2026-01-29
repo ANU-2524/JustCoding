@@ -77,9 +77,12 @@ export default function GuestPortfolioBuilder({ currentUser }) {
 
   return (
     <div className="portfolio-builder-container">
-      <h1 className="portfolio-title">Portfolio Builder</h1>
-      <div className="portfolio-section bio-section">
-        <h2>Bio</h2>
+      <header>
+        <h1 className="portfolio-title">Portfolio Builder</h1>
+      </header>
+      <section className="portfolio-section bio-section">
+        <h2 style={{fontWeight:600, fontSize:'1.3rem', marginBottom:'1.1rem'}}>Bio</h2>
+        <hr style={{margin:'-0.5rem 0 1.2rem 0', border:'none', borderTop:'1.5px solid #e2e8f0'}} />
         {editingBio ? (
           <>
             <textarea
@@ -97,9 +100,10 @@ export default function GuestPortfolioBuilder({ currentUser }) {
             <button className="portfolio-btn" onClick={() => setEditingBio(true)}>Edit Bio</button>
           </div>
         )}
-      </div>
-      <div className="portfolio-section skills-section">
-        <h2>Skills</h2>
+      </section>
+      <section className="portfolio-section skills-section">
+        <h2 style={{fontWeight:600, fontSize:'1.3rem', marginBottom:'1.1rem'}}>Skills</h2>
+        <hr style={{margin:'-0.5rem 0 1.2rem 0', border:'none', borderTop:'1.5px solid #e2e8f0'}} />
         <div className="skills-list">
           {portfolio.skills.map(skill => (
             <span className="skill-chip" key={skill}>
@@ -119,9 +123,10 @@ export default function GuestPortfolioBuilder({ currentUser }) {
           />
           <button className="portfolio-btn" onClick={handleAddSkill}>Add</button>
         </div>
-      </div>
-      <div className="portfolio-section projects-section">
-        <h2>Projects</h2>
+      </section>
+      <section className="portfolio-section projects-section">
+        <h2 style={{fontWeight:600, fontSize:'1.3rem', marginBottom:'1.1rem'}}>Projects</h2>
+        <hr style={{margin:'-0.5rem 0 1.2rem 0', border:'none', borderTop:'1.5px solid #e2e8f0'}} />
         <div className="projects-list">
           {portfolio.projects.map((proj, idx) => (
             <div className="project-card" key={idx}>
@@ -139,7 +144,7 @@ export default function GuestPortfolioBuilder({ currentUser }) {
           ))}
         </div>
         <div className="project-form">
-          <h3>{editingProjectIdx !== null ? 'Edit Project' : 'Add Project'}</h3>
+          <h3 style={{fontWeight:600, fontSize:'1.1rem', marginBottom:'0.7rem'}}>{editingProjectIdx !== null ? 'Edit Project' : 'Add Project'}</h3>
           <input
             className="portfolio-input"
             type="text"
@@ -181,9 +186,10 @@ export default function GuestPortfolioBuilder({ currentUser }) {
             </button>
           )}
         </div>
-      </div>
-      <div className="portfolio-section preview-section">
-        <h2>Live Preview</h2>
+      </section>
+      <section className="portfolio-section preview-section">
+        <h2 style={{fontWeight:600, fontSize:'1.3rem', marginBottom:'1.1rem'}}>Live Preview</h2>
+        <hr style={{margin:'-0.5rem 0 1.2rem 0', border:'none', borderTop:'1.5px solid #e2e8f0'}} />
         <div className="portfolio-preview">
           <h3>Bio</h3>
           <p>{portfolio.bio || 'No bio yet.'}</p>
@@ -207,7 +213,7 @@ export default function GuestPortfolioBuilder({ currentUser }) {
             ))}
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
