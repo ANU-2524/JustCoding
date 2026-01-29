@@ -349,6 +349,26 @@ const ChallengeSolve = () => {
                     )}
                   </div>
                 )}
+
+                {/* Editorial Link */}
+                <div style={{marginTop:24}}>
+                  <a
+                    href={`/challenges/${challenge.slug || slug}/editorial`}
+                    style={{
+                      display: 'inline-block',
+                      background: '#e0e7ff',
+                      color: '#3730a3',
+                      padding: '8px 16px',
+                      borderRadius: 8,
+                      textDecoration: 'none',
+                      fontWeight: 500
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Editorial / Hints
+                  </a>
+                </div>
               </div>
             )}
 
