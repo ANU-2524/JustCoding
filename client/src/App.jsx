@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const GuestNotes = lazy(() => import("./components/GuestNotes"));
 const CodeGallery = lazy(() => import("./components/CodeGallery"));
 
 const LoginPage = lazy(() => import("./components/LoginPage"));
@@ -63,6 +64,8 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Guest Notes / Coding Journal */}
+                  <Route path="/notes" element={<GuestNotes />} />
                   {/* Public Code Gallery */}
                   <Route path="/code-gallery" element={<CodeGallery />} />
                   {/* Portfolio Builder (guest-friendly) */}
