@@ -82,6 +82,7 @@ const Navbar = () => {
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaChartLine /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/community', label: 'Community', icon: <FaComments /> },
+    { path: '/daily-prompt', label: 'Daily Coding Prompt', icon: <FaLightbulb /> },
     { path: '/code-gallery', label: 'Code Gallery', icon: <FaBook /> },
     { path: '/code-review-wall', label: 'Code Review Wall', icon: <FaComments /> },
   ];
