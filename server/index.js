@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 const BadgeService = require('./services/BadgeService');
 const Room = require('./models/Room');
+const ExecutionQueueService = require('./services/ExecutionQueueService');
+const ExecutionHistory = require('./models/ExecutionHistory');
 
 // Logging Service
 const { logger, httpLogger } = require('./services/logger');
@@ -38,6 +40,7 @@ const progressRoute = require('./routes/progress');
 const challengesRoute = require('./routes/challenges');
 const roomRoute = require('./routes/room');
 const userRoute = require('./routes/user');
+const executionRoute = require('./routes/execution');
 
 // Multi-Language Visualizer Service
 const visualizerService = require('./services/visualizer');
@@ -86,7 +89,7 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   logger.info("User connected", { socketId: socket.id });
 
-  socket.on("join-room", async ({ roomId, username }) => {
+  socket.on("join-room", async ({ roomId, username, userId }) => {
     try {
       socket.join(roomId);
 
@@ -99,32 +102,137 @@ io.on("connection", (socket) => {
         });
       }
 
-      logger.info(`${username} joined room ${roomId}`, { username, roomId });
-      userMap[socket.id] = { username, roomId };
+      logger.info(`${username} joined room ${roomId}`, { username, roomId, userId });
+      userMap[socket.id] = { username, roomId, userId: userId || socket.id };
 
-      socket.emit('code-update', room.code);
+      // Send initial room state with sequence number
+      const sequence = room.getNextSequence();
+      await room.save();
 
-      socket.to(roomId).emit("user-joined", `${username} joined the room`);
+      socket.emit('room-state', {
+        code: room.code,
+        language: room.language,
+        sequence,
+        executionState: room.executionState
+      });
+
+      socket.to(roomId).emit("user-joined", {
+        message: `${username} joined the room`,
+        username,
+        userId: userId || socket.id,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       logger.error('Error joining room', { error: error.message, roomId });
+      socket.emit('error', { message: 'Failed to join room' });
     }
   });
 
-  socket.on("code-change", ({ roomId, code }) => {
-    socket.to(roomId).emit("code-update", code);
+  socket.on("code-change", async ({ roomId, code, sequence }) => {
+    try {
+      socket.to(roomId).emit("code-update", { code, sequence });
 
-    if (roomTimers[roomId]) {
-      clearTimeout(roomTimers[roomId]);
-    }
-
-    roomTimers[roomId] = setTimeout(async () => {
-      try {
-        await Room.updateOne({ roomId }, { code });
-        delete roomTimers[roomId];
-      } catch (error) {
-        logger.error('Error updating room code', { error: error.message, roomId });
+      if (roomTimers[roomId]) {
+        clearTimeout(roomTimers[roomId]);
       }
-    }, 2000);
+
+      roomTimers[roomId] = setTimeout(async () => {
+        try {
+          const room = await Room.findOne({ roomId });
+          if (room) {
+            room.code = code;
+            await room.save();
+          }
+          delete roomTimers[roomId];
+        } catch (error) {
+          logger.error('Error updating room code', { error: error.message, roomId });
+        }
+      }, 2000);
+    } catch (error) {
+      logger.error('Error broadcasting code change', { error: error.message, roomId });
+    }
+  });
+
+  socket.on("execute-code", async ({ roomId, code, language, stdin, userId, username }) => {
+    try {
+      const user = userMap[socket.id];
+      const execUserId = userId || user?.userId || socket.id;
+      const execUsername = username || user?.username || 'Anonymous';
+      const correlationId = `ws-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      logger.info('WebSocket execution request', {
+        roomId,
+        userId: execUserId,
+        language,
+        correlationId
+      });
+
+      // Emit execution started event
+      io.to(roomId).emit("execution-started", {
+        userId: execUserId,
+        username: execUsername,
+        correlationId,
+        timestamp: new Date().toISOString()
+      });
+
+      // Execute code through queue service
+      const result = await ExecutionQueueService.executeCode({
+        roomId,
+        userId: execUserId,
+        username: execUsername,
+        code,
+        language,
+        stdin: stdin || '',
+        correlationId,
+        priority: 0
+      });
+
+      // Record execution
+      await ExecutionHistory.recordExecution({
+        executionId: result.executionId,
+        correlationId,
+        roomId,
+        userId: execUserId,
+        username: execUsername,
+        language,
+        code,
+        stdin: stdin || '',
+        output: result.output || '',
+        error: result.error,
+        success: result.success,
+        executionTime: result.executionTime,
+        completedAt: new Date(result.timestamp),
+        status: result.success ? 'completed' : 'failed'
+      });
+
+      // Emit result to all users in room with correlation ID
+      io.to(roomId).emit("execution-result", {
+        ...result,
+        correlationId
+      });
+
+      logger.info('WebSocket execution completed', {
+        roomId,
+        userId: execUserId,
+        success: result.success,
+        correlationId
+      });
+    } catch (error) {
+      logger.error('WebSocket execution error', {
+        error: error.message,
+        roomId,
+        userId
+      });
+
+      socket.emit("execution-result", {
+        success: false,
+        error: error.message,
+        userId,
+        username,
+        roomId,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   socket.on("send-chat", ({ roomId, username, message }) => {
@@ -169,7 +277,10 @@ app.use("/api/challenges", challengesRoute);
 // Room routes 
 app.use("/api/room", roomRoute);
 
-// User data sync routes (profile + snippets)
+// User data sync routes (profil
+
+// Execution history and queue management routes
+app.use("/api/execution", executionRoute);e + snippets)
 app.use("/api/user", userRoute);
 
 // Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
@@ -192,40 +303,53 @@ app.get('/api/visualizer/languages', (req, res) => {
   });
 });
 
-// Code execution endpoint with security
+// Code execution endpoint with race condition prevention
 app.post('/compile', codeLimiter, asyncHandler(async (req, res) => {
-  const { language, code, stdin } = req.body;
+  const { language, code, stdin, roomId, userId, username, correlationId } = req.body;
 
   if (!language || !code) {
     throw new BadRequestError('Missing required fields: language and code');
   }
 
-  if (code.length > 10000) {
-    throw new BadRequestError('Code too long. Maximum 10,000 characters allowed.');
+  // Generate correlation ID if not provided
+  const execCorrelationId = correlationId || `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+  try {
+    // Use ExecutionQueueService for proper locking and queuing
+    const result = await ExecutionQueueService.executeCode({
+      roomId: roomId || 'standalone',
+      userId: userId || 'anonymous',
+      username: username || 'Anonymous',
+      code,
+      language,
+      stdin: stdin || '',
+      correlationId: execCorrelationId,
+      priority: 0
+    });
+
+    // Record execution in history
+    await ExecutionHistory.recordExecution({
+      executionId: result.executionId,
+      correlationId: execCorrelationId,
+      roomId: result.roomId,
+      userId: result.userId,
+      username: result.username,
+      language,
+      code,
+      stdin: stdin || '',
+      output: result.output || '',
+      error: result.error,
+      success: result.success,
+      executionTime: result.executionTime,
+      completedAt: new Date(result.timestamp),
+      status: result.success ? 'completed' : 'failed'
+    });
+
+    res.json(result);
+  } catch (error) {
+    logger.error('Execution error', { error: error.message, correlationId: execCorrelationId });
+    throw new ExternalServiceError(error.message || 'Code execution failed');
   }
-
-  if (stdin && stdin.length > 1000) {
-    throw new BadRequestError('Input too long. Maximum 1,000 characters allowed.');
-  }
-
-  const langInfo = languageMap[language];
-  if (!langInfo) {
-    throw new BadRequestError(`Unsupported language. Supported: ${Object.keys(languageMap).join(', ')}`);
-  }
-
-  const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
-    language,
-    version: langInfo.version,
-    stdin: stdin || '',
-    files: [{ name: `main.${langInfo.ext}`, content: code }],
-  }).catch(err => {
-    throw new ExternalServiceError('Code execution service unavailable. Please try again.');
-  });
-
-  const output = response.data.run.stdout || response.data.run.stderr || "No output";
-  const sanitizedOutput = output.substring(0, 5000);
-
-  res.json({ success: true, output: sanitizedOutput });
 }));
 
 app.get('/', (req, res) => {
