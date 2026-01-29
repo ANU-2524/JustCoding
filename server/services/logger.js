@@ -2,8 +2,12 @@
  * Structured Logging Service using Winston
  * Professional logging with different levels and file logging for production
  */
-const winston = require('winston');
-const path = require('path');
+import winston from 'winston';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Define log levels
 const levels = {
@@ -169,7 +173,7 @@ const logExternalService = (service, operation, duration, success, metadata = {}
   });
 };
 
-module.exports = {
+export {
   logger,
   httpLogger,
   logError,

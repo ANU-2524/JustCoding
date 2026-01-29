@@ -1,12 +1,13 @@
-const express = require("express");
-const dotenv = require("dotenv");
+import express from "express";
+import dotenv from "dotenv";
 const router = express.Router();
+import { validate } from '../middleware/validation.js';
 dotenv.config();
 
 // Import async handler and error utilities
-const { asyncHandler } = require("../middleware/async");
-const { BadRequestError, ExternalServiceError } = require("../utils/ErrorResponse");
-const { logExternalService } = require("../services/logger");
+import { asyncHandler } from "../middleware/async.js";
+import { BadRequestError, ExternalServiceError } from "../utils/ErrorResponse.js";
+import { logExternalService } from "../services/logger.js";
 
 // Node-fetch for CommonJS
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -14,110 +15,90 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 // ✅ RECOMMENDED OpenRouter model
 const MODEL_NAME = "mistralai/mistral-7b-instruct";
 
-router.post("/explain", asyncHandler(async (req, res, next) => {
+/**
+ * POST /api/gpt/explain
+ * Get AI explanation for programming question
+ * Returns: { success, explanation }
+ */
+router.post("/explain", validate('gptExplain'), async (req, res) => {
   const { question } = req.body;
 
-  // Enhanced input validation using error classes
-  if (!question) {
-    throw new BadRequestError("Missing 'question' in request body.");
-  }
-  
-  if (typeof question !== 'string') {
-    throw new BadRequestError("'question' must be a string.");
-  }
-  
-  if (question.length > 2000) {
-    throw new BadRequestError("Question too long. Maximum 2000 characters allowed.");
-  }
-  
-  if (question.trim().length === 0) {
-    throw new BadRequestError("Question cannot be empty.");
-  }
+  try {
+    const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: MODEL_NAME,
+        messages: [
+          {
+            role: "user",
+            content: `Explain this programming question in very simple terms:\n\n${question}`,
+          },
+        ],
+      }),
+    });
 
-  const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL_NAME,
-      messages: [
-        {
-          role: "user",
-          content: `Explain this programming question in very simple terms:\n\n${question}`,
-        },
-      ],
-    }),
-  });
+    const data = await result.json();
 
-  const data = await result.json();
+    if (!data || !data.choices || !data.choices[0]?.message?.content) {
+      console.error("❌ Invalid OpenRouter response:", JSON.stringify(data, null, 2));
+      return res.json({ success: false, explanation: "💡 No explanation available." });
+    }
 
-  if (!data || !data.choices || !data.choices[0]?.message?.content) {
-    logExternalService('OpenRouter', 'explain', false, { response: data });
-    return res.json({ explanation: "💡 No explanation available." });
+    const reply = data.choices[0].message.content.trim();
+    res.json({ success: true, explanation: reply });
+  } catch (err) {
+    console.error("❌ Error fetching explanation from OpenRouter:", err);
+    res.status(500).json({ success: false, error: "Failed to get explanation." });
   }
+})
 
-  logExternalService('OpenRouter', 'explain', true);
-  const reply = data.choices[0].message.content.trim();
-  res.json({ explanation: reply });
-}));
-
-router.post("/debug", asyncHandler(async (req, res, next) => {
+/**
+ * POST /api/gpt/debug
+ * Get AI debugging assistance for code
+ * Returns: { success, debugHelp }
+ */
+router.post("/debug", validate('gptDebug'), async (req, res) => {
   const { code, errorMessage } = req.body;
 
-  // Enhanced input validation using error classes
-  if (!code) {
-    throw new BadRequestError("Missing 'code' in request body.");
-  }
-  
-  if (typeof code !== 'string') {
-    throw new BadRequestError("'code' must be a string.");
-  }
-  
-  if (code.length > 10000) {
-    throw new BadRequestError("Code too long. Maximum 10,000 characters allowed.");
-  }
-  
-  if (code.trim().length === 0) {
-    throw new BadRequestError("Code cannot be empty.");
-  }
-  
-  if (errorMessage && typeof errorMessage !== 'string') {
-    throw new BadRequestError("'errorMessage' must be a string.");
-  }
-  
-  if (errorMessage && errorMessage.length > 5000) {
-    throw new BadRequestError("Error message too long. Maximum 5,000 characters allowed.");
-  }
+  try {
+    const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: MODEL_NAME,
+        messages: [
+          {
+            role: "user",
+            content: `Please help me debug this code:\n\n${code}\n\nError Message (if any):\n${errorMessage || "No specific error"}\n\nExplain what's wrong and suggest a fix.`,
+          },
+        ],
+      }),
+    });
 
-  const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL_NAME,
-      messages: [
-        {
-          role: "user",
-          content: `Please help me debug this code:\n\n${code}\n\nError Message (if any):\n${errorMessage || "No specific error"}\n\nExplain what's wrong and suggest a fix.`,
-        },
-      ],
-    }),
-  });
+    const data = await result.json();
 
-  const data = await result.json();
+    if (!data || !data.choices || !data.choices[0]?.message?.content) {
+      console.error("❌ Invalid OpenRouter debug response:", JSON.stringify(data, null, 2));
+      return res.json({ success: false, debugHelp: "🐞 No debugging help available." });
+    }
 
-  if (!data || !data.choices || !data.choices[0]?.message?.content) {
-    logExternalService('OpenRouter', 'debug', false, { response: data });
-    return res.json({ debugHelp: "🐞 No debugging help available." });
+    const reply = data.choices[0].message.content.trim();
+    res.json({ success: true, debugHelp: reply });
+  } catch (err) {
+    console.error("❌ Error fetching debug help from OpenRouter:", err);
+    res.status(500).json({ success: false, error: "Failed to get debug help." });
   }
 
   logExternalService('OpenRouter', 'debug', true);
   const reply = data.choices[0].message.content.trim();
   res.json({ debugHelp: reply });
-}));
+});
 
-module.exports = router;
+export default router;

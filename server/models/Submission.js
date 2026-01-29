@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const submissionSchema = new mongoose.Schema({
   challengeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Challenge', required: true },
@@ -34,4 +34,4 @@ submissionSchema.index({ challengeId: 1, submittedAt: 1 });
 submissionSchema.index({ odId: 1, challengeId: 1, points: -1, submittedAt: 1 });
 submissionSchema.index({ challengeId: 1, odId: 1, status: 1, points: -1 });
 
-module.exports = mongoose.model('Submission', submissionSchema);
+export default mongoose.model('Submission', submissionSchema);

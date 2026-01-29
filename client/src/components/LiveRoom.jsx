@@ -76,7 +76,6 @@ const LiveRoom = () => {
 
   const messagesEndRef = useRef(null);
 
-
   // Initialize socket and join room
   useEffect(() => {
     sessionIdRef.current = startSession({ roomId, username });
@@ -117,7 +116,9 @@ const LiveRoom = () => {
       setSystemMsg(`${newUser} joined the room`);
       setTimeout(() => setSystemMsg(''), 3000);
       setParticipants(prev => {
-        if (prev.find(p => p.username === newUser)) return prev;
+        if (prev.find(p => p.username === newUser)) {
+return prev;
+}
         return [...prev, { username: newUser, color, isActive: true }];
       });
     });
@@ -240,12 +241,16 @@ const LiveRoom = () => {
 
   // Recording controls (host only)
   const startRecording = useCallback(() => {
-    if (!isHost) return;
+    if (!isHost) {
+return;
+}
     socket.current.emit("start-recording", { roomId });
   }, [isHost, roomId]);
 
   const stopRecording = useCallback(() => {
-    if (!isHost) return;
+    if (!isHost) {
+return;
+}
     socket.current.emit("stop-recording", { roomId });
   }, [isHost, roomId]);
 
@@ -254,7 +259,6 @@ const LiveRoom = () => {
     socket.current.emit("debug-state", { roomId, state });
     setDebugState(state);
   }, [roomId]);
-
 
   // Chat functions
   const handleSendMessage = () => {
@@ -301,7 +305,9 @@ const LiveRoom = () => {
 
   // AI functions
   const explainQuestion = async () => {
-    if (!questionText.trim()) return;
+    if (!questionText.trim()) {
+return;
+}
     setIsExplaining(true);
     incrementStat('aiExplains', 1);
     const result = await getExplanation(questionText);
@@ -344,7 +350,6 @@ const LiveRoom = () => {
       left: columnNumber * 7.8 + 4 // +4 for padding/gutter
     };
   };
-
 
   return (
     <div className="live-room-container">

@@ -1,7 +1,7 @@
 /**
  * Python Parser for Code Visualization
  */
-const BaseParser = require('./baseParser');
+import BaseParser from './baseParser.js';
 
 class PythonParser extends BaseParser {
   constructor() {
@@ -210,4 +210,4 @@ class PythonParser extends BaseParser {
   }
 }
 
-module.exports = PythonParser;
+export default PythonParser;

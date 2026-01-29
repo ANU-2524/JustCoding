@@ -268,6 +268,10 @@ const leetCodeProblems = [
 ];
 
 const Challenges = () => {
+
+  const [showProblemPopup, setShowProblemPopup] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
+
   const [challenges, setChallenges] = useState(leetCodeProblems);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -307,6 +311,11 @@ const Challenges = () => {
     e.preventDefault();
     filterChallenges();
   };
+
+//   const handleChallengeClick = (challenge) => {
+//   setSelectedChallenge(challenge);
+//   setShowProblemPopup(true);
+// };
 
   const handleChallengeClick = (challenge) => {
     setSelectedChallenge(challenge);
@@ -409,6 +418,7 @@ const Challenges = () => {
                 <div
                   key={challenge.id}
                   className="challenge-card"
+                   onClick={() => handleChallengeClick(challenge)}
                 >
                   <div className="challenge-header">
                     <span className="category-icon">{categoryIcons[challenge.category] || '💡'}</span>

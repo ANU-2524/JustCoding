@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@typescript-eslint/parser": "^8.54.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -21,6 +23,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.21.0",
     "node-fetch": "^3.3.2",

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const achievementSchema = new mongoose.Schema({
   badgeId: { type: String, required: true, unique: true },
@@ -25,4 +25,4 @@ const achievementSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 });
 
-module.exports = mongoose.model('Achievement', achievementSchema);
+export default mongoose.model('Achievement', achievementSchema);

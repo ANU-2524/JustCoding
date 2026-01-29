@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { FaTrophy, FaMedal, FaAward, FaCrown, FaArrowLeft, FaSync, FaClock, FaUsers } from 'react-icons/fa';
 import '../Style/ContestLeaderboard.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const ContestLeaderboard = () => {
   const { slug } = useParams();
   const [leaderboard, setLeaderboard] = useState([]);
@@ -83,9 +85,15 @@ const ContestLeaderboard = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <FaCrown className="rank-icon gold" />;
-    if (rank === 2) return <FaTrophy className="rank-icon silver" />;
-    if (rank === 3) return <FaMedal className="rank-icon bronze" />;
+    if (rank === 1) {
+return <FaCrown className="rank-icon gold" />;
+}
+    if (rank === 2) {
+return <FaTrophy className="rank-icon silver" />;
+}
+    if (rank === 3) {
+return <FaMedal className="rank-icon bronze" />;
+}
     return <span className="rank-number">#{rank}</span>;
   };
 
