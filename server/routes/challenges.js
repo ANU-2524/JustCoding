@@ -1,9 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import Challenge from '../models/Challenge.js';
-import Submission from '../models/Submission.js';
-import Contest from '../models/Contest.js';
-import ChallengeService from '../services/ChallengeService.js';
+const Challenge = require('../models/Challenge');
+const Submission = require('../models/Submission');
+const Contest = require('../models/Contest');
+const ChallengeService = require('../services/ChallengeService');
+const ContestService = require('../services/ContestService');
+const LeaderboardService = require('../services/LeaderboardService');
 
 // Utility function to escape regex to prevent ReDoS
 function escapeRegex(string) {
@@ -495,7 +497,80 @@ router.get('/contests/:slug/top/:limit', async (req, res) => {
       return res.status(404).json({ error: 'Contest not found' });
     }
 
-    res.json(contest.leaderboard);
+    const topPerformers = await ContestService.getTopPerformers(contest._id, limit);
+    res.json({ topPerformers, contestTitle: contest.title });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get contest statistics
+router.get('/contests/:slug/stats', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
+    const contest = await Contest.findOne({ slug: req.params.slug })
+      .select('_id')
+      .lean();
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    const stats = await ContestService.getContestStats(contest._id);
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Submit solution to contest challenge
+router.post('/contests/:slug/challenges/:challengeSlug/submit', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug) || !validateSlug(req.params.challengeSlug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
+    const { odId, odName, code, language } = req.body;
+
+    if (!validateOdId(odId)) {
+      return res.status(400).json({ error: 'Invalid odId' });
+    }
+
+    if (!code || !language) {
+      return res.status(400).json({ error: 'Code and language are required' });
+    }
+
+    // Get contest and challenge
+    const contest = await Contest.findOne({ slug: req.params.slug })
+      .select('_id challenges')
+      .lean();
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    const challenge = await Challenge.findOne({ slug: req.params.challengeSlug })
+      .select('_id')
+      .lean();
+
+    if (!challenge) {
+      return res.status(404).json({ error: 'Challenge not found' });
+    }
+
+    // Submit through ContestService (handles leaderboard update)
+    const submission = await ContestService.submitSolution(
+      contest._id,
+      challenge._id,
+      odId,
+      odName,
+      code,
+      language
+    );
+
+    res.json(submission);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
