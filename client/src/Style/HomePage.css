@@ -797,6 +797,17 @@ body {
   color: #ffffff;
 }
 
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
 @media (max-width: 520px) {
   .footer-container {
     grid-template-columns: 1fr;

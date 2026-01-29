@@ -428,15 +428,17 @@ const HomePage = () => {
     {/* Social Links */}
     <div className="footer-social">
       <h4>Connect</h4>
-      <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
-        <FaTwitter /> Twitter
-      </a>
-      <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
-        <FaGithub /> GitHub
-      </a>
-      <a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer">
-        <FaLinkedin /> LinkedIn
-      </a>
+      <div className="social-icons">
+        <a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer">
+          <FaTwitter />
+        </a>
+        <a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer">
+          <FaGithub />
+        </a>
+        <a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer">
+          <FaLinkedin />
+        </a>
+      </div>
     </div>
 
   </div>
