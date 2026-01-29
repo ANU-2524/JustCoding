@@ -62,6 +62,7 @@ const Navbar = () => {
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
     { path: '/analytics', label: 'Analytics', icon: <FaChartLine /> },
     { path: '/code-quality', label: 'Code Quality', icon: <FaBug /> },
+    { path: '/debug', label: 'AI Debugger', icon: <FaRobot /> },
     { path: '/code-explainer', label: 'Code Explainer', icon: <FaLightbulb /> },
     { path: '/snippets', label: 'Snippets', icon: <FaSave /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
