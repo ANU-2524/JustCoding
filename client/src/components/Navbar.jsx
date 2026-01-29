@@ -77,13 +77,15 @@ const Navbar = () => {
   ];
 
   return (
-    <motion.nav 
+    <nav 
       className={`navbar ${scrolled ? 'scrolled' : ''} ${location.pathname === '/' ? 'hero-navbar' : ''}`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="nav-container">
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <div className="nav-container">
         <Link to="/" className="nav-logo">
           <motion.div
             whileHover={{ rotate: 180 }}
@@ -324,7 +326,8 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </div>
-    </motion.nav>
+    </motion.div>
+    </nav>
   );
 };
 
