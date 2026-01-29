@@ -14,7 +14,9 @@ function escapeRegex(string) {
 
 // Validation functions
 function validateSlug(slug) {
-  return typeof slug === 'string' && slug.length > 0 && /^[a-zA-Z0-9-]+$/.test(slug);
+  return (
+    typeof slug === 'string' && slug.length > 0 && /^[a-zA-Z0-9-]+$/.test(slug)
+  );
 }
 
 function validateOdId(odId) {
@@ -32,7 +34,12 @@ router.get('/', async (req, res) => {
     if (isNaN(pageNum) || pageNum.toString() !== page || pageNum < 1) {
       return res.status(400).json({ error: 'Invalid page number' });
     }
-    if (isNaN(limitNum) || limitNum.toString() !== limit || limitNum < 1 || limitNum > 100) {
+    if (
+      isNaN(limitNum) ||
+      limitNum.toString() !== limit ||
+      limitNum < 1 ||
+      limitNum > 100
+    ) {
       return res.status(400).json({ error: 'Invalid limit (1-100)' });
     }
 
@@ -44,12 +51,14 @@ router.get('/', async (req, res) => {
       const escapedSearch = escapeRegex(search);
       query.$or = [
         { title: { $regex: escapedSearch, $options: 'i' } },
-        { tags: { $regex: escapedSearch, $options: 'i' } }
+        { tags: { $regex: escapedSearch, $options: 'i' } },
       ];
     }
 
     const challenges = await Challenge.find(query)
-      .select('title slug difficulty category points solvedCount successRate tags')
+      .select(
+        'title slug difficulty category points solvedCount successRate tags'
+      )
       .sort({ difficulty: 1, points: 1 })
       .skip((pageNum - 1) * limitNum)
       .limit(limitNum);
@@ -62,8 +71,8 @@ router.get('/', async (req, res) => {
         page: pageNum,
         limit: limitNum,
         total,
-        pages: Math.ceil(total / limitNum)
-      }
+        pages: Math.ceil(total / limitNum),
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -77,8 +86,10 @@ router.get('/:slug', async (req, res) => {
       return res.status(400).json({ error: 'Invalid slug format' });
     }
 
-    const challenge = await Challenge.findOne({ slug: req.params.slug, isActive: true })
-      .select('-testCases.expectedOutput -editorial');
+    const challenge = await Challenge.findOne({
+      slug: req.params.slug,
+      isActive: true,
+    }).select('-testCases.expectedOutput -editorial');
 
     if (!challenge) {
       return res.status(404).json({ error: 'Challenge not found' });
@@ -86,13 +97,19 @@ router.get('/:slug', async (req, res) => {
 
     // Get visible test cases only
     const visibleTestCases = challenge.testCases
-      .filter(tc => !tc.isHidden)
-      .map(tc => ({ input: tc.input, expectedOutput: tc.expectedOutput }));
+      .filter((tc) => !tc.isHidden)
+      .map((tc) => ({ input: tc.input, expectedOutput: tc.expectedOutput }));
+
+    const challengeObj = challenge.toObject();
 
     res.json({
-      ...challenge.toObject(),
+      ...challengeObj,
+      description: challengeObj.description || '',
+      constraints: challengeObj.constraints || '',
+      examples: challengeObj.examples || [],
+      hints: challengeObj.hints || [],
       testCases: visibleTestCases,
-      totalTestCases: challenge.testCases.length
+      totalTestCases: challenge.testCases.length,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -132,7 +149,7 @@ router.post('/:slug/submit', async (req, res) => {
       totalTests: submission.totalTests,
       executionTime: submission.executionTime,
       points: submission.points,
-      testResults: submission.testResults
+      testResults: submission.testResults,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -160,12 +177,23 @@ router.post('/:slug/run', async (req, res) => {
     // Run against visible test cases only (or custom input)
     let testCases;
     if (customInput !== undefined) {
-      testCases = [{ input: customInput, expectedOutput: '', isHidden: false, timeLimit: 2000 }];
+      testCases = [
+        {
+          input: customInput,
+          expectedOutput: '',
+          isHidden: false,
+          timeLimit: 2000,
+        },
+      ];
     } else {
-      testCases = challenge.testCases.filter(tc => !tc.isHidden).slice(0, 3);
+      testCases = challenge.testCases.filter((tc) => !tc.isHidden).slice(0, 3);
     }
 
-    const results = await ChallengeService.runTestCases(code, language, testCases);
+    const results = await ChallengeService.runTestCases(
+      code,
+      language,
+      testCases
+    );
 
     res.json(results);
   } catch (error) {
@@ -185,7 +213,9 @@ router.get('/:slug/leaderboard', async (req, res) => {
       return res.status(404).json({ error: 'Challenge not found' });
     }
 
-    const leaderboard = await ChallengeService.getChallengeLeaderboard(challenge._id);
+    const leaderboard = await ChallengeService.getChallengeLeaderboard(
+      challenge._id
+    );
     res.json(leaderboard);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -210,11 +240,13 @@ router.get('/:slug/submissions/:odId', async (req, res) => {
 
     const submissions = await Submission.find({
       challengeId: challenge._id,
-      odId
+      odId,
     })
-    .sort({ submittedAt: -1 })
-    .limit(20)
-    .select('status passedTests totalTests executionTime language submittedAt');
+      .sort({ submittedAt: -1 })
+      .limit(20)
+      .select(
+        'status passedTests totalTests executionTime language submittedAt'
+      );
 
     res.json(submissions);
   } catch (error) {
@@ -244,16 +276,18 @@ router.get('/:slug/editorial', async (req, res) => {
     const solved = await Submission.findOne({
       challengeId: challenge._id,
       odId,
-      status: 'accepted'
+      status: 'accepted',
     });
 
     if (!solved) {
-      return res.status(403).json({ error: 'Solve the challenge first to view editorial' });
+      return res
+        .status(403)
+        .json({ error: 'Solve the challenge first to view editorial' });
     }
 
     res.json({
       editorial: challenge.editorial,
-      hints: challenge.hints
+      hints: challenge.hints,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -281,17 +315,19 @@ router.get('/user/:odId/progress', async (req, res) => {
 router.get('/contests/list', async (req, res) => {
   try {
     const now = new Date();
-    
+
     const contests = await Contest.find()
-      .select('title slug description startTime endTime duration status participants')
+      .select(
+        'title slug description startTime endTime duration status participants'
+      )
       .sort({ startTime: -1 });
 
     // Update status for each contest
-    const updatedContests = contests.map(c => {
+    const updatedContests = contests.map((c) => {
       c.updateStatus();
       return {
         ...c.toObject(),
-        participantCount: c.participants.length
+        participantCount: c.participants.length,
       };
     });
 
@@ -308,8 +344,10 @@ router.get('/contests/:slug', async (req, res) => {
       return res.status(400).json({ error: 'Invalid slug format' });
     }
 
-    const contest = await Contest.findOne({ slug: req.params.slug })
-      .populate('challenges', 'title slug difficulty points solvedCount');
+    const contest = await Contest.findOne({ slug: req.params.slug }).populate(
+      'challenges',
+      'title slug difficulty points solvedCount'
+    );
 
     if (!contest) {
       return res.status(404).json({ error: 'Contest not found' });
@@ -342,7 +380,7 @@ router.post('/contests/:slug/join', async (req, res) => {
     }
 
     // Check if already joined
-    const existing = contest.participants.find(p => p.odId === odId);
+    const existing = contest.participants.find((p) => p.odId === odId);
     if (existing) {
       return res.json({ participant: existing });
     }
@@ -533,6 +571,93 @@ router.post('/contests/:slug/challenges/:challengeSlug/submit', async (req, res)
     );
 
     res.json(submission);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================
+// ADMIN CONTEST ROUTES
+// ============================================
+
+// Create new contest (Admin only)
+router.post('/contests', async (req, res) => {
+  try {
+    const { title, slug, description, startTime, endTime, duration, maxParticipants, challenges } = req.body;
+
+    if (!title || !slug || !description || !startTime || !endTime) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Check if slug already exists
+    const existing = await Contest.findOne({ slug });
+    if (existing) {
+      return res.status(400).json({ error: 'Contest slug already exists' });
+    }
+
+    const contest = new Contest({
+      title,
+      slug,
+      description,
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      duration: duration || 120,
+      maxParticipants: maxParticipants || 100,
+      challenges: challenges || [],
+      status: 'upcoming'
+    });
+
+    await contest.save();
+    res.json(contest);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update contest (Admin only)
+router.put('/contests/:slug', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
+    const contest = await Contest.findOne({ slug: req.params.slug });
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    const { title, description, startTime, endTime, duration, maxParticipants, challenges } = req.body;
+
+    if (title) contest.title = title;
+    if (description) contest.description = description;
+    if (startTime) contest.startTime = new Date(startTime);
+    if (endTime) contest.endTime = new Date(endTime);
+    if (duration) contest.duration = duration;
+    if (maxParticipants) contest.maxParticipants = maxParticipants;
+    if (challenges) contest.challenges = challenges;
+
+    contest.updateStatus();
+    await contest.save();
+
+    res.json(contest);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete contest (Admin only)
+router.delete('/contests/:slug', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
+    const contest = await Contest.findOneAndDelete({ slug: req.params.slug });
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    res.json({ deleted: true, slug: req.params.slug });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
