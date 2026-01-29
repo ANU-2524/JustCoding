@@ -96,16 +96,22 @@ const CodeExplainer = () => {
   };
 
   const downloadExplanation = () => {
+    let url;
     try {
       const element = document.createElement('a');
       const file = new Blob([`Code:\n\n${code}\n\n---\n\nExplanation:\n\n${explanation}`], { type: 'text/plain' });
-      element.href = URL.createObjectURL(file);
+      url = URL.createObjectURL(file);
+      element.href = url;
       element.download = `code-explanation-${Date.now()}.txt`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
     } catch (err) {
       console.error('Download failed:', err);
+    } finally {
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
     }
   };
 
