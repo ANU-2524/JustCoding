@@ -35,6 +35,7 @@ const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
 const CodeQuality = lazy(() => import("./components/CodeQuality"));
+const CodeExplainer = lazy(() => import("./components/CodeExplainer"));
 const Analytics = lazy(() => import("./components/Analytics"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
@@ -124,6 +125,7 @@ function App() {
 
                   <Route path="/admin/rooms" element={<RoomManagement />} />
                   <Route path="/code-quality" element={<CodeQuality />} />
+                  <Route path="/code-explainer" element={<CodeExplainer />} />
                   
                   {/* Catch-all route for undefined paths */}
                   <Route path="*" element={<NotFound />} />
