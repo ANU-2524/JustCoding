@@ -43,6 +43,7 @@ const Analytics = lazy(() => import("./components/Analytics"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
+const CommunityPostDetail = lazy(() => import("./components/CommunityPostDetail"));
 
 
 function App() {
@@ -137,6 +138,10 @@ function App() {
                   <Route path="/code-quality" element={<CodeQuality />} />
                   <Route path="/code-explainer" element={<CodeExplainer />} />
                   <Route path="/snippets" element={<SnippetsManager />} />
+                  
+                  {/* Community */}
+                  <Route path="/community" element={<CommunityPage />} />
+                  <Route path="/community/posts/:id" element={<CommunityPostDetail />} />
                   
                   {/* Catch-all route for undefined paths */}
                   <Route path="*" element={<NotFound />} />

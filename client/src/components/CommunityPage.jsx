@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaPlus, FaSearch, FaFilter, FaSort, FaFire, FaClock, FaComment, FaEye, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
@@ -8,6 +9,7 @@ import '../Style/CommunityPage.css';
 const CommunityPage = () => {
   const { currentUser } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,15 @@ const CommunityPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState(null);
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+  const [viewMode, setViewMode] = useState('list');
+  const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const [newPostData, setNewPostData] = useState({
+    title: '',
+    content: '',
+    category: 'general-discussion',
+    tags: ''
+  });
+  const [submittingPost, setSubmittingPost] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -59,7 +69,7 @@ const CommunityPage = () => {
   };
 
   const handleVote = async (postId, voteType) => {
-    if (!user) {
+    if (!currentUser) {
       alert('Please login to vote');
       return;
     }
@@ -72,7 +82,7 @@ const CommunityPage = () => {
         },
         body: JSON.stringify({
           voteType,
-          userId: user.uid
+          userId: currentUser.uid
         })
       });
 
@@ -86,6 +96,58 @@ const CommunityPage = () => {
       }
     } catch (error) {
       console.error('Error voting:', error);
+    }
+  };
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) {
+      alert('Please login to create a post');
+      navigate('/login');
+      return;
+    }
+
+    if (!newPostData.title.trim() || !newPostData.content.trim()) {
+      alert('Please fill in title and content');
+      return;
+    }
+
+    setSubmittingPost(true);
+    try {
+      const response = await fetch('/api/community/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await currentUser.getIdToken()}`
+        },
+        body: JSON.stringify({
+          title: newPostData.title,
+          content: newPostData.content,
+          category: newPostData.category,
+          tags: newPostData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+          author: currentUser.displayName || currentUser.email,
+          authorId: currentUser.uid
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to create post');
+      
+      const createdPost = await response.json();
+      setPosts([createdPost, ...posts]);
+      setShowNewPostModal(false);
+      setNewPostData({
+        title: '',
+        content: '',
+        category: 'general-discussion',
+        tags: ''
+      });
+      alert('Post created successfully! 🎉');
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Failed to create post. Please try again.');
+    } finally {
+      setSubmittingPost(false);
     }
   };
 
@@ -128,7 +190,17 @@ const CommunityPage = () => {
           <h1>Community Forum</h1>
           <p>Connect, share, and learn with fellow developers</p>
         </div>
-        <button className="create-post-btn">
+        <button 
+          className="create-post-btn"
+          onClick={() => {
+            if (!currentUser) {
+              alert('Please login to create a post');
+              navigate('/login');
+            } else {
+              setShowNewPostModal(true);
+            }
+          }}
+        >
           <FaPlus /> New Post
         </button>
       </div>
@@ -241,7 +313,13 @@ const CommunityPage = () => {
               </div>
 
               <div className="post-content">
-                <h3 className="post-title">{post.title}</h3>
+                <h3 
+                  className="post-title" 
+                  onClick={() => navigate(`/community/posts/${post._id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {post.title}
+                </h3>
                 <p className="post-excerpt">
                   {post.content.length > 200
                     ? `${post.content.substring(0, 200)}...`
@@ -273,16 +351,22 @@ const CommunityPage = () => {
 
                 <div className="post-actions">
                   <button
+                    className="view-post-btn"
+                    onClick={() => navigate(`/community/posts/${post._id}`)}
+                  >
+                    View Discussion
+                  </button>
+                  <button
                     className="vote-btn upvote"
                     onClick={() => handleVote(post._id, 'upvote')}
-                    disabled={!user}
+                    disabled={!currentUser}
                   >
                     <FaThumbsUp />
                   </button>
                   <button
                     className="vote-btn downvote"
                     onClick={() => handleVote(post._id, 'downvote')}
-                    disabled={!user}
+                    disabled={!currentUser}
                   >
                     <FaThumbsDown />
                   </button>
@@ -315,6 +399,100 @@ const CommunityPage = () => {
             Next
           </button>
         </div>
+      )}
+
+      {/* New Post Modal */}
+      {showNewPostModal && (
+        <motion.div
+          className="modal-overlay"
+          onClick={() => setShowNewPostModal(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className={`new-post-modal ${theme}`}
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <div className="modal-header">
+              <h2>Create New Post</h2>
+              <button 
+                className="close-btn"
+                onClick={() => setShowNewPostModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreatePost} className="new-post-form">
+              <div className="form-group">
+                <label>Title *</label>
+                <input
+                  type="text"
+                  value={newPostData.title}
+                  onChange={(e) => setNewPostData({...newPostData, title: e.target.value})}
+                  placeholder="Enter post title"
+                  maxLength="200"
+                  required
+                />
+                <span className="char-count">{newPostData.title.length}/200</span>
+              </div>
+
+              <div className="form-group">
+                <label>Category *</label>
+                <select
+                  value={newPostData.category}
+                  onChange={(e) => setNewPostData({...newPostData, category: e.target.value})}
+                >
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Content *</label>
+                <textarea
+                  value={newPostData.content}
+                  onChange={(e) => setNewPostData({...newPostData, content: e.target.value})}
+                  placeholder="Share your thoughts or ask a question..."
+                  rows="8"
+                  maxLength="5000"
+                  required
+                />
+                <span className="char-count">{newPostData.content.length}/5000</span>
+              </div>
+
+              <div className="form-group">
+                <label>Tags (comma separated)</label>
+                <input
+                  type="text"
+                  value={newPostData.tags}
+                  onChange={(e) => setNewPostData({...newPostData, tags: e.target.value})}
+                  placeholder="e.g. javascript, react, help"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setShowNewPostModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={submittingPost}
+                >
+                  {submittingPost ? 'Creating...' : 'Create Post'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
       )}
     </motion.div>
   );
