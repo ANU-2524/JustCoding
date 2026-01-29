@@ -1,2 +1,6 @@
-- [x] Remove "fallback: true" from the database unavailable fallback response in /event route
-- [x] Remove "fallback: true" from the error catch block fallback response in /event route
+# TODO: Modify Connect Section in Home Page Footer
+
+## Tasks
+- [x] Edit HomePage.jsx to remove text from social links and structure icons in a single line
+- [x] Update CSS if necessary to ensure proper alignment
+- [x] Test the changes to verify logos are displayed correctly
