@@ -397,14 +397,100 @@ router.post('/contests/:slug/join', async (req, res) => {
   }
 });
 
-// Get contest leaderboard
+// Get contest leaderboard (Optimized with Redis caching)
 router.get('/contests/:slug/leaderboard', async (req, res) => {
   try {
     if (!validateSlug(req.params.slug)) {
       return res.status(400).json({ error: 'Invalid slug format' });
     }
 
-    const contest = await Contest.findOne({ slug: req.params.slug });
+    const { page = 1, limit = 50, refresh = 'false' } = req.query;
+
+    // Validate pagination params
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const forceRefresh = refresh === 'true';
+
+    if (isNaN(pageNum) || pageNum < 1 || pageNum > 1000) {
+      return res.status(400).json({ error: 'Invalid page number (1-1000)' });
+    }
+    if (isNaN(limitNum) || limitNum < 1 || limitNum > 200) {
+      return res.status(400).json({ error: 'Invalid limit (1-200)' });
+    }
+
+    const contest = await Contest.findOne({ slug: req.params.slug })
+      .select('_id title status startTime endTime')
+      .lean();
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    // Get optimized leaderboard with caching
+    const result = await ContestService.getLeaderboard(contest._id, {
+      page: pageNum,
+      limit: limitNum,
+      forceRefresh
+    });
+
+    res.json({
+      leaderboard: result.leaderboard,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.totalParticipants,
+        pages: Math.ceil(result.totalParticipants / result.limit)
+      },
+      cached: result.cached,
+      contestStatus: contest.status
+    });
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get user's standing in contest
+router.get('/contests/:slug/standing/:odId', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+    if (!validateOdId(req.params.odId)) {
+      return res.status(400).json({ error: 'Invalid odId' });
+    }
+
+    const contest = await Contest.findOne({ slug: req.params.slug })
+      .select('_id')
+      .lean();
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    const standing = await ContestService.getUserStanding(contest._id, req.params.odId);
+    res.json(standing);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get top performers (for contest highlights)
+router.get('/contests/:slug/top/:limit', async (req, res) => {
+  try {
+    if (!validateSlug(req.params.slug)) {
+      return res.status(400).json({ error: 'Invalid slug format' });
+    }
+
+    const limit = parseInt(req.params.limit, 10);
+    if (isNaN(limit) || limit < 1 || limit > 50) {
+      return res.status(400).json({ error: 'Invalid limit (1-50)' });
+    }
+
+    const contest = await Contest.findOne({ slug: req.params.slug })
+      .select('_id title')
+      .lean();
+
     if (!contest) {
       return res.status(404).json({ error: 'Contest not found' });
     }
