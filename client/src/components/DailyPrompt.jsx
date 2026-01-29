@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DailyPrompt.css";
 import PrismHighlight from "./PrismHighlight";
+import SolutionComments from "./SolutionComments";
 
 // Demo backend using localStorage for guest persistence
 const getTodayKey = () => {
@@ -112,17 +113,21 @@ export default function DailyPrompt() {
       <div className="prompt-submissions">
         <h4>Public Submissions</h4>
         {sorted.length === 0 && <div className="prompt-empty">No submissions yet. Be the first!</div>}
-        {sorted.map((sub, idx) => (
-          <div className="prompt-submission-card" key={idx}>
-            <div className="prompt-sub-header">
-              <span className="prompt-sub-name">{sub.name}</span>
-              <button className="prompt-upvote" onClick={() => handleUpvote(submissions.indexOf(sub))}>
-                ▲ {sub.votes || 0}
-              </button>
+        {sorted.map((sub, idx) => {
+          const origIdx = submissions.indexOf(sub);
+          return (
+            <div className="prompt-submission-card" key={idx}>
+              <div className="prompt-sub-header">
+                <span className="prompt-sub-name">{sub.name}</span>
+                <button className="prompt-upvote" onClick={() => handleUpvote(origIdx)}>
+                  ▲ {sub.votes || 0}
+                </button>
+              </div>
+              <PrismHighlight code={sub.solution} language="javascript" />
+              <SolutionComments promptKey={getTodayKey()} solutionIndex={origIdx} />
             </div>
-            <PrismHighlight code={sub.solution} language="javascript" />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

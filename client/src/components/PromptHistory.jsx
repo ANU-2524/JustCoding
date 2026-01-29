@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./PromptHistory.css";
 import PrismHighlight from "./PrismHighlight";
+import SolutionComments from "./SolutionComments";
 
 // Demo: Use the same prompts as DailyPrompt
 const getAllPrompts = () => [
@@ -63,15 +64,19 @@ export default function PromptHistory() {
       <div className="history-submissions">
         <h4>Top Solutions</h4>
         {sorted.length === 0 && <div className="history-empty">No submissions for this prompt yet.</div>}
-        {sorted.map((sub, idx) => (
-          <div className="history-sub-card" key={idx}>
-            <div className="history-sub-header">
-              <span className="history-sub-name">{sub.name}</span>
-              <span className="history-sub-votes">▲ {sub.votes || 0}</span>
+        {sorted.map((sub, idx) => {
+          const origIdx = submissions.indexOf(sub);
+          return (
+            <div className="history-sub-card" key={idx}>
+              <div className="history-sub-header">
+                <span className="history-sub-name">{sub.name}</span>
+                <span className="history-sub-votes">▲ {sub.votes || 0}</span>
+              </div>
+              <PrismHighlight code={sub.solution} language="javascript" />
+              <SolutionComments promptKey={selected.key} solutionIndex={origIdx} />
             </div>
-            <PrismHighlight code={sub.solution} language="javascript" />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
