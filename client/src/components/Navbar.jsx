@@ -59,7 +59,6 @@ const Navbar = () => {
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/guest-leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
     { path: '/notes', label: 'Notes', icon: <FaBook /> },
-    { path: '/code-gallery', label: 'Code Gallery', icon: <FaBook /> },
     { path: '/portfolio-builder', label: 'Portfolio Builder', icon: <FaUser /> },
     { path: '/export', label: 'Export Progress', icon: <FaDownload /> },
   ];
@@ -83,6 +82,8 @@ const Navbar = () => {
     { path: '/leaderboard', label: 'Leaderboard', icon: <FaChartLine /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
     { path: '/community', label: 'Community', icon: <FaComments /> },
+    { path: '/code-gallery', label: 'Code Gallery', icon: <FaBook /> },
+    { path: '/code-review-wall', label: 'Code Review Wall', icon: <FaComments /> },
   ];
   
   const profileDropdownItems = [
