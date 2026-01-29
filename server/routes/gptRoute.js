@@ -24,6 +24,12 @@ router.post("/explain", validate('gptExplain'), async (req, res) => {
   const { question } = req.body;
 
   try {
+    // Check if API key exists
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("❌ OPENROUTER_API_KEY not set in environment variables");
+      return res.status(500).json({ error: "API key not configured. Please set OPENROUTER_API_KEY in .env" });
+    }
+
     const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -41,6 +47,13 @@ router.post("/explain", validate('gptExplain'), async (req, res) => {
       }),
     });
 
+    // Check if response is ok
+    if (!result.ok) {
+      const errorText = await result.text();
+      console.error(`❌ OpenRouter API error (${result.status}):`, errorText);
+      return res.status(result.status).json({ error: `OpenRouter API error: ${result.statusText}` });
+    }
+
     const data = await result.json();
 
     if (!data || !data.choices || !data.choices[0]?.message?.content) {
@@ -52,7 +65,7 @@ router.post("/explain", validate('gptExplain'), async (req, res) => {
     res.json({ success: true, explanation: reply });
   } catch (err) {
     console.error("❌ Error fetching explanation from OpenRouter:", err);
-    res.status(500).json({ success: false, error: "Failed to get explanation." });
+    res.status(500).json({ error: "Failed to get explanation. " + err.message });
   }
 })
 
@@ -65,6 +78,12 @@ router.post("/debug", validate('gptDebug'), async (req, res) => {
   const { code, errorMessage } = req.body;
 
   try {
+    // Check if API key exists
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("❌ OPENROUTER_API_KEY not set in environment variables");
+      return res.status(500).json({ error: "API key not configured. Please set OPENROUTER_API_KEY in .env" });
+    }
+
     const result = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -82,6 +101,13 @@ router.post("/debug", validate('gptDebug'), async (req, res) => {
       }),
     });
 
+    // Check if response is ok
+    if (!result.ok) {
+      const errorText = await result.text();
+      console.error(`❌ OpenRouter API error (${result.status}):`, errorText);
+      return res.status(result.status).json({ error: `OpenRouter API error: ${result.statusText}` });
+    }
+
     const data = await result.json();
 
     if (!data || !data.choices || !data.choices[0]?.message?.content) {
@@ -93,7 +119,7 @@ router.post("/debug", validate('gptDebug'), async (req, res) => {
     res.json({ success: true, debugHelp: reply });
   } catch (err) {
     console.error("❌ Error fetching debug help from OpenRouter:", err);
-    res.status(500).json({ success: false, error: "Failed to get debug help." });
+    res.status(500).json({ error: "Failed to get debug help. " + err.message });
   }
 
   logExternalService('OpenRouter', 'debug', true);

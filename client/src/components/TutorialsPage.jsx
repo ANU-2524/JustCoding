@@ -17,6 +17,7 @@ import {
   FaTrophy,
   FaUser
 } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/TutorialsPage.css';
 
 const difficultyColors = {
@@ -55,6 +56,8 @@ function TutorialsPage() {
   const [tutorials, setTutorials] = useState([]);
   const [filteredTutorials, setFilteredTutorials] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [featuredTutorials, setFeaturedTutorials] = useState([]);
+  const [learningPaths, setLearningPaths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
@@ -72,6 +75,8 @@ function TutorialsPage() {
   useEffect(() => {
     fetchTutorials();
     fetchCategories();
+    fetchFeaturedTutorials();
+    fetchLearningPaths();
     if (currentUser) {
       fetchUserProgress();
     }
@@ -109,6 +114,26 @@ function TutorialsPage() {
       setCategories(data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchFeaturedTutorials = async () => {
+    try {
+      const response = await fetch('/api/tutorials/featured');
+      const data = await response.json();
+      setFeaturedTutorials(data);
+    } catch (error) {
+      console.error('Error fetching featured tutorials:', error);
+    }
+  };
+
+  const fetchLearningPaths = async () => {
+    try {
+      const response = await fetch('/api/tutorials/learning-paths?difficulty=beginner&limit=4');
+      const data = await response.json();
+      setLearningPaths(data);
+    } catch (error) {
+      console.error('Error fetching learning paths:', error);
     }
   };
 
@@ -311,6 +336,12 @@ return { percentage, status: 'in-progress' };
 
   return (
     <div className="tutorials-page">
+      <Breadcrumb 
+        items={[
+          { label: 'Tutorials', path: null }
+        ]}
+      />
+
       <div className="tutorials-container">
         {/* Header */}
         <div className="tutorials-header">
@@ -440,6 +471,66 @@ return { percentage, status: 'in-progress' };
 
         {/* Tutorials Grid */}
         <div className="tutorials-content">
+          {/* Featured Tutorials Section */}
+          {!searchTerm && !selectedDifficulty && !selectedCategory && !selectedLanguage && featuredTutorials.length > 0 && (
+            <div className="featured-section">
+              <div className="section-header">
+                <h2>
+                  <FaStar className="section-icon" /> Featured Tutorials
+                </h2>
+                <p>Popular and highly-rated tutorials to get you started</p>
+              </div>
+              <div className="featured-grid">
+                {featuredTutorials.slice(0, 3).map(tutorial => (
+                  <div key={tutorial._id} className="featured-card" onClick={() => startTutorial(tutorial)}>
+                    <div className="featured-badge">
+                      <FaStar /> Featured
+                    </div>
+                    <h3>{tutorial.title}</h3>
+                    <p>{tutorial.description}</p>
+                    <div className="featured-meta">
+                      <span className="difficulty-badge" style={{ backgroundColor: difficultyColors[tutorial.difficulty] }}>
+                        {tutorial.difficulty}
+                      </span>
+                      <span className="rating">
+                        <FaStar /> {tutorial.rating?.toFixed(1) || '4.5'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Learning Paths Section */}
+          {!searchTerm && !selectedDifficulty && !selectedCategory && !selectedLanguage && learningPaths.length > 0 && (
+            <div className="learning-paths-section">
+              <div className="section-header">
+                <h2>
+                  <FaTrophy className="section-icon" /> Recommended Learning Paths
+                </h2>
+                <p>Structured paths to guide your learning journey</p>
+                <button className="view-all-btn" onClick={() => navigate('/learning-paths')}>
+                  View All Paths <FaChevronRight />
+                </button>
+              </div>
+              <div className="paths-preview-grid">
+                {learningPaths.slice(0, 4).map(path => (
+                  <div key={path._id} className="path-preview-card" onClick={() => navigate(`/learning-paths/${path._id}`)}>
+                    <div className="path-icon">📚</div>
+                    <h4>{path.title}</h4>
+                    <div className="path-stats-mini">
+                      <span><FaClock /> {path.estimatedDuration || '2-3h'}</span>
+                      <span className="difficulty-mini" style={{ color: difficultyColors[path.difficulty] }}>
+                        {path.difficulty}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>
