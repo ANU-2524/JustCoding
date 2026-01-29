@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +13,12 @@ import {
 } from "react-icons/fa";
 import "../Style/Challenges.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaCode, FaTrophy, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine, FaTimes } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
+import '../Style/Challenges.css';
+
 
 const difficultyColors = {
   easy: "#4caf50",
@@ -357,6 +364,12 @@ const Challenges = () => {
 
   return (
     <div className="challenges-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Challenges', path: null }
+        ]}
+      />
+
       <div className="challenges-hero">
         <h1>
           <FaCode /> Coding Challenges

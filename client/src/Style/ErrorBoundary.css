@@ -1,0 +1,288 @@
+/* Error Boundary Styles */
+
+.error-boundary-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0c141d 0%, #1a2332 100%);
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.error-boundary-content {
+  background: rgba(13, 17, 23, 0.95);
+  border: 2px solid rgba(244, 67, 54, 0.3);
+  border-radius: 12px;
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-icon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 3.5rem;
+  color: #f44336;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.error-title {
+  font-size: 2rem;
+  color: #f0f6fc;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.error-message {
+  font-size: 1rem;
+  color: #b0b8c0;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+}
+
+.error-details {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.error-summary {
+  color: #ff7043;
+  font-weight: 600;
+  user-select: none;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.error-summary:hover {
+  background: rgba(255, 112, 67, 0.1);
+}
+
+.error-details[open] .error-summary {
+  margin-bottom: 0.5rem;
+}
+
+.error-stack {
+  margin-top: 0.75rem;
+}
+
+.error-type {
+  color: #f44336;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+.error-trace {
+  background: rgba(0, 0, 0, 0.5);
+  color: #00ff00;
+  padding: 1rem;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.error-warning {
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  color: #ffb74d;
+  font-size: 0.95rem;
+}
+
+.error-warning p {
+  margin: 0;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0 1.5rem 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #ff7043, #f44336);
+  color: white;
+}
+
+.retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
+}
+
+.retry-btn:active {
+  transform: translateY(0);
+}
+
+.home-btn {
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  color: #58a6ff;
+}
+
+.home-btn:hover {
+  background: rgba(88, 166, 255, 0.2);
+  border-color: #58a6ff;
+  transform: translateY(-2px);
+}
+
+.home-btn:active {
+  transform: translateY(0);
+}
+
+.error-help {
+  text-align: center;
+  color: #6e7681;
+  font-size: 0.9rem;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 88, 31, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error-boundary-container {
+    padding: 1rem;
+  }
+
+  .error-boundary-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .error-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .error-title {
+    font-size: 1.5rem;
+  }
+
+  .error-message {
+    font-size: 0.95rem;
+    padding: 0;
+  }
+
+  .error-actions {
+    gap: 0.75rem;
+    margin: 1.5rem 0 1rem 0;
+  }
+
+  .error-btn {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .error-trace {
+    font-size: 0.65rem;
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-boundary-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .error-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .error-title {
+    font-size: 1.25rem;
+  }
+
+  .error-message {
+    font-size: 0.9rem;
+  }
+
+  .error-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .error-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .error-boundary-container {
+    background: linear-gradient(135deg, #000a0f 0%, #0d1117 100%);
+  }
+
+  .error-boundary-content {
+    background: rgba(13, 17, 23, 0.98);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .error-boundary-content,
+  .error-icon {
+    animation: none;
+  }
+
+  .error-btn,
+  .error-summary {
+    transition: none;
+  }
+}

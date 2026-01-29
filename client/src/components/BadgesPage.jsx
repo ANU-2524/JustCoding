@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaMedal, FaTrophy, FaStar, FaCrown, FaLock, FaFire } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/BadgesPage.css';
 
 const BadgesPage = () => {
@@ -138,6 +139,12 @@ const BadgesPage = () => {
 
   return (
     <div className="badges-page">
+      <Breadcrumb 
+        items={[
+          { label: 'Badges', path: null }
+        ]}
+      />
+
       <div className="badges-header">
         <h1><FaMedal /> Badges & Achievements</h1>
         <div className="badges-stats">
