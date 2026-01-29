@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./DailyPrompt.css";
+import PrismHighlight from "./PrismHighlight";
 
 // Demo backend using localStorage for guest persistence
 const getTodayKey = () => {
@@ -119,7 +120,7 @@ export default function DailyPrompt() {
                 ▲ {sub.votes || 0}
               </button>
             </div>
-            <pre className="prompt-sub-solution">{sub.solution}</pre>
+            <PrismHighlight code={sub.solution} language="javascript" />
           </div>
         ))}
       </div>
