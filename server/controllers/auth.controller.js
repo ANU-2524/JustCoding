@@ -2,8 +2,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js"; 
 import { transporter } from "../config/mail.js";
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is missing in environment variables");
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET is required in production environment");
 }
 /* REGISTER */
 export const register = async (req, res) => {
@@ -53,7 +55,7 @@ export const login = async (req, res) => {
 
   const token = jwt.sign(
     { id: user._id, email: user.email },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: "7d" }
   );
 

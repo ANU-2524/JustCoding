@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import communityModels from '../models/Community.js';
 import { protect as auth } from '../middleware/auth.middleware.js';
 
@@ -6,9 +7,138 @@ const { Post, Comment, Vote, Reputation } = communityModels;
 
 const router = express.Router();
 
+// Optional auth middleware for routes that can work with or without auth
+const optionalAuth = (req, res, next) => {
+  const token = req.cookies.token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (err) {
+      // Silent fail - continue without user
+    }
+  }
+  next();
+};
+
 // Get all posts with filtering and pagination
 router.get('/posts', async (req, res) => {
   try {
+    // Auto-seed demo data on first access
+    const postCount = await Post.countDocuments();
+    if (postCount === 0) {
+      console.log('🌱 Auto-seeding demo posts...');
+      const demoPosts = [
+        {
+          title: 'How to optimize React performance?',
+          content: 'I have a large React application with many components. It\'s getting slow. What are the best practices to optimize performance? Should I use React.memo, useMemo, or useCallback?',
+          category: 'help-request',
+          tags: ['react', 'performance', 'javascript'],
+          author: 'demo_user_1',
+          authorName: 'Alex Chen',
+          upvotes: 15,
+          downvotes: 1,
+          score: 14,
+          viewCount: 234,
+          commentCount: 5
+        },
+        {
+          title: 'Share your favorite JavaScript libraries',
+          content: 'Let\'s have a discussion about the most useful JavaScript libraries you\'ve used. I personally love Axios for HTTP requests and Lodash for utility functions. What are yours?',
+          category: 'general-discussion',
+          tags: ['javascript', 'libraries', 'recommendations'],
+          author: 'demo_user_2',
+          authorName: 'Sarah Johnson',
+          upvotes: 28,
+          downvotes: 2,
+          score: 26,
+          viewCount: 512,
+          commentCount: 12
+        },
+        {
+          title: 'Code Review: E-commerce API endpoint',
+          content: 'I built an Express API for an e-commerce platform. Would love feedback on the code structure, error handling, and security.',
+          category: 'code-review',
+          tags: ['nodejs', 'express', 'api', 'code-review'],
+          author: 'demo_user_3',
+          authorName: 'Mike Developer',
+          upvotes: 22,
+          downvotes: 0,
+          score: 22,
+          viewCount: 189,
+          commentCount: 8
+        },
+        {
+          title: 'Bug: State not updating in Vue component',
+          content: 'I\'m working on a Vue 3 project and the component state is not updating when I modify it. I\'ve checked the data property and it looks correct. Any ideas?',
+          category: 'help-request',
+          tags: ['vue', 'bug', 'state-management'],
+          author: 'demo_user_4',
+          authorName: 'Emily Vue',
+          upvotes: 8,
+          downvotes: 0,
+          score: 8,
+          viewCount: 145,
+          commentCount: 4
+        },
+        {
+          title: 'Feature Request: Dark mode for the platform',
+          content: 'It would be great if the platform had a dark mode option. Many users prefer dark mode for reduced eye strain, especially when coding late at night.',
+          category: 'feature-requests',
+          tags: ['feature-request', 'ui', 'accessibility'],
+          author: 'demo_user_5',
+          authorName: 'Dark Mode Enthusiast',
+          upvotes: 42,
+          downvotes: 3,
+          score: 39,
+          viewCount: 678,
+          commentCount: 15
+        },
+        {
+          title: 'My first full-stack project: Todo App',
+          content: 'After 3 months of learning, I built a full-stack todo app with React, Node.js, MongoDB, and JWT authentication. Check it out on my GitHub!',
+          category: 'project-showcase',
+          tags: ['react', 'nodejs', 'mongodb', 'project'],
+          author: 'demo_user_6',
+          authorName: 'Young Developer',
+          upvotes: 56,
+          downvotes: 1,
+          score: 55,
+          viewCount: 892,
+          commentCount: 22
+        },
+        {
+          title: 'Career Advice: Switching from Web to Mobile Development',
+          content: 'I\'ve been doing web development for 5 years. I\'m thinking about transitioning to mobile development. Has anyone made this switch? What should I learn?',
+          category: 'career-advice',
+          tags: ['career', 'mobile', 'transition'],
+          author: 'demo_user_7',
+          authorName: 'Career Changer',
+          upvotes: 18,
+          downvotes: 0,
+          score: 18,
+          viewCount: 234,
+          commentCount: 9
+        },
+        {
+          title: 'Best resources for learning TypeScript',
+          content: 'I\'m starting my TypeScript journey. Can anyone recommend good tutorials, courses, or documentation? I\'m particularly interested in practical examples.',
+          category: 'learning-resources',
+          tags: ['typescript', 'learning', 'resources'],
+          author: 'demo_user_8',
+          authorName: 'Learning Dev',
+          upvotes: 33,
+          downvotes: 1,
+          score: 32,
+          viewCount: 445,
+          commentCount: 11
+        }
+      ];
+      
+      await Post.insertMany(demoPosts);
+      console.log('✅ Demo posts seeded successfully!');
+    }
+
     const {
       category,
       tag,
@@ -108,10 +238,9 @@ router.get('/posts/:id', async (req, res) => {
 });
 
 // Create new post
-router.post('/posts', auth, async (req, res) => {
+router.post('/posts', optionalAuth, async (req, res) => {
   try {
-    const { title, content, category, tags, codeSnippets } = req.body;
-    const author = req.user?.uid || req.body.author; // Fallback for optional auth
+    const { title, content, category, tags, codeSnippets, author, authorId } = req.body;
 
     if (!title || !content || !category) {
       return res.status(400).json({ error: 'Title, content, and category are required' });
@@ -123,27 +252,30 @@ router.post('/posts', auth, async (req, res) => {
       category,
       tags: tags || [],
       codeSnippets: codeSnippets || [],
-      author,
-      authorName: req.user?.displayName || req.body.authorName || 'Anonymous',
-      authorPhotoURL: req.user?.photoURL || req.body.authorPhotoURL || ''
+      author: author || 'Anonymous',
+      authorId: authorId || 'anonymous',
+      authorName: author || 'Anonymous',
+      authorPhotoURL: ''
     });
 
     await post.save();
 
-    // Update user reputation
-    await Reputation.findOneAndUpdate(
-      { userId: author },
-      {
-        $inc: { postsCount: 1 },
-        $setOnInsert: { userId: author }
-      },
-      { upsert: true, new: true }
-    );
+    // Update user reputation if user is provided
+    if (authorId && authorId !== 'anonymous') {
+      await Reputation.findOneAndUpdate(
+        { userId: authorId },
+        {
+          $inc: { postsCount: 1 },
+          $setOnInsert: { userId: authorId }
+        },
+        { upsert: true, new: true }
+      ).catch(err => console.log('Reputation update skipped:', err.message));
+    }
 
     res.status(201).json(post);
   } catch (error) {
-    console.error('Error creating post:', error);
-    res.status(500).json({ error: 'Failed to create post' });
+    console.error('Error creating post:', error.message);
+    res.status(500).json({ error: 'Failed to create post', details: error.message });
   }
 });
 
@@ -198,7 +330,7 @@ router.delete('/posts/:id', auth, async (req, res) => {
 });
 
 // Vote on post
-router.post('/posts/:id/vote', auth, async (req, res) => {
+router.post('/posts/:id/vote', optionalAuth, async (req, res) => {
   try {
     const { voteType } = req.body;
     const userId = req.user?.uid || req.body.userId;
@@ -272,10 +404,9 @@ router.get('/posts/:id/comments', async (req, res) => {
 });
 
 // Create comment
-router.post('/posts/:id/comments', auth, async (req, res) => {
+router.post('/posts/:id/comments', optionalAuth, async (req, res) => {
   try {
-    const { content, parentCommentId, codeSnippets } = req.body;
-    const author = req.user?.uid || req.body.author;
+    const { content, parentCommentId, codeSnippets, author, authorId } = req.body;
 
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
@@ -286,9 +417,10 @@ router.post('/posts/:id/comments', auth, async (req, res) => {
       content,
       parentCommentId,
       codeSnippets: codeSnippets || [],
-      author,
-      authorName: req.user?.displayName || req.body.authorName || 'Anonymous',
-      authorPhotoURL: req.user?.photoURL || req.body.authorPhotoURL || ''
+      author: author || 'Anonymous',
+      authorId: authorId || 'anonymous',
+      authorName: author || 'Anonymous',
+      authorPhotoURL: ''
     });
 
     await comment.save();
@@ -296,20 +428,22 @@ router.post('/posts/:id/comments', auth, async (req, res) => {
     // Update post comment count
     await Post.findByIdAndUpdate(req.params.id, { $inc: { commentCount: 1 } });
 
-    // Update user reputation
-    await Reputation.findOneAndUpdate(
-      { userId: author },
-      {
-        $inc: { commentsCount: 1 },
-        $setOnInsert: { userId: author }
-      },
-      { upsert: true, new: true }
-    );
+    // Update user reputation if user is provided
+    if (authorId && authorId !== 'anonymous') {
+      await Reputation.findOneAndUpdate(
+        { userId: authorId },
+        {
+          $inc: { commentsCount: 1 },
+          $setOnInsert: { userId: authorId }
+        },
+        { upsert: true, new: true }
+      ).catch(err => console.log('Reputation update skipped:', err.message));
+    }
 
     res.status(201).json(comment);
   } catch (error) {
-    console.error('Error creating comment:', error);
-    res.status(500).json({ error: 'Failed to create comment' });
+    console.error('Error creating comment:', error.message);
+    res.status(500).json({ error: 'Failed to create comment', details: error.message });
   }
 });
 
@@ -419,6 +553,140 @@ router.get('/categories', async (req, res) => {
     console.error('Error fetching categories:', error);
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
+});
+
+// Seed demo data - endpoint to populate initial posts
+router.post('/seed', async (req, res) => {
+  try {
+    // Check if posts already exist
+    const existingPosts = await Post.countDocuments();
+    if (existingPosts > 0) {
+      return res.json({ message: 'Demo data already exists', postsCount: existingPosts });
+    }
+
+    const demoPosts = [
+      {
+        title: 'How to optimize React performance?',
+        content: 'I have a large React application with many components. It\'s getting slow. What are the best practices to optimize performance? Should I use React.memo, useMemo, or useCallback?',
+        category: 'help-request',
+        tags: ['react', 'performance', 'javascript'],
+        author: 'demo_user_1',
+        authorName: 'Alex Chen',
+        upvotes: 15,
+        downvotes: 1,
+        score: 14,
+        viewCount: 234,
+        commentCount: 5
+      },
+      {
+        title: 'Share your favorite JavaScript libraries',
+        content: 'Let\'s have a discussion about the most useful JavaScript libraries you\'ve used. I personally love Axios for HTTP requests and Lodash for utility functions. What are yours?',
+        category: 'general-discussion',
+        tags: ['javascript', 'libraries', 'recommendations'],
+        author: 'demo_user_2',
+        authorName: 'Sarah Johnson',
+        upvotes: 28,
+        downvotes: 2,
+        score: 26,
+        viewCount: 512,
+        commentCount: 12
+      },
+      {
+        title: 'Code Review: E-commerce API endpoint',
+        content: 'I built an Express API for an e-commerce platform. Would love feedback on the code structure, error handling, and security. Here\'s the GitHub repo link...',
+        category: 'code-review',
+        tags: ['nodejs', 'express', 'api', 'code-review'],
+        author: 'demo_user_3',
+        authorName: 'Mike Developer',
+        upvotes: 22,
+        downvotes: 0,
+        score: 22,
+        viewCount: 189,
+        commentCount: 8
+      },
+      {
+        title: 'Bug: State not updating in Vue component',
+        content: 'I\'m working on a Vue 3 project and the component state is not updating when I modify it. I\'ve checked the data property and it looks correct. Any ideas?',
+        category: 'help-request',
+        tags: ['vue', 'bug', 'state-management'],
+        author: 'demo_user_4',
+        authorName: 'Emily Vue',
+        upvotes: 8,
+        downvotes: 0,
+        score: 8,
+        viewCount: 145,
+        commentCount: 4
+      },
+      {
+        title: 'Feature Request: Dark mode for the platform',
+        category: 'feature-requests',
+        content: 'It would be great if the platform had a dark mode option. Many users prefer dark mode for reduced eye strain, especially when coding late at night.',
+        tags: ['feature-request', 'ui', 'accessibility'],
+        author: 'demo_user_5',
+        authorName: 'Dark Mode Enthusiast',
+        upvotes: 42,
+        downvotes: 3,
+        score: 39,
+        viewCount: 678,
+        commentCount: 15
+      },
+      {
+        title: 'My first full-stack project: Todo App',
+        content: 'After 3 months of learning, I built a full-stack todo app with React, Node.js, MongoDB, and JWT authentication. Check it out on my GitHub!',
+        category: 'project-showcase',
+        tags: ['react', 'nodejs', 'mongodb', 'project'],
+        author: 'demo_user_6',
+        authorName: 'Young Developer',
+        upvotes: 56,
+        downvotes: 1,
+        score: 55,
+        viewCount: 892,
+        commentCount: 22
+      },
+      {
+        title: 'Career Advice: Switching from Web to Mobile Development',
+        content: 'I\'ve been doing web development for 5 years. I\'m thinking about transitioning to mobile development. Has anyone made this switch? What should I learn?',
+        category: 'career-advice',
+        tags: ['career', 'mobile', 'transition'],
+        author: 'demo_user_7',
+        authorName: 'Career Changer',
+        upvotes: 18,
+        downvotes: 0,
+        score: 18,
+        viewCount: 234,
+        commentCount: 9
+      },
+      {
+        title: 'Best resources for learning TypeScript',
+        content: 'I\'m starting my TypeScript journey. Can anyone recommend good tutorials, courses, or documentation? I\'m particularly interested in practical examples.',
+        category: 'learning-resources',
+        tags: ['typescript', 'learning', 'resources'],
+        author: 'demo_user_8',
+        authorName: 'Learning Dev',
+        upvotes: 33,
+        downvotes: 1,
+        score: 32,
+        viewCount: 445,
+        commentCount: 11
+      }
+    ];
+
+    // Insert demo posts
+    const insertedPosts = await Post.insertMany(demoPosts);
+
+    res.json({
+      message: 'Demo data seeded successfully!',
+      postsCreated: insertedPosts.length
+    });
+  } catch (error) {
+    console.error('Error seeding demo data:', error);
+    res.status(500).json({ error: 'Failed to seed demo data', details: error.message });
+  }
+});
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({ status: 'Community API is running', timestamp: new Date().toISOString() });
 });
 
 export default router;
