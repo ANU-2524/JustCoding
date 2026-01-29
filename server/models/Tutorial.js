@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const tutorialStepSchema = new mongoose.Schema({
   stepNumber: { type: Number, required: true },
@@ -121,7 +121,11 @@ tutorialProgressSchema.post('save', async function() {
   }
 });
 
-module.exports = {
-  Tutorial: mongoose.model('Tutorial', tutorialSchema),
-  TutorialProgress: mongoose.model('TutorialProgress', tutorialProgressSchema)
+const Tutorial = mongoose.model('Tutorial', tutorialSchema);
+const TutorialProgress = mongoose.model('TutorialProgress', tutorialProgressSchema);
+
+export { Tutorial, TutorialProgress };
+export default {
+  Tutorial,
+  TutorialProgress
 };

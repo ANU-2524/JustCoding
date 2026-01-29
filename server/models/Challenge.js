@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const testCaseSchema = new mongoose.Schema({
   input: { type: String, required: true },
@@ -54,4 +54,4 @@ challengeSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Challenge', challengeSchema);
+export default mongoose.model('Challenge', challengeSchema);

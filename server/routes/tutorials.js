@@ -1,6 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { Tutorial, TutorialProgress } = require('../models/Tutorial');
+import { Tutorial, TutorialProgress } from '../models/Tutorial.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 // Simple auth middleware for tutorials - optional for now
 const optionalAuth = async (req, res, next) => {
@@ -252,7 +254,7 @@ router.put('/:slug/progress', requireAuth, async (req, res) => {
     // Award points for completion (first time only)
     if (updateData.completedAt && !progress.completedAt) {
       // Add learning event for analytics
-      const LearningEvent = require('../models/LearningEvent');
+      const LearningEvent = require('../models/LearningEvent.js');
       await LearningEvent.create({
         userId: req.user.uid,
         eventType: 'tutorial_complete',
@@ -310,4 +312,4 @@ router.get('/user/progress', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

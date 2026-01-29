@@ -19,7 +19,8 @@ const Leaderboard = () => {
       setLoading(true);
       const response = await fetch(`${BACKEND_URL}/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
       const data = await response.json();
-      setLeaderboard(data || []);
+      // Handle new response format with success field
+      setLeaderboard(data.leaderboard || data || []);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       setLeaderboard([]);

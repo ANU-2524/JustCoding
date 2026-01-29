@@ -1,31 +1,9 @@
-const express = require('express');
-const { ESLint } = require('eslint');
+import express from 'express';
+import { ESLint } from 'eslint';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const router = express.Router();
-
-// Validation functions
-const MAX_CODE_LENGTH = 50000;
-
-function validateCode(code) {
-  return typeof code === 'string' && code.length > 0 && code.length <= MAX_CODE_LENGTH;
-}
-
-function validateLanguage(language) {
-  const validLanguages = ['javascript', 'typescript', 'python', 'java', 'cpp', 'c'];
-  return typeof language === 'string' && validLanguages.includes(language);
-}
-
-// Logging helper
-function logRequest(req, message, level = 'info') {
-  const logData = {
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    timestamp: new Date().toISOString(),
-    message
-  };
-  console[level](JSON.stringify(logData));
-}
+import { validate, logRequest } from '../middleware/validation.js';
 
 // Calculate cyclomatic complexity
 function calculateComplexity(code) {
@@ -105,22 +83,25 @@ const eslintConfigs = {
   },
 };
 
-router.post('/analyze', async (req, res) => {
+/**
+ * POST /api/code-quality/analyze
+ * Analyze code quality using ESLint
+ * Returns: { success, issues, fixedCode, totalErrors, totalWarnings }
+ */
+router.post('/analyze', validate('codeQuality'), async (req, res) => {
   try {
     const { code, language } = req.body || {};
 
-    if (!validateCode(code)) {
-      logRequest(req, 'Validation failed: invalid code payload', 'warn');
-      return res.status(400).json({
-        error: `Code is required and must be <= ${MAX_CODE_LENGTH} characters`,
+    // Only support JavaScript and TypeScript for now
+    if (!['javascript', 'typescript'].includes(language)) {
+      return res.json({
+        success: true,
+        issues: [],
+        totalErrors: 0,
+        totalWarnings: 0,
+        message: `Code quality analysis not available for ${language}`
       });
-    }
 
-    if (!validateLanguage(language)) {
-      logRequest(req, `Unsupported language: ${language}`, 'warn');
-      return res.status(400).json({
-        error: 'Supported languages: JavaScript, TypeScript, Python, Java, C++, C',
-      });
     }
 
     // Calculate metrics for all languages
@@ -217,38 +198,22 @@ router.post('/analyze', async (req, res) => {
         });
       }
 
-      // Check for TODO/FIXME comments
-      lines.forEach((line, index) => {
-        if (/TODO|FIXME|XXX|HACK/.test(line)) {
-          basicIssues.push({
-            line: index + 1,
-            column: 0,
-            message: `Found: ${line.trim()}`,
-            severity: 'warning',
-            ruleId: 'note'
-          });
-        }
-      });
-
-      logRequest(req, `Basic analysis completed for ${language}`);
-
-      return res.json({
+      res.json({
+        success: true,
         issues: basicIssues,
-        fixedCode: null,
-        totalErrors: basicIssues.filter(i => i.severity === 'error').length,
-        totalWarnings: basicIssues.filter(i => i.severity === 'warning').length,
-        metrics,
-        language,
-        message: `Basic analysis for ${language}. Full ESLint analysis available for JavaScript/TypeScript.`
+        fixedCode: code,
+        totalErrors: basicIssues.filter((i) => i.severity === 'error').length,
+        totalWarnings: basicIssues.filter((i) => i.severity === 'warning').length
       });
     }
   } catch (error) {
     logRequest(req, `Unexpected error: ${error.message}`, 'error');
     res.status(500).json({
-      error: 'An unexpected error occurred',
-      details: error.message,
+      success: false,
+      error: 'Failed to analyze code quality',
+      details: error.message
     });
   }
 });
 
-module.exports = router;
+export default router;
