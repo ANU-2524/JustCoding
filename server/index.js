@@ -28,6 +28,8 @@ import challengesRoute from './routes/challenges.js';
 import roomRoute from './routes/room.js';
 import userRoute from './routes/user.js';
 import communityRoute from './routes/community.js';
+import tutorialsRoute from './routes/tutorials.js';
+import authRoute from './routes/auth.routes.js';
 
 // Socket.IO (modularized)
 import socketModule from './socket/index.js';
@@ -84,6 +86,9 @@ const languageMap = {
 // API Routes
 // ============================================
 
+// Auth routes
+app.use("/api/auth", authRoute);
+
 // AI routes with security and rate limiting
 app.use("/api/gpt", aiLimiter, gptRoute);
 
@@ -96,6 +101,9 @@ app.use("/api/progress", progressRoute);
 // Challenges routes
 app.use("/api/challenges", challengesRoute);
 app.use("/api/community", communityRoute);
+
+// Tutorials routes
+app.use("/api/tutorials", tutorialsRoute);
 
 // Room routes
 app.use("/api/room", roomRoute);
