@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const contestSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -53,4 +53,4 @@ contestSchema.methods.updateStatus = function() {
   return this.status;
 };
 
-module.exports = mongoose.model('Contest', contestSchema);
+export default mongoose.model('Contest', contestSchema);

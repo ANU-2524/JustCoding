@@ -1,7 +1,7 @@
 /**
  * JavaScript Parser for Code Visualization
  */
-const BaseParser = require('./baseParser');
+import BaseParser from './baseParser.js';
 
 class JavaScriptParser extends BaseParser {
   constructor() {
@@ -183,4 +183,4 @@ class JavaScriptParser extends BaseParser {
   }
 }
 
-module.exports = JavaScriptParser;
+export default JavaScriptParser;

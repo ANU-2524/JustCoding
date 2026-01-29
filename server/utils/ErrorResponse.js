@@ -81,7 +81,7 @@ class ExternalServiceError extends ErrorResponse {
   }
 }
 
-module.exports = {
+export {
   ErrorResponse,
   BadRequestError,
   UnauthorizedError,

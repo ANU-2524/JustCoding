@@ -1,7 +1,7 @@
 /**
  * Go Parser for Code Visualization
  */
-const BaseParser = require('./baseParser');
+import BaseParser from './baseParser.js';
 
 class GoParser extends BaseParser {
   constructor() {
@@ -295,4 +295,4 @@ class GoParser extends BaseParser {
   }
 }
 
-module.exports = GoParser;
+export default GoParser;

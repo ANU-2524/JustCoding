@@ -9,7 +9,9 @@ const Cursor = () => {
   useEffect(() => {
     // Disable custom cursor on touch devices
     const isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
-    if (isTouchDevice) return;
+    if (isTouchDevice) {
+return;
+}
 
     const NUM_CIRCLES = 18; // Increased for a more fluid, energetic trail
     const container = containerRef.current;
@@ -19,7 +21,9 @@ const Cursor = () => {
     for (let i = 0; i < NUM_CIRCLES; i++) {
       const circle = document.createElement("div");
       circle.className = "circle";
-      if (i === 0) circle.classList.add("glow");
+      if (i === 0) {
+circle.classList.add("glow");
+}
       
       const opacity = 1 - (i / NUM_CIRCLES);
       circle.style.opacity = (opacity * 0.8).toString(); // Brighter opacity

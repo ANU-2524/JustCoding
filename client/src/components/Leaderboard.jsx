@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FaTrophy, FaMedal, FaAward, FaCrown } from 'react-icons/fa';
 import '../Style/Leaderboard.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
+
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [timeframe, setTimeframe] = useState('all-time');
@@ -14,9 +16,10 @@ const Leaderboard = () => {
   const fetchLeaderboard = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:4334/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
+      const response = await fetch(`${BACKEND_URL}/api/progress/leaderboard?timeframe=${timeframe}&limit=50`);
       const data = await response.json();
-      setLeaderboard(data || []);
+      // Handle new response format with success field
+      setLeaderboard(data.leaderboard || data || []);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       setLeaderboard([]);
@@ -26,9 +29,15 @@ const Leaderboard = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <FaCrown className="rank-icon gold" />;
-    if (rank === 2) return <FaTrophy className="rank-icon silver" />;
-    if (rank === 3) return <FaMedal className="rank-icon bronze" />;
+    if (rank === 1) {
+return <FaCrown className="rank-icon gold" />;
+}
+    if (rank === 2) {
+return <FaTrophy className="rank-icon silver" />;
+}
+    if (rank === 3) {
+return <FaMedal className="rank-icon bronze" />;
+}
     return <span className="rank-number">#{rank}</span>;
   };
 

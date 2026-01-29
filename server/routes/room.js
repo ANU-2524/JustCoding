@@ -1,6 +1,6 @@
-const express = require('express');
-const crypto = require('crypto');
-const Room = require('../models/Room');
+import express from 'express';
+import crypto from 'crypto';
+import Room from '../models/Room.js';
 
 const router = express.Router();
 
@@ -51,4 +51,4 @@ router.post('/create-room', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

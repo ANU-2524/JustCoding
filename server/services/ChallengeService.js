@@ -1,6 +1,6 @@
-const axios = require('axios');
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
+import axios from 'axios';
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
 
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
@@ -217,4 +217,4 @@ class ChallengeService {
   }
 }
 
-module.exports = ChallengeService;
+export default ChallengeService;
