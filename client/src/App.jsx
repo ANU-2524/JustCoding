@@ -37,6 +37,7 @@ const RoomManagement = lazy(() => import("./components/RoomManagement"));
 const CodeQuality = lazy(() => import("./components/CodeQuality"));
 const CodeExplainer = lazy(() => import("./components/CodeExplainer"));
 const SnippetsManager = lazy(() => import("./components/SnippetsManager"));
+const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
@@ -131,7 +132,8 @@ function App() {
                   <Route path="/progress" element={<Analytics />} />
                   <Route path="/export" element={<ProgressExport />} />
                   <Route path="/badges" element={<BadgesPage />} />
-                  <Route path="/debug" element={<DebugHelper />} />
+                  <Route path="/debug" element={<CodeDebugger />} />
+                  <Route path="/debug-helper" element={<DebugHelper />} />
 
                   <Route path="/admin/rooms" element={<RoomManagement />} />
                   <Route path="/code-quality" element={<CodeQuality />} />
