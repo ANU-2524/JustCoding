@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCode, FaTrophy, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine, FaTimes } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/Challenges.css';
 
 const difficultyColors = {
@@ -329,6 +330,12 @@ const Challenges = () => {
 
   return (
     <div className="challenges-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Challenges', path: null }
+        ]}
+      />
+
       <div className="challenges-hero">
         <h1><FaCode /> Coding Challenges</h1>
         <p>Sharpen your skills with curated programming problems</p>

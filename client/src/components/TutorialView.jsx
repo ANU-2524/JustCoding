@@ -18,6 +18,7 @@ import {
   FaBookmark
 } from 'react-icons/fa';
 import CodeEditor from './CodeEditor';
+import Breadcrumb from './Breadcrumb';
 import '../Style/TutorialView.css';
 
 function TutorialView() {
@@ -262,6 +263,13 @@ return 0;
 
   return (
     <div className="tutorial-view">
+      <Breadcrumb 
+        items={[
+          { label: 'Tutorials', path: '/tutorials' },
+          { label: tutorial.title, path: null }
+        ]}
+      />
+
       {/* Header */}
       <div className="tutorial-header">
         <div className="header-controls">

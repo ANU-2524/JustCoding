@@ -7,6 +7,7 @@ import { java } from '@codemirror/lang-java';
 import { cpp } from '@codemirror/lang-cpp';
 import { eclipse } from '@uiw/codemirror-theme-eclipse';
 import { FaPlay, FaPaperPlane, FaLightbulb, FaBook, FaTrophy, FaArrowLeft, FaCheck, FaTimes, FaClock } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/ChallengeSolve.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4334';
@@ -211,6 +212,13 @@ throw new Error('Challenge not found');
 
   return (
     <div className="challenge-solve-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Challenges', path: '/challenges' },
+          { label: challenge.title, path: null }
+        ]}
+      />
+
       {/* Header */}
       <div className="solve-header">
         <button className="back-btn" onClick={() => navigate('/challenges')}>
