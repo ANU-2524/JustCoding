@@ -10,9 +10,9 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const GuestLeaderboard = lazy(() => import("./components/GuestLeaderboard"));
 const GuestNotes = lazy(() => import("./components/GuestNotes"));
 const CodeGallery = lazy(() => import("./components/CodeGallery"));
-
 const LoginPage = lazy(() => import("./components/LoginPage"));
 const MainEditor = lazy(() => import("./components/MainEditor"));
 const Profile = lazy(() => import("./components/Profile"));
@@ -64,6 +64,8 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Guest Leaderboard Participation */}
+                  <Route path="/guest-leaderboard" element={<GuestLeaderboard />} />
                   {/* Guest Notes / Coding Journal */}
                   <Route path="/notes" element={<GuestNotes />} />
                   {/* Public Code Gallery */}
