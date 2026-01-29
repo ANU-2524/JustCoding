@@ -57,6 +57,7 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
+    { path: '/portfolio-builder', label: 'Portfolio Builder', icon: <FaUser /> },
     { path: '/export', label: 'Export Progress', icon: <FaDownload /> },
   ];
 

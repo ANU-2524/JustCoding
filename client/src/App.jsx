@@ -41,6 +41,8 @@ const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
+
+const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
@@ -58,6 +60,8 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Portfolio Builder (guest-friendly) */}
+                  <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/blog" element={<BlogPage />} />
