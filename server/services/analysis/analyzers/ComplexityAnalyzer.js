@@ -1,4 +1,5 @@
-const { AnalyzerPlugin, AnalysisResult } = require('../AnalyzerPlugin');
+import AnalyzerPlugin from '../AnalyzerPlugin.js';
+import AnalysisResult from '../AnalysisResult.js';
 
 class ComplexityAnalyzer extends AnalyzerPlugin {
   constructor() {
@@ -108,4 +109,4 @@ class ComplexityAnalyzer extends AnalyzerPlugin {
   }
 }
 
-module.exports = ComplexityAnalyzer;
+export default ComplexityAnalyzer;

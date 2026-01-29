@@ -1,11 +1,12 @@
 import express from 'express';
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
+import Contest from '../models/Contest.js';
+import ChallengeService from '../services/ChallengeService.js';
+import ContestService from '../services/ContestService.js';
+import LeaderboardService from '../services/LeaderboardService.js';
+
 const router = express.Router();
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
-const Contest = require('../models/Contest');
-const ChallengeService = require('../services/ChallengeService');
-const ContestService = require('../services/ContestService');
-const LeaderboardService = require('../services/LeaderboardService');
 
 // Utility function to escape regex to prevent ReDoS
 function escapeRegex(string) {

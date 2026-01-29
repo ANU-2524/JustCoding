@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const analysisResultSchema = new mongoose.Schema({
   submissionId: {
@@ -103,4 +103,4 @@ analysisResultSchema.statics.getUserStats = async function(userId) {
   ]);
 };
 
-module.exports = mongoose.model('AnalysisResult', analysisResultSchema);
+export default mongoose.model('AnalysisResult', analysisResultSchema);

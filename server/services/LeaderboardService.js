@@ -1,6 +1,6 @@
-const Contest = require('../models/Contest');
-const Submission = require('../models/Submission');
-const redis = require('redis');
+import Contest from '../models/Contest.js';
+import Submission from '../models/Submission.js';
+import redis from 'redis';
 
 // Initialize Redis client
 let redisClient = null;
@@ -14,8 +14,7 @@ const initRedis = async () => {
         connectTimeout: 5000,
         reconnectStrategy: (retries) => {
           if (retries > 3) {
-            console.log('Redis unavailable, falling back to MongoDB only');
-            return null;
+            return false;
           }
           return Math.min(retries * 100, 3000);
         }
@@ -23,7 +22,7 @@ const initRedis = async () => {
     });
 
     redisClient.on('error', (err) => {
-      console.log('Redis Client Error:', err.message);
+      // Suppress connection errors - Redis is optional
       isRedisAvailable = false;
     });
 
@@ -34,7 +33,6 @@ const initRedis = async () => {
 
     await redisClient.connect();
   } catch (error) {
-    console.log('Redis initialization failed, using MongoDB only:', error.message);
     isRedisAvailable = false;
   }
 };
@@ -340,4 +338,4 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-module.exports = LeaderboardService;
+export default LeaderboardService;

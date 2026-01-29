@@ -1,4 +1,4 @@
-const AnalyzerPlugin = require('../AnalyzerPlugin');
+import AnalyzerPlugin from '../AnalyzerPlugin.js';
 
 class JavaScriptAnalyzer extends AnalyzerPlugin {
   constructor() {
@@ -204,4 +204,4 @@ class JavaScriptAnalyzer extends AnalyzerPlugin {
   }
 }
 
-module.exports = JavaScriptAnalyzer;
+export default JavaScriptAnalyzer;
