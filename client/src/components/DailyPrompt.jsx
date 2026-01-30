@@ -148,13 +148,8 @@ export default function DailyPrompt() {
               <PrismHighlight code={sub.solution} language="javascript" />
               <SolutionComments promptKey={getTodayKey()} solutionIndex={origIdx} />
             </div>
-
           );
         })}
-
-            <PrismHighlight code={sub.solution} language="javascript" />
-          </div>
-        ))}
 
       </div>
     </div>

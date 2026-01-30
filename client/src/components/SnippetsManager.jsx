@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { FaCode, FaPlus, FaSearch, FaTimes, FaStar, FaRegStar, FaEdit, FaTrash, FaCopy, FaFilter, FaTag } from 'react-icons/fa';
+import { FaCode, FaPlus, FaSearch, FaTimes, FaStar, FaRegStar, FaEdit, FaTrash, FaCopy, FaFilter, FaTag, FaShareAlt, FaGlobe, FaLock } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -18,12 +18,15 @@ const SnippetsManager = () => {
     const saved = localStorage.getItem('snippetFavorites');
     return saved ? JSON.parse(saved) : [];
   });
-  const [formData, setFormData] = useState({
-    title: '',
-    language: 'javascript',
-    code: '',
-    tags: ''
+  const [showShareModal, setShowShareModal] = useState(null);
+  const [shareOptions, setShareOptions] = useState({
+    isPublic: false,
+    sharedWith: [],
+    tags: [],
+    description: ''
   });
+  const [publicSnippets, setPublicSnippets] = useState([]);
+  const [showPublicSnippets, setShowPublicSnippets] = useState(false);
 
   const languages = [
     'javascript', 'python', 'java', 'cpp', 'csharp', 'php', 'ruby', 
@@ -146,6 +149,60 @@ const SnippetsManager = () => {
     setShowModal(true);
   };
 
+  const handleShare = (snippet) => {
+    setShowShareModal(snippet);
+    setShareOptions({
+      isPublic: snippet.isPublic || false,
+      sharedWith: snippet.sharedWith || [],
+      tags: snippet.tags || [],
+      description: snippet.description || ''
+    });
+  };
+
+  const updateSharing = async () => {
+    try {
+      const response = await fetch(`http://localhost:4334/api/user/snippets/${showShareModal._id}/share`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          ...shareOptions
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to update sharing');
+
+      const updatedSnippet = await response.json();
+      setSnippets(snippets.map(s => s._id === updatedSnippet._id ? updatedSnippet : s));
+      setShowShareModal(null);
+      alert('Sharing settings updated!');
+    } catch (error) {
+      console.error('Error updating sharing:', error);
+      alert(`Failed to update sharing: ${error.message}`);
+    }
+  };
+
+  const fetchPublicSnippets = async () => {
+    try {
+      const response = await fetch('http://localhost:4334/api/user/snippets/public');
+      if (!response.ok) throw new Error('Failed to fetch public snippets');
+      const data = await response.json();
+      setPublicSnippets(data.snippets);
+      setShowPublicSnippets(true);
+    } catch (error) {
+      console.error('Error fetching public snippets:', error);
+      alert(`Failed to fetch public snippets: ${error.message}`);
+    }
+  };
+
+  const copyShareLink = (snippet) => {
+    if (snippet.shareId) {
+      const shareUrl = `${window.location.origin}/shared-snippet/${snippet.shareId}`;
+      navigator.clipboard.writeText(shareUrl);
+      alert('Share link copied to clipboard!');
+    }
+  };
+
   const toggleFavorite = (snippetId) => {
     setFavorites(prev =>
       prev.includes(snippetId)
@@ -178,9 +235,14 @@ const SnippetsManager = () => {
             <FaCode className="header-icon" />
             <h1>Code Snippets Manager</h1>
           </div>
-          <button className="btn-primary" onClick={() => setShowModal(true)}>
-            <FaPlus /> New Snippet
-          </button>
+          <div className="header-actions">
+            <button className="btn-secondary" onClick={fetchPublicSnippets}>
+              <FaGlobe /> Browse Public
+            </button>
+            <button className="btn-primary" onClick={() => setShowModal(true)}>
+              <FaPlus /> New Snippet
+            </button>
+          </div>
         </div>
 
         <div className="snippets-controls">
@@ -272,6 +334,13 @@ const SnippetsManager = () => {
                     <FaCopy /> Copy
                   </button>
                   <button
+                    className="action-btn share-btn"
+                    onClick={() => handleShare(snippet)}
+                    title="Share snippet"
+                  >
+                    <FaShareAlt /> Share
+                  </button>
+                  <button
                     className="action-btn edit-btn"
                     onClick={() => handleEdit(snippet)}
                     title="Edit snippet"
@@ -288,6 +357,66 @@ const SnippetsManager = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Public Snippets View */}
+        {showPublicSnippets && (
+          <div className="public-snippets-section">
+            <div className="section-header">
+              <h2><FaGlobe /> Public Snippets</h2>
+              <button className="btn-secondary" onClick={() => setShowPublicSnippets(false)}>
+                <FaTimes /> Close
+              </button>
+            </div>
+            <div className="snippets-grid">
+              {publicSnippets.map(snippet => (
+                <div key={snippet._id} className="snippet-card public-snippet">
+                  <div className="snippet-header">
+                    <h3>{snippet.title}</h3>
+                    <div className="snippet-meta">
+                      <span className="language-badge">{snippet.language}</span>
+                      <span className="author">by {snippet.userId?.displayName || 'Anonymous'}</span>
+                    </div>
+                  </div>
+                  <div className="snippet-preview">
+                    <SyntaxHighlighter
+                      language={snippet.language}
+                      style={theme === 'dark' ? vscDarkPlus : vs}
+                      customStyle={{
+                        margin: 0,
+                        padding: '1rem',
+                        fontSize: '0.9rem',
+                        maxHeight: '200px',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {snippet.code.length > 300 ? snippet.code.substring(0, 300) + '...' : snippet.code}
+                    </SyntaxHighlighter>
+                  </div>
+                  {snippet.description && (
+                    <div className="snippet-description">
+                      <p>{snippet.description}</p>
+                    </div>
+                  )}
+                  {snippet.tags && snippet.tags.length > 0 && (
+                    <div className="snippet-tags">
+                      {snippet.tags.map(tag => (
+                        <span key={tag} className="tag">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="snippet-actions">
+                    <button 
+                      className="btn-secondary"
+                      onClick={() => copyShareLink(snippet)}
+                    >
+                      <FaCopy /> Copy Link
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -364,6 +493,93 @@ const SnippetsManager = () => {
                 </button>
                 <button className="btn-danger" onClick={() => deleteSnippet(showDeleteConfirm)}>
                   Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Share Modal */}
+        {showShareModal && (
+          <div className="modal-overlay" onClick={() => setShowShareModal(null)}>
+            <div className="modal-content share-modal" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Share Snippet: {showShareModal.title}</h3>
+                <button className="close-btn" onClick={() => setShowShareModal(null)}>
+                  <FaTimes />
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="share-option">
+                  <label className="share-toggle">
+                    <input
+                      type="checkbox"
+                      checked={shareOptions.isPublic}
+                      onChange={(e) => setShareOptions({...shareOptions, isPublic: e.target.checked})}
+                    />
+                    <span className="toggle-slider"></span>
+                    <span className="toggle-label">
+                      {shareOptions.isPublic ? <><FaGlobe /> Make Public</> : <><FaLock /> Keep Private</>}
+                    </span>
+                  </label>
+                  <p className="share-description">
+                    {shareOptions.isPublic 
+                      ? "Anyone with the link can view this snippet" 
+                      : "Only you can see this snippet"
+                    }
+                  </p>
+                </div>
+
+                {shareOptions.isPublic && (
+                  <div className="share-link-section">
+                    <label>Share Link:</label>
+                    <div className="share-link-container">
+                      <input
+                        type="text"
+                        value={showShareModal.shareId ? `${window.location.origin}/shared-snippet/${showShareModal.shareId}` : 'Save changes to generate link'}
+                        readOnly
+                      />
+                      <button 
+                        className="btn-secondary"
+                        onClick={() => copyShareLink(showShareModal)}
+                        disabled={!showShareModal.shareId}
+                      >
+                        <FaCopy /> Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="share-option">
+                  <label>Description (optional):</label>
+                  <textarea
+                    value={shareOptions.description}
+                    onChange={(e) => setShareOptions({...shareOptions, description: e.target.value})}
+                    placeholder="Add a description for your snippet..."
+                    rows={3}
+                    maxLength={500}
+                  />
+                </div>
+
+                <div className="share-option">
+                  <label>Tags (optional):</label>
+                  <input
+                    type="text"
+                    value={shareOptions.tags.join(', ')}
+                    onChange={(e) => setShareOptions({
+                      ...shareOptions, 
+                      tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag)
+                    })}
+                    placeholder="javascript, react, utility (comma-separated)"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn-secondary" onClick={() => setShowShareModal(null)}>
+                  Cancel
+                </button>
+                <button className="btn-primary" onClick={updateSharing}>
+                  Update Sharing
                 </button>
               </div>
             </div>
