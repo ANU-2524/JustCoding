@@ -1,8 +1,8 @@
-const Contest = require('../models/Contest');
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
-const ChallengeService = require('./ChallengeService');
-const LeaderboardService = require('./LeaderboardService');
+import Contest from '../models/Contest.js';
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
+import ChallengeService from './ChallengeService.js';
+import LeaderboardService from './LeaderboardService.js';
 
 class ContestService {
   /**
@@ -220,4 +220,4 @@ class ContestService {
   }
 }
 
-module.exports = ContestService;
+export default ContestService;

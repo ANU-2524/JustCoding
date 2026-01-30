@@ -1,11 +1,12 @@
 import express from 'express';
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
+import Contest from '../models/Contest.js';
+import ChallengeService from '../services/ChallengeService.js';
+import ContestService from '../services/ContestService.js';
+import LeaderboardService from '../services/LeaderboardService.js';
+
 const router = express.Router();
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
-const Contest = require('../models/Contest');
-const ChallengeService = require('../services/ChallengeService');
-const ContestService = require('../services/ContestService');
-const LeaderboardService = require('../services/LeaderboardService');
 
 // Utility function to escape regex to prevent ReDoS
 function escapeRegex(string) {
@@ -254,35 +255,17 @@ router.get('/:slug/submissions/:odId', async (req, res) => {
   }
 });
 
-// Get editorial (only if solved)
+// Get editorial (public)
 router.get('/:slug/editorial', async (req, res) => {
   try {
     if (!validateSlug(req.params.slug)) {
       return res.status(400).json({ error: 'Invalid slug format' });
     }
 
-    const { odId } = req.query;
-    if (!validateOdId(odId)) {
-      return res.status(400).json({ error: 'Invalid odId' });
-    }
-
     const challenge = await Challenge.findOne({ slug: req.params.slug });
 
     if (!challenge) {
       return res.status(404).json({ error: 'Challenge not found' });
-    }
-
-    // Check if user has solved it
-    const solved = await Submission.findOne({
-      challengeId: challenge._id,
-      odId,
-      status: 'accepted',
-    });
-
-    if (!solved) {
-      return res
-        .status(403)
-        .json({ error: 'Solve the challenge first to view editorial' });
     }
 
     res.json({

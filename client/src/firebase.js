@@ -6,13 +6,13 @@ let app, auth, provider;
 
 try {
   const firebaseConfig = {
-    apiKey: "AIzaSyALzAZ3bWIdhlbMom29FMwweREqMg2SW_Y",
-    authDomain: "justcoding-46f9f.firebaseapp.com",
-    projectId: "justcoding-46f9f",
-    storageBucket: "justcoding-46f9f.firebasestorage.app",
-    messagingSenderId: "1024753498583",
-    appId: "1:1024753498583:web:5d50f979b7f9952c3a7392",
-    measurementId: "G-05MFX441MV"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
   };
 
   app = initializeApp(firebaseConfig);

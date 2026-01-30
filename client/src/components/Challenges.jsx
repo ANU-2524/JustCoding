@@ -13,12 +13,9 @@ import {
 } from "react-icons/fa";
 import "../Style/Challenges.css";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4334";
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaCode, FaTrophy, FaSearch, FaFilter, FaStar, FaUsers, FaChartLine, FaTimes } from 'react-icons/fa';
+
 import Breadcrumb from './Breadcrumb';
 import '../Style/Challenges.css';
-
 
 const difficultyColors = {
   easy: "#4caf50",

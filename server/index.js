@@ -1,74 +1,61 @@
+﻿
+import dotenv from 'dotenv';
+dotenv.config();
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const http = require('http');
-const { Server } = require('socket.io');
-const mongoose = require('mongoose');
-const connectDB = require('./config/database');
-const BadgeService = require('./services/BadgeService');
-const Room = require('./models/Room');
-const ExecutionQueueService = require('./services/ExecutionQueueService');
-const ExecutionHistory = require('./models/ExecutionHistory');
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
 
-// Logging Service
-const { logger, httpLogger } = require('./services/logger');
+import connectDB from './config/database.js';
+import BadgeService from './services/BadgeService.js';
+import Room from './models/Room.js';
+import ExecutionQueueService from './services/ExecutionQueueService.js';
+import ExecutionHistory from './models/ExecutionHistory.js';
 
-// Error Handling
-const { 
-  errorHandler, 
+
+import { logger, httpLogger } from './services/logger.js';
+
+import {
+  errorHandler,
   notFoundHandler,
   setupUnhandledRejectionHandler,
   setupUncaughtExceptionHandler
-} = require('./middleware/error');
-const { asyncHandler } = require('./middleware/async');
-const { BadRequestError, ExternalServiceError } = require('./utils/ErrorResponse');
+} from './middleware/error.js';
+
+import { asyncHandler } from './middleware/async.js';
+import { BadRequestError, ExternalServiceError } from './utils/ErrorResponse.js';
 
 // Setup uncaught exception handler early
 setupUncaughtExceptionHandler();
 
-const {
+import {
   generalLimiter,
   aiLimiter,
   codeLimiter,
   rateLimitLogger
-
-} = require('./middleware/simpleRateLimiter');
-const gptRoute = require('./routes/gptRoute');
-const codeQualityRoute = require('./routes/codeQuality');
-
-
-} = require('./middleware/simpleRateLimiter');
-const gptRoute = require('./routes/gptRoute');
-const codeQualityRoute = require('./routes/codeQuality');
-const analysisRoute = require('./routes/analysis');
-
-const progressRoute = require('./routes/progress');
-const challengesRoute = require('./routes/challenges');
-const roomRoute = require('./routes/room');
-const userRoute = require('./routes/user');
-const executionRoute = require('./routes/execution');
-
-
 } from './middleware/simpleRateLimiter.js';
-import { validate } from './middleware/validation.js';
-import { BadRequestError, ExternalServiceError } from './utils/ErrorResponse.js';
-import gptRoute from './routes/gptRoute.js';
+
 import codeQualityRoute from './routes/codeQuality.js';
+import analysisRoute from './routes/analysis.js';
 import progressRoute from './routes/progress.js';
 import challengesRoute from './routes/challenges.js';
 import roomRoute from './routes/room.js';
 import userRoute from './routes/user.js';
+import executionRoute from './routes/execution.js';
+
+import { validate } from './middleware/validation.js';
+import gptRoute from './routes/gptRoute.js';
 import communityRoute from './routes/community.js';
 import tutorialsRoute from './routes/tutorials.js';
 import authRoute from './routes/auth.routes.js';
+import { applySecurityMiddleware } from './config/security.js';
 
 // Socket.IO (modularized)
 import socketModule from './socket/index.js';
 const { initializeSocket, cleanup: socketCleanup } = socketModule;
-
-
 
 // Multi-Language Visualizer Service
 import visualizerServicePkg from './services/visualizer/index.js';
@@ -77,6 +64,16 @@ const visualizerService = visualizerServicePkg;
 // Initialize Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
+
+// Global variables for WebSocket management
+const userMap = {};
+const roomTimers = {};
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173'
+];
 
 // Initialize database connection
 connectDB();
@@ -161,11 +158,17 @@ io.on("connection", (socket) => {
           delete roomTimers[roomId];
         } catch (error) {
           logger.error('Error updating room code', { error: error.message, roomId });
+          delete roomTimers[roomId];
         }
       }, 2000);
     } catch (error) {
       logger.error('Error broadcasting code change', { error: error.message, roomId });
     }
+  });
+
+  socket.on("disconnect", () => {
+    logger.info("User disconnected", { socketId: socket.id });
+    delete userMap[socket.id];
   });
 
   socket.on("execute-code", async ({ roomId, code, language, stdin, userId, username }) => {
@@ -249,6 +252,7 @@ io.on("connection", (socket) => {
       });
     }
   });
+});
 
 // Make io accessible to routes if needed
 app.set('io', io);
@@ -294,11 +298,11 @@ app.use("/api/tutorials", tutorialsRoute);
 // Room routes
 app.use("/api/room", roomRoute);
 
-// User data sync routes (profil
+// User data sync routes (profile + snippets)
+app.use("/api/user", userRoute);
 
 // Execution history and queue management routes
-app.use("/api/execution", executionRoute);e + snippets)
-app.use("/api/user", userRoute);
+app.use("/api/execution", executionRoute);
 
 // ============================================
 // Visualizer Endpoints

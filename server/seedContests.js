@@ -109,7 +109,7 @@ const seedContests = async () => {
     ];
 
     await Contest.insertMany(testContests);
-    console.log('✅ Test contest data added!');
+    // console.log('✅ Test contest data added!');
     
     process.exit(0);
   } catch (error) {

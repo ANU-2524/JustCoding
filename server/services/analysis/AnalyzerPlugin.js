@@ -58,4 +58,4 @@ class AnalyzerPlugin {
   }
 }
 
-module.exports = AnalyzerPlugin;
+export default AnalyzerPlugin;

@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -9,6 +10,9 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const GuestLeaderboard = lazy(() => import("./components/GuestLeaderboard"));
+const GuestNotes = lazy(() => import("./components/GuestNotes"));
+const CodeGallery = lazy(() => import("./components/CodeGallery"));
 const LoginPage = lazy(() => import("./components/LoginPage"));
 const MainEditor = lazy(() => import("./components/MainEditor"));
 const Profile = lazy(() => import("./components/Profile"));
@@ -25,7 +29,10 @@ const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"))
 const ContributingPage = lazy(() => import("./components/ContributingPage"));
 const FAQPage = lazy(() => import("./components/FAQPage"));
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
+const ProgressDashboard = lazy(() => import("./components/ProgressDashboard"));
+const LeaderboardPage = lazy(() => import("./components/LeaderboardPage"));
 const ContestDetail = lazy(() => import("./components/ContestDetail"));
+const ChallengeEditorial = lazy(() => import("./components/ChallengeEditorial"));
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
@@ -41,6 +48,12 @@ const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
+
+const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
+
+const PromptHistory = lazy(() => import("./components/PromptHistory"));
+const DailyPrompt = lazy(() => import("./components/DailyPrompt"));
+const CodeReviewWall = lazy(() => import("./components/CodeReviewWall"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
@@ -58,6 +71,14 @@ function App() {
               <Navbar />
               <Suspense fallback={<div>Loading...</div>}>
                 <Routes>
+                  {/* Guest Leaderboard Participation */}
+                  <Route path="/guest-leaderboard" element={<GuestLeaderboard />} />
+                  {/* Guest Notes / Coding Journal */}
+                  <Route path="/notes" element={<GuestNotes />} />
+                  {/* Public Code Gallery */}
+                  <Route path="/code-gallery" element={<CodeGallery />} />
+                  {/* Portfolio Builder (guest-friendly) */}
+                  <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/blog" element={<BlogPage />} />
@@ -65,7 +86,7 @@ function App() {
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/contributing" element={<ContributingPage />} />
                   <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                   {/* Main personal editor */}
                   <Route
                     path="/editor"
@@ -113,6 +134,7 @@ function App() {
                   {/* Coding Challenges */}
                   <Route path="/challenges" element={<Challenges />} />
                   <Route path="/challenges/:slug" element={<ChallengeSolve />} />
+                  <Route path="/challenges/:slug/editorial" element={<ChallengeEditorial />} />
                   
                   {/* Tutorials */}
                   <Route path="/tutorials" element={<TutorialsPage />} />
@@ -130,7 +152,7 @@ function App() {
                   
                   {/* Analytics/Progress */}
                   <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/progress" element={<Analytics />} />
+                  <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
                   <Route path="/badges" element={<BadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
@@ -144,6 +166,12 @@ function App() {
                   {/* Community */}
                   <Route path="/community" element={<CommunityPage />} />
                   <Route path="/community/posts/:id" element={<CommunityPostDetail />} />
+                  {/* Daily Coding Prompt */}
+                  <Route path="/daily-prompt" element={<DailyPrompt />} />
+                  {/* Prompt History */}
+                  <Route path="/prompt-history" element={<PromptHistory />} />
+                  {/* Public Code Review Wall */}
+                  <Route path="/code-review-wall" element={<CodeReviewWall />} />
                   
                   {/* Catch-all route for undefined paths */}
                   <Route path="*" element={<NotFound />} />

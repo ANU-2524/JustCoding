@@ -23,15 +23,15 @@ export const AuthProvider = ({ children }) => {
     // Set loading to false if unsubscribing without getting a user
     return () => {
       if (unsub) {
-unsub();
-}
+        unsub();
+      }
     };
   }, []);
 
   const logout = () => {
     if (!auth) {
-return;
-}
+      return;
+    }
     signOut(auth);
   };
 
