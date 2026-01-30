@@ -224,28 +224,7 @@ All error responses use a consistent format with an `error` key containing a des
   }
   ```
 
-### Inconsistent Routes (To Be Updated)
-Some routes currently use a wrapper format for success responses (`{ success: true, data: object }`). These should be updated to return data directly for consistency:
 
-- `progress.js`: Routes like `/dashboard/:userId`, `/event`, `/leaderboard`, `/export/:userId`
-- `codeQuality.js`: Route `/analyze`
-
-**Current inconsistent format:**
-```json
-{
-  "success": true,
-  "data": {
-    "key": "value"
-  }
-}
-```
-
-**Should be changed to:**
-```json
-{
-  "key": "value"
-}
-```
 
 ## 📚 API Reference
 
