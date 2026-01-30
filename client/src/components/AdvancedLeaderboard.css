@@ -1,0 +1,56 @@
+.advanced-leaderboard-container {
+  max-width: 1000px;
+  margin: 5.2rem auto 2.5rem auto;
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  box-shadow: 0 4px 32px rgba(44,62,80,0.13), 0 1.5px 8px rgba(44,62,80,0.08);
+  padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  border: 1.5px solid #e2e8f0;
+}
+@media (prefers-color-scheme: dark) {
+  .advanced-leaderboard-container {
+    background: rgba(30,32,38,0.98);
+    border: 1.5px solid #23272f;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.25), 0 1.5px 8px rgba(0,0,0,0.13);
+  }
+}
+.advanced-leaderboard-table, .analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2.2rem;
+}
+.advanced-leaderboard-table th, .advanced-leaderboard-table td,
+.analytics-table th, .analytics-table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  text-align: center;
+}
+.advanced-leaderboard-table th, .analytics-table th {
+  background: #f1f5f9;
+  color: #2563eb;
+  font-weight: 700;
+}
+@media (prefers-color-scheme: dark) {
+  .advanced-leaderboard-table th, .analytics-table th {
+    background: #23272f;
+    color: #7da6ff;
+  }
+}
+.badge {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.2rem 0.7rem;
+  margin: 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.advanced-leaderboard-analytics {
+  margin-top: 2.2rem;
+}
+.advanced-leaderboard-analytics h3 {
+  color: #2563eb;
+  margin-bottom: 1rem;
+}
