@@ -10,6 +10,12 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const CollabEditor = lazy(() => import("./components/CollabEditor"));
+
+const Forum = lazy(() => import("./components/Forum"));
+
+const UserHistoryPage = lazy(() => import("./components/UserHistoryPage"));
+
 const GuestLeaderboard = lazy(() => import("./components/GuestLeaderboard"));
 const GuestNotes = lazy(() => import("./components/GuestNotes"));
 const CodeGallery = lazy(() => import("./components/CodeGallery"));
@@ -38,6 +44,7 @@ const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
 const UserBadgesPage = lazy(() => import("./components/UserBadgesPage"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
+const CommunityReputationPage = lazy(() => import("./components/CommunityReputationPage"));
 const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
@@ -156,6 +163,15 @@ function App() {
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
+
+
+                  {/* Discussion Forum */}
+                  <Route path="/forum" element={<Forum />} />
+                  {/* User History Page */}
+                  <Route path="/history" element={<UserHistoryPage />} />
+
+                  {/* Community Reputation Page */}
+                  <Route path="/community-reputation" element={<CommunityReputationPage />} />
                   <Route path="/badges" element={<UserBadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
                   <Route path="/debug-helper" element={<DebugHelper />} />
@@ -164,6 +180,8 @@ function App() {
                   <Route path="/code-quality" element={<CodeQuality />} />
                   <Route path="/code-explainer" element={<CodeExplainer />} />
                   <Route path="/snippets" element={<SnippetsManager />} />
+                  {/* Collaborative Editor */}
+                  <Route path="/collab-editor" element={<CollabEditor />} />
                   
                   {/* Community */}
                   <Route path="/community" element={<CommunityPage />} />

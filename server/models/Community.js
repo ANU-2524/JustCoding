@@ -161,10 +161,11 @@ reputationSchema.pre('save', function(next) {
   next();
 });
 
-const Post = mongoose.model('Post', postSchema);
-const Comment = mongoose.model('Comment', commentSchema);
-const Vote = mongoose.model('Vote', voteSchema);
-const Reputation = mongoose.model('Reputation', reputationSchema);
+
+const Post = mongoose.models.Post || mongoose.model('Post', postSchema);
+const Comment = mongoose.models.Comment || mongoose.model('Comment', commentSchema);
+const Vote = mongoose.models.Vote || mongoose.model('Vote', voteSchema);
+const Reputation = mongoose.models.Reputation || mongoose.model('Reputation', reputationSchema);
 
 export { Post, Comment, Vote, Reputation };
 export default {

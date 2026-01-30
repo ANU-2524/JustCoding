@@ -1,4 +1,5 @@
-﻿
+﻿import initCollabSocket from './socket/collab.js';
+import forumRoutes from './routes/forum.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -45,6 +46,7 @@ import challengesRoute from './routes/challenges.js';
 import roomRoute from './routes/room.js';
 import userRoute from './routes/user.js';
 import executionRoute from './routes/execution.js';
+import collabRoutes from './routes/collab.js';
 
 import { validate } from './middleware/validation.js';
 import gptRoute from './routes/gptRoute.js';
@@ -303,6 +305,10 @@ app.use("/api/user", userRoute);
 
 // Execution history and queue management routes
 app.use("/api/execution", executionRoute);
+app.use('/api/forum', forumRoutes);
+
+// After forumRoutes registration:
+app.use('/api/collab', collabRoutes);
 
 // ============================================
 // Visualizer Endpoints
@@ -467,3 +473,6 @@ server.listen(PORT, () => {
 });
 
 export { app, server, io };
+
+// After io is created:
+initCollabSocket(io);

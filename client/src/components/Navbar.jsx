@@ -91,6 +91,7 @@ const Navbar = () => {
     { path: '/debug', label: 'AI Debugger', icon: <FaRobot /> },
     { path: '/code-explainer', label: 'Code Explainer', icon: <FaLightbulb /> },
     { path: '/snippets', label: 'Snippets', icon: <FaSave /> },
+    { path: '/collab-editor', label: 'Collaborative Editor', icon: <FaUsers /> },
   ];
 
   const communityItems = [
