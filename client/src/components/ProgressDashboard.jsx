@@ -62,6 +62,3 @@ const ProgressDashboard = () => {
 };
 
 export default ProgressDashboard;
-};
-
-export default ProgressDashboard;
