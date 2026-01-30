@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./PromptHistory.css";
 import PrismHighlight from "./PrismHighlight";
+
 import SolutionComments from "./SolutionComments";
+
 
 // Demo: Use the same prompts as DailyPrompt
 const getAllPrompts = () => [
@@ -75,8 +77,14 @@ export default function PromptHistory() {
               <PrismHighlight code={sub.solution} language="javascript" />
               <SolutionComments promptKey={selected.key} solutionIndex={origIdx} />
             </div>
+
           );
         })}
+
+            <PrismHighlight code={sub.solution} language="javascript" />
+          </div>
+        ))}
+
       </div>
     </div>
   );
