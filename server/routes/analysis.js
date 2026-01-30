@@ -1,14 +1,15 @@
-const express = require('express');
+import express from 'express';
+import crypto from 'crypto';
+import AnalysisResult from '../models/AnalysisResult.js';
+import registry from '../services/analysis/AnalyzerRegistry.js';
+import ESLintAnalyzer from '../services/analysis/analyzers/ESLintAnalyzer.js';
+import SecurityAnalyzer from '../services/analysis/analyzers/SecurityAnalyzer.js';
+import ComplexityAnalyzer from '../services/analysis/analyzers/ComplexityAnalyzer.js';
+import AIAnalyzer from '../services/analysis/analyzers/AIAnalyzer.js';
+import { asyncHandler } from '../middleware/async.js';
+import { logger } from '../services/logger.js';
+
 const router = express.Router();
-const crypto = require('crypto');
-const AnalysisResult = require('../models/AnalysisResult');
-const registry = require('../services/analysis/AnalyzerRegistry');
-const ESLintAnalyzer = require('../services/analysis/analyzers/ESLintAnalyzer');
-const SecurityAnalyzer = require('../services/analysis/analyzers/SecurityAnalyzer');
-const ComplexityAnalyzer = require('../services/analysis/analyzers/ComplexityAnalyzer');
-const AIAnalyzer = require('../services/analysis/analyzers/AIAnalyzer');
-const { asyncHandler } = require('../middleware/async');
-const { logger } = require('../services/logger');
 
 // Initialize analyzers
 let initialized = false;
@@ -240,4 +241,4 @@ router.post('/analyzers/:name/toggle', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

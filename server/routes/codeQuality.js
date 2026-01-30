@@ -1,9 +1,8 @@
 import express from 'express';
 import { ESLint } from 'eslint';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const router = express.Router();
 import { validate, logRequest } from '../middleware/validation.js';
+
+const router = express.Router();
 
 // Calculate cyclomatic complexity
 function calculateComplexity(code) {
@@ -67,7 +66,7 @@ const eslintConfigs = {
       node: true,
     },
     extends: ['eslint:recommended'],
-    parser: require.resolve('@typescript-eslint/parser'),
+    parser: '@typescript-eslint/parser',
     parserOptions: {
       ecmaVersion: 12,
       sourceType: 'module',

@@ -1,5 +1,6 @@
-const { AnalyzerPlugin, AnalysisResult } = require('../AnalyzerPlugin');
-const { ESLint } = require('eslint');
+import AnalyzerPlugin from '../AnalyzerPlugin.js';
+import AnalysisResult from '../AnalysisResult.js';
+import { ESLint } from 'eslint';
 
 class ESLintAnalyzer extends AnalyzerPlugin {
   constructor() {
@@ -98,4 +99,4 @@ class ESLintAnalyzer extends AnalyzerPlugin {
   }
 }
 
-module.exports = ESLintAnalyzer;
+export default ESLintAnalyzer;

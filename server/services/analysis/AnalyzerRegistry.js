@@ -1,4 +1,5 @@
-const { logger } = require('../logger');
+import { logger } from '../logger.js';
+import crypto from 'crypto';
 
 /**
  * Registry for managing analyzer plugins
@@ -190,7 +191,6 @@ class AnalyzerRegistry {
    * Generate cache key
    */
   generateCacheKey(code, language, analyzers) {
-    const crypto = require('crypto');
     const analyzerStr = analyzers ? analyzers.sort().join(',') : 'all';
     return crypto
       .createHash('md5')
@@ -202,4 +202,4 @@ class AnalyzerRegistry {
 // Singleton instance
 const registry = new AnalyzerRegistry();
 
-module.exports = registry;
+export default registry;

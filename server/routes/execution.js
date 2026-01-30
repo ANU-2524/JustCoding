@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import ExecutionHistory from '../models/ExecutionHistory.js';
+import ExecutionQueueService from '../services/ExecutionQueueService.js';
+import { asyncHandler } from '../middleware/async.js';
+
 const router = express.Router();
-const ExecutionHistory = require('../models/ExecutionHistory');
-const ExecutionQueueService = require('../services/ExecutionQueueService');
-const { asyncHandler } = require('../middleware/async');
 
 // Get execution history for a room
 router.get('/history/room/:roomId', asyncHandler(async (req, res) => {
@@ -94,4 +95,4 @@ router.get('/queue/status/:roomId', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

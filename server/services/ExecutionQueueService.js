@@ -1,6 +1,6 @@
-const axios = require('axios');
-const redis = require('redis');
-const { logger } = require('./logger');
+import axios from 'axios';
+import redis from 'redis';
+import { logger } from './logger.js';
 
 // Initialize Redis client for distributed locks
 let redisClient = null;
@@ -14,8 +14,8 @@ const initRedis = async () => {
         connectTimeout: 5000,
         reconnectStrategy: (retries) => {
           if (retries > 3) {
-            console.log('Redis unavailable for execution queue, using in-memory fallback');
-            return null;
+            logger.warn('Redis unavailable for execution queue, using in-memory fallback');
+            return false;
           }
           return Math.min(retries * 100, 3000);
         }
@@ -23,7 +23,7 @@ const initRedis = async () => {
     });
 
     redisClient.on('error', (err) => {
-      logger.warn('Redis Client Error (ExecutionQueue)', { error: err.message });
+      // Suppress error logs for Redis - it's optional
       isRedisAvailable = false;
     });
 
@@ -34,13 +34,13 @@ const initRedis = async () => {
 
     await redisClient.connect();
   } catch (error) {
-    logger.warn('Redis initialization failed for execution queue, using in-memory fallback', { error: error.message });
+    // Suppress error - Redis is optional fallback
     isRedisAvailable = false;
   }
 };
 
 // Initialize Redis on module load
-initRedis().catch(console.error);
+initRedis();
 
 // In-memory fallback for locks when Redis is unavailable
 const memoryLocks = new Map();
@@ -428,4 +428,4 @@ process.on('SIGTERM', async () => {
   await ExecutionQueueService.cleanup();
 });
 
-module.exports = ExecutionQueueService;
+export default ExecutionQueueService;

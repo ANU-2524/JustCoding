@@ -5,15 +5,29 @@ import Breadcrumb from './Breadcrumb';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
 import {
-  addSnippet,
-  deleteSnippet,
   getProfileLocal,
   getStats,
   listSessions,
-  listSnippets,
   updateProfileLocal,
-  updateSnippet,
 } from '../services/localStore';
+import {
+  fetchSnippetsFromBackend,
+  createSnippetOnBackend,
+  updateSnippetOnBackend,
+  deleteSnippetOnBackend,
+} from '../services/syncService';
+
+// Utility to get or create a temp user ID for guests
+function getUserId(currentUser) {
+  if (currentUser?.uid) return currentUser.uid;
+  let tempId = localStorage.getItem('tempUserId');
+  if (!tempId) {
+    tempId = 'guest-' + ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+    localStorage.setItem('tempUserId', tempId);
+  }
+  return tempId;
 
 /**
  * Profile Component - User Profile Card with Basic Snippet Management
@@ -60,14 +74,16 @@ const Profile = () => {
   }, [currentUser]);
 
   const refreshData = () => {
-    setSnippets(listSnippets());
+    const userId = getUserId(currentUser);
+    fetchSnippetsFromBackend(userId).then(setSnippets);
     setSessions(listSessions());
     setStats(getStats());
   };
 
   useEffect(() => {
     refreshData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -175,20 +191,26 @@ return '';
       alert('Please enter a snippet title.');
       return;
     }
-    addSnippet({ title: newTitle.trim(), language: newLanguage, code: newCode });
-    setNewTitle('');
-    setNewCode('');
-    refreshData();
-    setActiveTab('snippets');
+    const userId = getUserId(currentUser);
+    createSnippetOnBackend(userId, {
+      title: newTitle.trim(),
+      language: newLanguage,
+      code: newCode,
+    }).then(() => {
+      setNewTitle('');
+      setNewCode('');
+      refreshData();
+      setActiveTab('snippets');
+    });
   };
 
   const handleDeleteSnippet = (id) => {
     const ok = window.confirm('Delete this snippet?');
-    if (!ok) {
-return;
-}
-    deleteSnippet(id);
-    refreshData();
+    if (!ok) return;
+    const userId = getUserId(currentUser);
+    deleteSnippetOnBackend(id, userId).then(() => {
+      refreshData();
+    });
   };
 
   const handleLoadSnippetToEditor = (snippet) => {
@@ -456,12 +478,12 @@ e.preventDefault();
                           <button
                             className="dash-btn"
                             onClick={() => {
+                              const userId = getUserId(currentUser);
                               const title = window.prompt('Rename snippet', s.title);
-                              if (!title) {
-return;
-}
-                              updateSnippet(s.id, { title: title.trim() });
-                              refreshData();
+                              if (!title) return;
+                              updateSnippetOnBackend(s.id, userId, { title: title.trim() }).then(() => {
+                                refreshData();
+                              });
                             }}
                           >
                             Rename

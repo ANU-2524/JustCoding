@@ -1,5 +1,6 @@
-const axios = require('axios');
-const { AnalyzerPlugin, AnalysisResult } = require('../AnalyzerPlugin');
+import axios from 'axios';
+import AnalyzerPlugin from '../AnalyzerPlugin.js';
+import AnalysisResult from '../AnalysisResult.js';
 
 class AIAnalyzer extends AnalyzerPlugin {
   constructor() {
@@ -87,4 +88,4 @@ ${code.substring(0, 2000)}
   }
 }
 
-module.exports = AIAnalyzer;
+export default AIAnalyzer;

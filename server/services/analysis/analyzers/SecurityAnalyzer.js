@@ -1,4 +1,5 @@
-const { AnalyzerPlugin, AnalysisResult } = require('../AnalyzerPlugin');
+import AnalyzerPlugin from '../AnalyzerPlugin.js';
+import AnalysisResult from '../AnalysisResult.js';
 
 class SecurityAnalyzer extends AnalyzerPlugin {
   constructor() {
@@ -79,4 +80,4 @@ class SecurityAnalyzer extends AnalyzerPlugin {
   }
 }
 
-module.exports = SecurityAnalyzer;
+export default SecurityAnalyzer;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const executionHistorySchema = new mongoose.Schema({
   executionId: {
@@ -151,4 +151,4 @@ executionHistorySchema.statics.getStats = async function(roomId, timeRange = 360
   };
 };
 
-module.exports = mongoose.model('ExecutionHistory', executionHistorySchema);
+export default mongoose.model('ExecutionHistory', executionHistorySchema);
