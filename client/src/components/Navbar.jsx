@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaBook, FaBug, FaGithub, FaLightbulb, FaSave, FaRoad, FaComments, FaChevronDown, FaDownload } from 'react-icons/fa';
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaBook, FaBug, FaGithub, FaLightbulb, FaSave, FaRoad, FaComments, FaChevronDown, FaDownload, FaEllipsisH, FaTimesCircle } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -14,6 +14,7 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const profileRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -42,10 +43,24 @@ const Navbar = () => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    const handleKey = (event) => {
+      if (event.key === 'Escape') {
+        setIsProfileOpen(false);
+        setOpenDropdown(null);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, []);
 
   useEffect(() => {
@@ -114,9 +129,9 @@ const Navbar = () => {
           <span className="logo-text">Just<span className="highlight">Coding</span></span>
         </Link>
 
-        {/* Desktop Navigation Links (center) */}
-        <div className="nav-menu-desktop desktop-only">
-          {navItems.map((item) => (
+        {/* Desktop Navigation Links (center) - show top 3, keep the rest in a creative More dropdown */}
+        <div className="nav-menu-desktop desktop-only compact">
+          {navItems.slice(0, 3).map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -135,106 +150,95 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {/* Learning Dropdown */}
-          <div className="nav-dropdown-container">
-            <button 
-              className="nav-dropdown-btn"
-              onClick={() => setOpenDropdown(openDropdown === 'learning' ? null : 'learning')}
-              title="Learning Resources"
+          <div className="nav-dropdown-container" ref={dropdownRef}>
+            <button
+              className="nav-dropdown-btn more-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'more' ? null : 'more')}
+              title="More"
+              aria-haspopup="true"
+              aria-expanded={openDropdown === 'more'}
             >
-              <FaBook className="nav-link-icon" />
-              <span className="nav-link-label">Learn</span>
-              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'learning' ? 'open' : ''}`} />
+              <span className="more-icon" aria-hidden>
+                <FaEllipsisH />
+              </span>
+              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'more' ? 'open' : ''}`} />
             </button>
-            <AnimatePresence>
-              {openDropdown === 'learning' && (
-                <motion.div 
-                  className="nav-dropdown-menu"
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {learningItems.map((item) => (
-                    <Link 
-                      key={item.path}
-                      to={item.path}
-                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => setOpenDropdown(null)}
-                    >
-                      {item.icon} <span>{item.label}</span>
-                    </Link>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
-          {/* Coding Tools Dropdown */}
-          <div className="nav-dropdown-container">
-            <button 
-              className="nav-dropdown-btn"
-              onClick={() => setOpenDropdown(openDropdown === 'tools' ? null : 'tools')}
-              title="Coding Tools"
-            >
-              <FaLightbulb className="nav-link-icon" />
-              <span className="nav-link-label">Tools</span>
-              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'tools' ? 'open' : ''}`} />
-            </button>
             <AnimatePresence>
-              {openDropdown === 'tools' && (
-                <motion.div 
-                  className="nav-dropdown-menu"
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              {openDropdown === 'more' && (
+                <motion.div
+                  className="nav-dropdown-menu creative-more"
+                  role="menu"
+                  initial={{ opacity: 0, y: 6, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                  transition={{ duration: 0.18 }}
                 >
-                  {codingToolsItems.map((item) => (
-                    <Link 
+                  <div className="dropdown-header">
+                    <div className="dropdown-header-title">More</div>
+                    <button className="dropdown-close" onClick={() => setOpenDropdown(null)} aria-label="Close menu">
+                      <FaTimesCircle />
+                    </button>
+                  </div>
+                  {/* Remaining primary links */}
+                  {navItems.slice(3).map((item) => (
+                    <Link
                       key={item.path}
                       to={item.path}
+                      role="menuitem"
                       className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
                       onClick={() => setOpenDropdown(null)}
                     >
                       {item.icon} <span>{item.label}</span>
                     </Link>
                   ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
-          {/* Community Dropdown */}
-          <div className="nav-dropdown-container">
-            <button 
-              className="nav-dropdown-btn"
-              onClick={() => setOpenDropdown(openDropdown === 'community' ? null : 'community')}
-              title="Community & Rankings"
-            >
-              <FaUsers className="nav-link-icon" />
-              <span className="nav-link-label">Community</span>
-              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'community' ? 'open' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {openDropdown === 'community' && (
-                <motion.div 
-                  className="nav-dropdown-menu"
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {communityItems.map((item) => (
-                    <Link 
-                      key={item.path}
-                      to={item.path}
-                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => setOpenDropdown(null)}
-                    >
-                      {item.icon} <span>{item.label}</span>
-                    </Link>
-                  ))}
+                  <div className="dropdown-section two-column">
+                    <div>
+                      <div className="dropdown-section-title">Learning</div>
+                      {learningItems.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          role="menuitem"
+                          className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {item.icon} <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+
+                    <div>
+                      <div className="dropdown-section-title">Tools</div>
+                      {codingToolsItems.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          role="menuitem"
+                          className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {item.icon} <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="dropdown-section">
+                    <div className="dropdown-section-title">Community</div>
+                    {communityItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        role="menuitem"
+                        className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {item.icon} <span>{item.label}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

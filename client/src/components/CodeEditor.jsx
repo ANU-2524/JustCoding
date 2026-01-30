@@ -16,6 +16,8 @@ const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
       });
 
       // Set editor options based on settings
+      const isLargeFile = code && code.length > 1000000; // 1MB threshold
+      
       const options = {
         fontSize: 14,
         fontFamily: "'Fira Code', 'Consolas', 'Courier New', monospace",
@@ -26,9 +28,9 @@ const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
         readOnly: false,
         automaticLayout: true,
         minimap: {
-          enabled: true
+          enabled: !isLargeFile // Disable minimap for large files
         },
-        wordWrap: 'on',
+        wordWrap: isLargeFile ? 'off' : 'on', // Disable word wrap for large files
         wrappingIndent: 'indent',
         
         // IntelliSense configurations
@@ -38,7 +40,7 @@ const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
         tabCompletion: 'on',
         
         // Auto-completion settings
-        quickSuggestions: editorSettings.intellisense ? {
+        quickSuggestions: editorSettings.intellisense && !isLargeFile ? { // Disable for large files
           other: true,
           comments: true,
           strings: true
@@ -51,27 +53,26 @@ const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
         autoClosingDelete: editorSettings.autoClosing ? 'always' : 'never',
         
         // Formatting settings
-        formatOnType: editorSettings.formatOnType,
-        formatOnPaste: true,
+        formatOnType: editorSettings.formatOnType && !isLargeFile, // Disable for large files
+        formatOnPaste: !isLargeFile, // Disable for large files
         
         // Parameter hints
         parameterHints: {
-          enabled: true,
-          cycle: true
+          enabled: !isLargeFile // Disable for large files
         },
         
         // Code Lens
-        codeLens: true,
+        codeLens: !isLargeFile, // Disable for large files
         
         // Bracket pair colorization
         bracketPairColorization: {
-          enabled: true
+          enabled: !isLargeFile // Disable for large files
         },
         
         // Guides
         guides: {
-          bracketPairs: true,
-          bracketPairsHorizontal: true
+          bracketPairs: !isLargeFile,
+          bracketPairsHorizontal: !isLargeFile
         }
       };
 
@@ -79,7 +80,7 @@ const CodeEditor = ({ language, code, setCode, theme, editorSettings }) => {
         editorRef.current.updateOptions(options);
       }
     }
-  }, [monaco, editorSettings]);
+  }, [monaco, editorSettings, code]);
 
   const handleEditorDidMount = (editor, monacoInstance) => {
     editorRef.current = editor;

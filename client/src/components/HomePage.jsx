@@ -97,9 +97,9 @@ const HomePage = () => {
             </motion.button>
 
             <motion.button
-              className="btn-secondary"
-              onClick={() => navigate("/debug")}
-              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(239, 68, 68, 0.35)" }}
+              className="btn-debugger"
+              onClick={() => navigate("/debugger")}
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.5)" }}
               whileTap={{ scale: 0.95 }}
             >
               AI Debugger
