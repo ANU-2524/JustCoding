@@ -269,6 +269,15 @@
   font-size: 0.9rem;
 }
 
+.mobile-auth-note {
+  display: block;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 8px 0;
+  font-style: italic;
+}
+
 .google-button {
   display: flex;
   align-items: center;

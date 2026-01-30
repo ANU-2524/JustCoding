@@ -77,6 +77,7 @@ export default function PromptHistory() {
             </div>
           );
         })}
+
       </div>
     </div>
   );

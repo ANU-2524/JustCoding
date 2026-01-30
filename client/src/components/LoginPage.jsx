@@ -1,10 +1,12 @@
 // src/components/LoginPage.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { auth, provider } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendPasswordResetEmail,
   GithubAuthProvider 
 } from "firebase/auth";
@@ -22,6 +24,36 @@ const LoginPage = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/editor";
+
+  // Handle OAuth redirect result
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          navigate(from);
+        }
+      } catch (error) {
+        console.error("Redirect sign-in error:", error);
+        // Handle specific mobile OAuth errors
+        if (error.code === 'auth/popup-blocked') {
+          alert("Popup was blocked. Please allow popups for this site and try again.");
+        } else if (error.code === 'auth/popup-closed-by-user') {
+          // User closed popup, no action needed
+        } else {
+          alert(`Authentication failed: ${error.message}`);
+        }
+      }
+    };
+
+    handleRedirectResult();
+  }, [navigate, from]);
+
+  // Detect if device is mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           window.innerWidth <= 768;
+  };
 
   // Password Strength Logic
   const strengthScore = useMemo(() => {
@@ -46,26 +78,39 @@ score++;
 
   const handleSocialSignIn = async (type) => {
     const socialProvider = type === 'google' ? provider : new GithubAuthProvider();
+    
     try {
-      await signInWithPopup(auth, socialProvider);
-      navigate(from);
+      if (isMobile()) {
+        // Use redirect for mobile devices to avoid popup issues
+        await signInWithRedirect(auth, socialProvider);
+        // Navigation will happen in the useEffect when redirect completes
+      } else {
+        // Use popup for desktop
+        await signInWithPopup(auth, socialProvider);
+        navigate(from);
+      }
     } catch (err) {
- alert(err.message); 
-}
-  };
+      console.error("Social sign-in error:", err);
+      if (err.code === 'auth/popup-blocked') {
+        alert("Popup was blocked. Please allow popups for this site and try again.");
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        // User closed popup, no action needed
+      } else {
+        alert(`Authentication failed: ${err.message}`);
+      }
 
   const handleSubmit = async (e, type) => {
     e.preventDefault();
     try {
       if (type === 'login') {
-await signInWithEmailAndPassword(auth, email, password);
-} else {
-await createUserWithEmailAndPassword(auth, email, password);
-}
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
       navigate(from);
     } catch (error) {
- alert(error.message); 
-}
+      alert(error.message);
+    }
   };
 
   return (
