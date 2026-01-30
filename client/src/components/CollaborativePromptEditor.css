@@ -1,0 +1,82 @@
+.collab-prompt-editor-container {
+  max-width: 700px;
+  margin: 5.2rem auto 2.5rem auto;
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  box-shadow: 0 4px 32px rgba(44,62,80,0.13), 0 1.5px 8px rgba(44,62,80,0.08);
+  padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  border: 1.5px solid #e2e8f0;
+}
+@media (prefers-color-scheme: dark) {
+  .collab-prompt-editor-container {
+    background: rgba(30,32,38,0.98);
+    border: 1.5px solid #23272f;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.25), 0 1.5px 8px rgba(0,0,0,0.13);
+  }
+}
+.collab-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-width: 420px;
+  margin: 0 auto 2rem auto;
+}
+.collab-prompt-input, .collab-prompt-textarea {
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 1.05rem;
+  color: #222;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+  margin-bottom: 0.2rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+@media (prefers-color-scheme: dark) {
+  .collab-prompt-input, .collab-prompt-textarea {
+    color: #fff;
+    background: #23272f;
+    border: 1.5px solid #3b4252;
+  }
+  .collab-prompt-input::placeholder, .collab-prompt-textarea::placeholder {
+    color: #bfc7d5;
+    opacity: 1;
+  }
+}
+.collab-prompt-btn {
+  background: linear-gradient(90deg, #3182ce 60%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.4rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+  transition: background 0.2s, color 0.2s;
+}
+.collab-prompt-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.collab-prompt-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.collab-prompt-status {
+  color: #2563eb;
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+}
+.collab-prompt-note {
+  margin-top: 1.2rem;
+  color: #4a5568;
+  font-size: 1.01rem;
+  text-align: center;
+}
+@media (prefers-color-scheme: dark) {
+  .collab-prompt-note {
+    color: #bfc7d5;
+  }
+}
