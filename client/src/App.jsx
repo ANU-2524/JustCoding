@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const CollabEditor = lazy(() => import("./components/CollabEditor"));
+
 const Forum = lazy(() => import("./components/Forum"));
 
 const UserHistoryPage = lazy(() => import("./components/UserHistoryPage"));
@@ -174,6 +176,8 @@ function App() {
                   <Route path="/code-quality" element={<CodeQuality />} />
                   <Route path="/code-explainer" element={<CodeExplainer />} />
                   <Route path="/snippets" element={<SnippetsManager />} />
+                  {/* Collaborative Editor */}
+                  <Route path="/collab-editor" element={<CollabEditor />} />
                   
                   {/* Community */}
                   <Route path="/community" element={<CommunityPage />} />
