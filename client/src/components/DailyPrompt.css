@@ -117,6 +117,23 @@
   font-size: 0.98rem;
   margin-bottom: 0.2rem;
 }
+.prompt-warning {
+  color: #d97706;
+  background: #fef3c7;
+  border: 1.2px solid #fbbf24;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  font-size: 1.01rem;
+  text-align: center;
+}
+@media (prefers-color-scheme: dark) {
+  .prompt-warning {
+    background: #23272f;
+    color: #fbbf24;
+    border: 1.2px solid #fbbf24;
+  }
+}
 .prompt-submissions {
   margin-top: 2.2rem;
 }
