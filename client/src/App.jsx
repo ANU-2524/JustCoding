@@ -37,6 +37,7 @@ const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
 const UserBadgesPage = lazy(() => import("./components/UserBadgesPage"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
+const CommunityReputationPage = lazy(() => import("./components/CommunityReputationPage"));
 const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
 const RoomManagement = lazy(() => import("./components/RoomManagement"));
@@ -157,6 +158,9 @@ function App() {
 
                   {/* User History Page */}
                   <Route path="/history" element={<UserHistoryPage />} />
+
+                  {/* Community Reputation Page */}
+                  <Route path="/community-reputation" element={<CommunityReputationPage />} />
                   <Route path="/badges" element={<UserBadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
                   <Route path="/debug-helper" element={<DebugHelper />} />
