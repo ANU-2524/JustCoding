@@ -63,18 +63,70 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 ---
 
 ## 📁 Folder Structure
+
 ```bash
 JustCode/
-├── client/ # Frontend (React + Vite)
-│ ├── src/
-│ ├── public/
-│ └── index.html
+├── client/                          # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── components/              # React UI components
+│   │   │   ├── Challenges.jsx       # Displays coding challenges, filters, contests, leaderboard
+│   │   │   ├── HomePage.jsx         # Landing page component
+│   │   │   ├── CodeEditor.jsx       # Main code editor with input/output
+│   │   │   ├── LiveRoom.jsx         # Real-time collaboration room
+│   │   │   └── ...                  # Other UI components (Navbar, Profile, etc.)
+│   │   ├── Style/                   # CSS stylesheets
+│   │   │   ├── Challenges.css       # Styles for challenges page
+│   │   │   ├── HomePage.css         # Styles for home page
+│   │   │   └── ...                  # Other component styles
+│   │   ├── hooks/                   # Custom React hooks
+│   │   │   └── useCollaboration.js  # Hook for real-time collaboration
+│   │   ├── services/                # Client-side services
+│   │   │   └── localStore.js        # Local storage utilities
+│   │   ├── assets/                  # Static assets (images, icons)
+│   │   └── __tests__/               # Unit tests for components and hooks
+│   ├── public/                      # Public static files
+│   └── index.html                   # Main HTML template
 │
-├── server/ # Backend (Node + Express)
+├── server/                          # Backend (Node.js + Express)
+│   ├── models/                      # Mongoose database schemas
+│   │   ├── Challenge.js             # Challenge schema (title, difficulty, testCases, starterCode)
+│   │   ├── User.js                  # User profile and authentication schema
+│   │   ├── Submission.js            # Code submission tracking schema
+│   │   ├── Contest.js               # Contest configuration schema
+│   │   └── ...                      # Other data models
+│   ├── services/                    # Business logic and utilities
+│   │   ├── ChallengeService.js      # Code execution, test case validation, leaderboard logic
+│   │   ├── BadgeService.js          # Achievement and badge management
+│   │   ├── AnalyticsService.js      # User progress and analytics
+│   │   ├── collaboration/           # Real-time collaboration features
+│   │   │   ├── index.js             # Collaboration service entry point
+│   │   │   ├── OperationalTransform.js # Operational transformation for concurrent editing
+│   │   │   └── SessionManager.js    # Manages collaboration sessions
+│   │   └── visualizer/              # Code execution visualization
+│   │       ├── index.js             # Visualizer service
+│   │       └── parsers/             # Language-specific code parsers
+│   │           ├── javascript.js    # JavaScript code visualization
+│   │           ├── python.js        # Python code visualization
+│   │           └── ...              # Other language parsers
+│   ├── routes/                      # API route handlers
+│   │   ├── challenges.js            # Challenge CRUD and submission endpoints
+│   │   ├── codeQuality.js           # Code quality analysis endpoints
+│   │   ├── progress.js              # User progress tracking endpoints
+│   │   ├── gptRoute.js              # AI-powered explanation endpoints
+│   │   └── ...                      # Other API routes
+│   ├── middleware/                  # Express middleware
+│   │   └── simpleRateLimiter.js     # Rate limiting middleware
+│   ├── config/                      # Configuration files
+│   │   └── database.js              # Database connection configuration
+│   ├── seeds/                       # Database seed data
+│   │   └── challenges.js            # Initial challenge data
+│   └── index.js                     # Main server entry point
 │
-├── README.md
-├── CONTRIBUTING.md
-└── .gitignore
+├── README.md                        # Project documentation
+├── CONTRIBUTING.md                  # Contribution guidelines
+├── package.json                     # Root package configuration
+├── .gitignore                       # Git ignore rules
+└── ...                              # Other root files (LICENSE, etc.)
 ```
 
 ## 🛠️ How to Run Locally
@@ -258,28 +310,7 @@ All error responses use a consistent format with an `error` key containing a des
   }
   ```
 
-### Inconsistent Routes (To Be Updated)
-Some routes currently use a wrapper format for success responses (`{ success: true, data: object }`). These should be updated to return data directly for consistency:
 
-- `progress.js`: Routes like `/dashboard/:userId`, `/event`, `/leaderboard`, `/export/:userId`
-- `codeQuality.js`: Route `/analyze`
-
-**Current inconsistent format:**
-```json
-{
-  "success": true,
-  "data": {
-    "key": "value"
-  }
-}
-```
-
-**Should be changed to:**
-```json
-{
-  "key": "value"
-}
-```
 
 ## 📚 API Reference
 
