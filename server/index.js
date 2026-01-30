@@ -63,6 +63,7 @@ const visualizerService = visualizerServicePkg;
 
 // Initialize Express app and HTTP server
 const app = express();
+import forumRoutes from './routes/forum.js';
 const server = http.createServer(app);
 
 // Global variables for WebSocket management
@@ -303,6 +304,7 @@ app.use("/api/user", userRoute);
 
 // Execution history and queue management routes
 app.use("/api/execution", executionRoute);
+app.use('/api/forum', forumRoutes);
 
 // ============================================
 // Visualizer Endpoints

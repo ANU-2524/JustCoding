@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const Forum = lazy(() => import("./components/Forum"));
+
 const UserHistoryPage = lazy(() => import("./components/UserHistoryPage"));
 
 const GuestLeaderboard = lazy(() => import("./components/GuestLeaderboard"));
@@ -156,6 +158,9 @@ function App() {
                   <Route path="/progress" element={<Analytics />} />
                   <Route path="/export" element={<ProgressExport />} />
 
+
+                  {/* Discussion Forum */}
+                  <Route path="/forum" element={<Forum />} />
                   {/* User History Page */}
                   <Route path="/history" element={<UserHistoryPage />} />
 
