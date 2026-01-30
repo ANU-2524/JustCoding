@@ -1,0 +1,106 @@
+.solution-comments {
+  margin-top: 1.1rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1rem 1.2rem 1.2rem 1.2rem;
+  border: 1.2px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+}
+@media (prefers-color-scheme: dark) {
+  .solution-comments {
+    background: #23272f;
+    border: 1.2px solid #23272f;
+    color: #e3e8f7;
+  }
+}
+.solution-comments h5 {
+  margin: 0 0 0.7rem 0;
+  font-size: 1.08rem;
+  color: #2563eb;
+}
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.comment-input, .comment-textarea {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1.2px solid #cbd5e1;
+  font-size: 1rem;
+  color: #222;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+@media (prefers-color-scheme: dark) {
+  .comment-input, .comment-textarea {
+    color: #fff;
+    background: #23272f;
+    border: 1.2px solid #3b4252;
+  }
+  .comment-input::placeholder, .comment-textarea::placeholder {
+    color: #bfc7d5;
+    opacity: 1;
+  }
+}
+.comment-btn {
+  background: linear-gradient(90deg, #3182ce 60%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+.comment-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.comment-error {
+  color: #e53e3e;
+  font-size: 0.98rem;
+  margin-bottom: 0.2rem;
+}
+.comment-list {
+  margin-top: 0.5rem;
+}
+.comment-empty {
+  color: #888;
+  font-size: 0.98rem;
+  text-align: center;
+}
+.comment-item {
+  background: #e2e8f0;
+  border-radius: 7px;
+  padding: 0.4rem 0.8rem 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 2px rgba(44,62,80,0.04);
+}
+@media (prefers-color-scheme: dark) {
+  .comment-item {
+    background: #181a20;
+    color: #e3e8f7;
+  }
+}
+.comment-author {
+  font-weight: 600;
+  color: #3182ce;
+  margin-right: 0.7rem;
+}
+.comment-time {
+  color: #888;
+  font-size: 0.93rem;
+}
+.comment-text {
+  margin-top: 0.2rem;
+  color: #2d3748;
+  font-size: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+  .comment-text {
+    color: #e3e8f7;
+  }
+}

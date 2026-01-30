@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy } from 'react-icons/fa'; // Added FaTrophy
+import { FaCode, FaUsers, FaRobot, FaBars, FaTimes, FaSignOutAlt, FaHome, FaUser, FaCaretDown, FaMoon, FaSun, FaChartLine, FaQuestionCircle, FaNewspaper, FaTrophy, FaBook, FaBug, FaGithub, FaLightbulb, FaSave, FaRoad, FaComments, FaChevronDown, FaDownload } from 'react-icons/fa';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -12,6 +12,7 @@ const Navbar = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const profileRef = useRef(null);
 
   const toggleMenu = () => {
@@ -50,19 +51,47 @@ const Navbar = () => {
   useEffect(() => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
+    setOpenDropdown(null);
   }, [location.pathname]);
 
   const navItems = [
     { path: '/', label: 'Home', icon: <FaHome /> },
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
+    { path: '/guest-leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
+    { path: '/notes', label: 'Notes', icon: <FaBook /> },
+    { path: '/portfolio-builder', label: 'Portfolio Builder', icon: <FaUser /> },
+    { path: '/export', label: 'Export Progress', icon: <FaDownload /> },
+  ];
+
+  const learningItems = [
+    { path: '/tutorials', label: 'Tutorials', icon: <FaBook /> },
+    { path: '/learning-paths', label: 'Learning Paths', icon: <FaRoad /> },
+    { path: '/blog', label: 'Blog', icon: <FaNewspaper /> },
+  ];
+
+  const codingToolsItems = [
     { path: '/challenges', label: 'Challenges', icon: <FaTrophy /> },
+    { path: '/contests', label: 'Contests', icon: <FaTrophy /> },
+    { path: '/code-quality', label: 'Code Quality', icon: <FaBug /> },
+    { path: '/debug', label: 'AI Debugger', icon: <FaRobot /> },
+    { path: '/code-explainer', label: 'Code Explainer', icon: <FaLightbulb /> },
+    { path: '/snippets', label: 'Snippets', icon: <FaSave /> },
+  ];
+
+  const communityItems = [
+    { path: '/leaderboard', label: 'Leaderboard', icon: <FaChartLine /> },
+    { path: '/advanced-leaderboard', label: 'Advanced Leaderboard', icon: <FaTrophy /> },
     { path: '/live', label: 'Collaborate', icon: <FaUsers /> },
-    { path: '/faq', label: 'FAQ', icon: <FaQuestionCircle /> },
-    { path: '/blog', label: 'Blog', icon: <FaNewspaper /> }, // Using FaNewspaper for blog
-    { path: '/profile', label: 'Profile', icon: <FaUser /> },
+    { path: '/community', label: 'Community', icon: <FaComments /> },
+    { path: '/daily-prompt', label: 'Daily Coding Prompt', icon: <FaLightbulb /> },
+    { path: '/collaborative-prompt', label: 'Real-Time Collaboration', icon: <FaUsers /> },
+    { path: '/prompt-history', label: 'Prompt History', icon: <FaBook /> },
+    { path: '/code-gallery', label: 'Code Gallery', icon: <FaBook /> },
+    { path: '/code-review-wall', label: 'Code Review Wall', icon: <FaComments /> },
   ];
   
-  const authenticatedNavItems = [
+  const profileDropdownItems = [
+    { path: '/profile', label: 'Profile', icon: <FaUser /> },
     { path: '/dashboard', label: 'Dashboard', icon: <FaChartLine /> },
   ];
 
@@ -91,9 +120,10 @@ const Navbar = () => {
               key={item.path}
               to={item.path}
               className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+              title={item.label}
             >
               <span className="nav-link-icon">{item.icon}</span>
-              <span>{item.label}</span>
+              <span className="nav-link-label">{item.label}</span>
               {location.pathname === item.path && (
                 <motion.div 
                   className="active-indicator"
@@ -103,23 +133,111 @@ const Navbar = () => {
               )}
             </Link>
           ))}
-          {currentUser && authenticatedNavItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+
+          {/* Learning Dropdown */}
+          <div className="nav-dropdown-container">
+            <button 
+              className="nav-dropdown-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'learning' ? null : 'learning')}
+              title="Learning Resources"
             >
-              <span className="nav-link-icon">{item.icon}</span>
-              <span>{item.label}</span>
-              {location.pathname === item.path && (
+              <FaBook className="nav-link-icon" />
+              <span className="nav-link-label">Learn</span>
+              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'learning' ? 'open' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {openDropdown === 'learning' && (
                 <motion.div 
-                  className="active-indicator"
-                  layoutId="activeTab"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
+                  className="nav-dropdown-menu"
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {learningItems.map((item) => (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      {item.icon} <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </motion.div>
               )}
-            </Link>
-          ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Coding Tools Dropdown */}
+          <div className="nav-dropdown-container">
+            <button 
+              className="nav-dropdown-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'tools' ? null : 'tools')}
+              title="Coding Tools"
+            >
+              <FaLightbulb className="nav-link-icon" />
+              <span className="nav-link-label">Tools</span>
+              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'tools' ? 'open' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {openDropdown === 'tools' && (
+                <motion.div 
+                  className="nav-dropdown-menu"
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {codingToolsItems.map((item) => (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      {item.icon} <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Community Dropdown */}
+          <div className="nav-dropdown-container">
+            <button 
+              className="nav-dropdown-btn"
+              onClick={() => setOpenDropdown(openDropdown === 'community' ? null : 'community')}
+              title="Community & Rankings"
+            >
+              <FaUsers className="nav-link-icon" />
+              <span className="nav-link-label">Community</span>
+              <FaChevronDown className={`dropdown-arrow ${openDropdown === 'community' ? 'open' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {openDropdown === 'community' && (
+                <motion.div 
+                  className="nav-dropdown-menu"
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {communityItems.map((item) => (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className={`dropdown-item ${location.pathname === item.path ? 'active' : ''}`}
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      {item.icon} <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="nav-actions">
@@ -166,9 +284,16 @@ const Navbar = () => {
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                      <FaUser /> Profile
-                    </Link>
+                    {profileDropdownItems.map((item) => (
+                      <Link 
+                        key={item.path}
+                        to={item.path}
+                        className="dropdown-item"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        {item.icon} {item.label}
+                      </Link>
+                    ))}
                     <button className="dropdown-item" onClick={handleLogout}>
                       <FaSignOutAlt /> Logout
                     </button>
@@ -242,7 +367,7 @@ const Navbar = () => {
                     key={item.path}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 * index }}
+                    transition={{ delay: 0.05 * index }}
                   >
                     <Link
                       to={item.path}
@@ -254,23 +379,78 @@ const Navbar = () => {
                     </Link>
                   </motion.div>
                 ))}
-                {currentUser && authenticatedNavItems.map((item, index) => (
-                  <motion.div
-                    key={item.path}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 * (index + navItems.length) }}
-                  >
-                    <Link
-                      to={item.path}
-                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => setIsMenuOpen(false)}
+              </div>
+
+              {/* Learning Section */}
+              <div className="mobile-menu-section">
+                <div className="mobile-menu-category-title">Learning</div>
+                <div className="mobile-nav-links">
+                  {learningItems.map((item, index) => (
+                    <motion.div
+                      key={item.path}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 * (index + 5) }}
                     >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </Link>
-                  </motion.div>
-                ))}
+                      <Link
+                        to={item.path}
+                        className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Coding Tools Section */}
+              <div className="mobile-menu-section">
+                <div className="mobile-menu-category-title">Tools</div>
+                <div className="mobile-nav-links">
+                  {codingToolsItems.map((item, index) => (
+                    <motion.div
+                      key={item.path}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 * (index + 8) }}
+                    >
+                      <Link
+                        to={item.path}
+                        className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Community Section */}
+              <div className="mobile-menu-section">
+                <div className="mobile-menu-category-title">Community</div>
+                <div className="mobile-nav-links">
+                  {communityItems.map((item, index) => (
+                    <motion.div
+                      key={item.path}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 * (index + 14) }}
+                    >
+                      <Link
+                        to={item.path}
+                        className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
               
               {/* Mobile Profile Section (when logged in) */}
@@ -298,13 +478,16 @@ const Navbar = () => {
                     </span>
                   </div>
                   
-                  <Link 
-                    to="/profile" 
-                    className="mobile-profile-link"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <FaUser /> <span>Profile</span>
-                  </Link>
+                  {profileDropdownItems.map((item) => (
+                    <Link 
+                      key={item.path}
+                      to={item.path}
+                      className="mobile-profile-link"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.icon} <span>{item.label}</span>
+                    </Link>
+                  ))}
                   
                   <button 
                     className="mobile-logout-btn"

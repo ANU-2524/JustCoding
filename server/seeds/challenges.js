@@ -1,9 +1,11 @@
-const mongoose = require('mongoose');
-require('dotenv').config();
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const Challenge = require('../models/Challenge');
+dotenv.config();
 
-const sampleChallenges = [
+import Challenge from '../models/Challenge.js';
+
+export const sampleChallenges = [
   {
     title: 'Two Sum',
     slug: 'two-sum',
@@ -539,6 +541,228 @@ Use two pointers to compare elements from both arrays and build the merged resul
       { input: '1 2 4\n1 3 4', output: '1 1 2 3 4 4', explanation: 'Merge two sorted arrays' }
     ],
     tags: ['array', 'two-pointers', 'sorting']
+  },
+  {
+    title: 'Longest Common Subsequence',
+    slug: 'longest-common-subsequence',
+    description: `Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
+
+A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.
+
+For example, "ace" is a subsequence of "abcde" while "aec" is not.`,
+    difficulty: 'hard',
+    category: 'dp',
+    points: 500,
+    testCases: [
+      { input: 'abcde\nace', expectedOutput: '3', isHidden: false, timeLimit: 2000 },
+      { input: 'abc\nabc', expectedOutput: '3', isHidden: false, timeLimit: 2000 },
+      { input: 'abc\ndef', expectedOutput: '0', isHidden: false, timeLimit: 2000 },
+      { input: 'psnw\nvozsh', expectedOutput: '1', isHidden: true, timeLimit: 2000 },
+      { input: 'ezupkr\nubmrapg', expectedOutput: '2', isHidden: true, timeLimit: 2000 }
+    ],
+    starterCode: {
+      javascript: `function longestCommonSubsequence(text1, text2) {
+  // Your code here
+  // Return the length of LCS
+}
+
+// Read input
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin });
+const lines = [];
+rl.on('line', line => lines.push(line));
+rl.on('close', () => {
+  const text1 = lines[0];
+  const text2 = lines[1];
+  const result = longestCommonSubsequence(text1, text2);
+  console.log(result);
+});`,
+      python: `def longest_common_subsequence(text1, text2):
+    # Your code here
+    # Return the length of LCS
+    pass
+
+# Read input
+text1 = input().strip()
+text2 = input().strip()
+result = longest_common_subsequence(text1, text2)
+print(result)`,
+      java: `import java.util.*;
+
+public class Main {
+    public static int longestCommonSubsequence(String text1, String text2) {
+        // Your code here
+        return 0;
+    }
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String text1 = sc.nextLine();
+        String text2 = sc.nextLine();
+        int result = longestCommonSubsequence(text1, text2);
+        System.out.println(result);
+    }
+}`,
+      cpp: `#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int longestCommonSubsequence(string text1, string text2) {
+    // Your code here
+    return 0;
+}
+
+int main() {
+    string text1, text2;
+    getline(cin, text1);
+    getline(cin, text2);
+    
+    int result = longestCommonSubsequence(text1, text2);
+    cout << result << endl;
+    return 0;
+}`
+    },
+    hints: [
+      'Use dynamic programming with a 2D table',
+      'dp[i][j] represents LCS of first i chars of text1 and first j chars of text2',
+      'If characters match, dp[i][j] = dp[i-1][j-1] + 1',
+      'Otherwise, dp[i][j] = max(dp[i-1][j], dp[i][j-1])'
+    ],
+    editorial: `## Solution
+
+Use a 2D DP table where dp[i][j] is the length of LCS of text1[0..i-1] and text2[0..j-1].
+
+Initialize dp[0][j] = 0 and dp[i][0] = 0.
+
+For each i from 1 to len1, j from 1 to len2:
+  if text1[i-1] == text2[j-1], dp[i][j] = dp[i-1][j-1] + 1
+  else dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+Return dp[len1][len2].`,
+    constraints: '1 <= text1.length, text2.length <= 1000\ntext1 and text2 consist of lowercase English letters.',
+    examples: [
+      { input: 'abcde\nace', output: '3', explanation: 'LCS is "ace"' },
+      { input: 'abc\nabc', output: '3', explanation: 'LCS is "abc"' },
+      { input: 'abc\ndef', output: '0', explanation: 'No common characters' }
+    ],
+    tags: ['string', 'dynamic-programming']
+  },
+  {
+    title: '0/1 Knapsack Problem',
+    slug: '0-1-knapsack-problem',
+    description: `You are given weights and values of N items, put these items in a knapsack of capacity W to get the maximum total value in the knapsack.
+
+Note that you can either put the item or not (0-1 property).`,
+    difficulty: 'hard',
+    category: 'dp',
+    points: 500,
+    testCases: [
+      { input: '3\n10\n60 100 120\n10 20 30', expectedOutput: '220', isHidden: false, timeLimit: 2000 },
+      { input: '2\n50\n60 100\n10 20', expectedOutput: '160', isHidden: false, timeLimit: 2000 },
+      { input: '1\n10\n100\n20', expectedOutput: '0', isHidden: false, timeLimit: 2000 },
+      { input: '4\n5\n10 40 30 50\n5 4 6 3', expectedOutput: '50', isHidden: true, timeLimit: 2000 },
+      { input: '3\n8\n10 20 30\n2 3 4', expectedOutput: '50', isHidden: true, timeLimit: 2000 }
+    ],
+    starterCode: {
+      javascript: `function knapsack(W, wt, val, n) {
+  // Your code here
+  // Return maximum value
+}
+
+// Read input
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin });
+const lines = [];
+rl.on('line', line => lines.push(line));
+rl.on('close', () => {
+  const n = parseInt(lines[0]);
+  const W = parseInt(lines[1]);
+  const val = lines[2].split(' ').map(Number);
+  const wt = lines[3].split(' ').map(Number);
+  const result = knapsack(W, wt, val, n);
+  console.log(result);
+});`,
+      python: `def knapsack(W, wt, val, n):
+    # Your code here
+    # Return maximum value
+    pass
+
+# Read input
+n = int(input())
+W = int(input())
+val = list(map(int, input().split()))
+wt = list(map(int, input().split()))
+result = knapsack(W, wt, val, n)
+print(result)`,
+      java: `import java.util.*;
+
+public class Main {
+    public static int knapsack(int W, int[] wt, int[] val, int n) {
+        // Your code here
+        return 0;
+    }
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int W = sc.nextInt();
+        int[] val = new int[n];
+        for (int i = 0; i < n; i++) val[i] = sc.nextInt();
+        int[] wt = new int[n];
+        for (int i = 0; i < n; i++) wt[i] = sc.nextInt();
+        int result = knapsack(W, wt, val, n);
+        System.out.println(result);
+    }
+}`,
+      cpp: `#include <iostream>
+#include <vector>
+using namespace std;
+
+int knapsack(int W, vector<int>& wt, vector<int>& val, int n) {
+    // Your code here
+    return 0;
+}
+
+int main() {
+    int n, W;
+    cin >> n >> W;
+    vector<int> val(n), wt(n);
+    for (int i = 0; i < n; i++) cin >> val[i];
+    for (int i = 0; i < n; i++) cin >> wt[i];
+    
+    int result = knapsack(W, wt, val, n);
+    cout << result << endl;
+    return 0;
+}`
+    },
+    hints: [
+      'Use 2D DP where dp[i][w] is max value using first i items with capacity w',
+      'For each item, decide to include or exclude',
+      'If wt[i-1] > w, dp[i][w] = dp[i-1][w]',
+      'Else dp[i][w] = max(dp[i-1][w], val[i-1] + dp[i-1][w - wt[i-1]])'
+    ],
+    editorial: `## Solution
+
+Use 2D DP table dp[n+1][W+1].
+
+Initialize dp[0][w] = 0 for all w, dp[i][0] = 0 for all i.
+
+For i from 1 to n:
+  for w from 1 to W:
+    if wt[i-1] <= w:
+      dp[i][w] = max(dp[i-1][w], val[i-1] + dp[i-1][w - wt[i-1]])
+    else:
+      dp[i][w] = dp[i-1][w]
+
+Return dp[n][W].`,
+    constraints: '1 <= N <= 1000\n1 <= W <= 1000\n1 <= wt[i], val[i] <= 1000',
+    examples: [
+      { input: '3\n10\n60 100 120\n10 20 30', output: '220', explanation: 'Items 2 and 3: 100 + 120 = 220' },
+      { input: '2\n50\n60 100\n10 20', output: '160', explanation: 'Both items: 60 + 100 = 160' },
+      { input: '1\n10\n100\n20', output: '0', explanation: 'Item weight 20 > capacity 10' }
+    ],
+    tags: ['dynamic-programming', 'knapsack']
   }
 ];
 

@@ -1,5 +1,5 @@
-const LearningEvent = require('../models/LearningEvent');
-const User = require('../models/User');
+import LearningEvent from '../models/LearningEvent.js';
+import User from '../models/User.js';
 
 class AnalyticsService {
   static async getUserProgress(userId) {
@@ -134,4 +134,4 @@ class AnalyticsService {
   }
 }
 
-module.exports = AnalyticsService;
+export default AnalyticsService;

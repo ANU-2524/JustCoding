@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const contestSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -34,6 +34,12 @@ const contestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Indexes for optimized queries
+contestSchema.index({ slug: 1 }, { unique: true });
+contestSchema.index({ status: 1, startTime: -1 });
+contestSchema.index({ startTime: 1, endTime: 1 });
+contestSchema.index({ 'participants.odId': 1 });
+
 // Update status based on time
 contestSchema.methods.updateStatus = function() {
   const now = new Date();
@@ -47,4 +53,4 @@ contestSchema.methods.updateStatus = function() {
   return this.status;
 };
 
-module.exports = mongoose.model('Contest', contestSchema);
+export default mongoose.model('Contest', contestSchema);

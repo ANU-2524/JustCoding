@@ -1,52 +1,92 @@
-﻿// BACKEND: server.js (or index.js)
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const http = require("http");
-const { Server } = require("socket.io");
-const connectDB = require('./config/database');
-const BadgeService = require('./services/BadgeService');
-const {
-  generalLimiter, 
-  aiLimiter, 
-  codeLimiter, 
-  rateLimitLogger 
-} = require('./middleware/simpleRateLimiter');
-const gptRoute = require("./routes/gptRoute.js");
-const codeQualityRoute = require("./routes/codeQuality.js");
-const progressRoute = require("./routes/progress.js");
-const challengesRoute = require("./routes/challenges.js");
+﻿
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+
+import connectDB from './config/database.js';
+import BadgeService from './services/BadgeService.js';
+import Room from './models/Room.js';
+import ExecutionQueueService from './services/ExecutionQueueService.js';
+import ExecutionHistory from './models/ExecutionHistory.js';
+
+
+import { logger, httpLogger } from './services/logger.js';
+
+import {
+  errorHandler,
+  notFoundHandler,
+  setupUnhandledRejectionHandler,
+  setupUncaughtExceptionHandler
+} from './middleware/error.js';
+
+import { asyncHandler } from './middleware/async.js';
+import { BadRequestError, ExternalServiceError } from './utils/ErrorResponse.js';
+
+// Setup uncaught exception handler early
+setupUncaughtExceptionHandler();
+
+import {
+  generalLimiter,
+  aiLimiter,
+  codeLimiter,
+  rateLimitLogger
+} from './middleware/simpleRateLimiter.js';
+
+import codeQualityRoute from './routes/codeQuality.js';
+import analysisRoute from './routes/analysis.js';
+import progressRoute from './routes/progress.js';
+import challengesRoute from './routes/challenges.js';
+import roomRoute from './routes/room.js';
+import userRoute from './routes/user.js';
+import executionRoute from './routes/execution.js';
+
+import { validate } from './middleware/validation.js';
+import gptRoute from './routes/gptRoute.js';
+import communityRoute from './routes/community.js';
+import tutorialsRoute from './routes/tutorials.js';
+import authRoute from './routes/auth.routes.js';
+import { applySecurityMiddleware } from './config/security.js';
+
+// Socket.IO (modularized)
+import socketModule from './socket/index.js';
+const { initializeSocket, cleanup: socketCleanup } = socketModule;
 
 // Multi-Language Visualizer Service
-const visualizerService = require('./services/visualizer');
+import visualizerServicePkg from './services/visualizer/index.js';
+const visualizerService = visualizerServicePkg;
 
+// Initialize Express app and HTTP server
 const app = express();
 const server = http.createServer(app);
+
+// Global variables for WebSocket management
+const userMap = {};
+const roomTimers = {};
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173'
+];
 
 // Initialize database connection
 connectDB();
 
 // Initialize badges on startup
-BadgeService.initializeBadges().catch(console.error);
+BadgeService.initializeBadges().catch(err => logger.warn('Badge initialization failed', { error: err.message }));
 
-const userMap = {};
+// ============================================
+// Security Middleware
+// ============================================
+applySecurityMiddleware(app, cors, express);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://just-coding-theta.vercel.app";
-const allowedOrigins = [
-  "http://localhost:5173",
-  FRONTEND_URL
-];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
-
-// Security: Request size limiting - increased for code submissions
-app.use(express.json({ limit: '50kb' }));
-
-// Security: Rate limiting
+// Rate limiting middleware
 app.use(rateLimitLogger);
 app.use(generalLimiter);
 
@@ -59,81 +99,230 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
+  logger.info("User connected", { socketId: socket.id });
 
-  socket.on("join-room", ({ roomId, username }) => {
-    socket.join(roomId);
-    console.log(`${username} joined room ${roomId}`);
-    userMap[socket.id] = { username, roomId };
-    socket.to(roomId).emit("user-joined", `${username} joined the room`);
+  socket.on("join-room", async ({ roomId, username, userId }) => {
+    try {
+      socket.join(roomId);
+
+      let room = await Room.findOne({ roomId });
+      if (!room) {
+        room = await Room.create({
+          roomId,
+          code: "//Welcome to JustCoding",
+          language: "javascript",
+        });
+      }
+
+      logger.info(`${username} joined room ${roomId}`, { username, roomId, userId });
+      userMap[socket.id] = { username, roomId, userId: userId || socket.id };
+
+      // Send initial room state with sequence number
+      const sequence = room.getNextSequence();
+      await room.save();
+
+      socket.emit('room-state', {
+        code: room.code,
+        language: room.language,
+        sequence,
+        executionState: room.executionState
+      });
+
+      socket.to(roomId).emit("user-joined", {
+        message: `${username} joined the room`,
+        username,
+        userId: userId || socket.id,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('Error joining room', { error: error.message, roomId });
+      socket.emit('error', { message: 'Failed to join room' });
+    }
   });
 
-  socket.on("code-change", ({ roomId, code }) => {
-    socket.to(roomId).emit("code-update", code);
-  });
+  socket.on("code-change", async ({ roomId, code, sequence }) => {
+    try {
+      socket.to(roomId).emit("code-update", { code, sequence });
 
-  socket.on("send-chat", ({ roomId, username, message }) => {
-    socket.to(roomId).emit("receive-chat", { username, message });
-  });
+      if (roomTimers[roomId]) {
+        clearTimeout(roomTimers[roomId]);
+      }
 
-  socket.on("typing", ({ roomId, username }) => {
-    socket.to(roomId).emit("show-typing", `${username} is typing...`);
+      roomTimers[roomId] = setTimeout(async () => {
+        try {
+          const room = await Room.findOne({ roomId });
+          if (room) {
+            room.code = code;
+            await room.save();
+          }
+          delete roomTimers[roomId];
+        } catch (error) {
+          logger.error('Error updating room code', { error: error.message, roomId });
+          delete roomTimers[roomId];
+        }
+      }, 2000);
+    } catch (error) {
+      logger.error('Error broadcasting code change', { error: error.message, roomId });
+    }
   });
 
   socket.on("disconnect", () => {
-    const user = userMap[socket.id];
-    if (user) {
-      const { username, roomId } = user;
-      socket.to(roomId).emit("user-left", `${username} left the room`);
-      delete userMap[socket.id];
+    logger.info("User disconnected", { socketId: socket.id });
+    delete userMap[socket.id];
+  });
+
+  socket.on("execute-code", async ({ roomId, code, language, stdin, userId, username }) => {
+    try {
+      const user = userMap[socket.id];
+      const execUserId = userId || user?.userId || socket.id;
+      const execUsername = username || user?.username || 'Anonymous';
+      const correlationId = `ws-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      logger.info('WebSocket execution request', {
+        roomId,
+        userId: execUserId,
+        language,
+        correlationId
+      });
+
+      // Emit execution started event
+      io.to(roomId).emit("execution-started", {
+        userId: execUserId,
+        username: execUsername,
+        correlationId,
+        timestamp: new Date().toISOString()
+      });
+
+      // Execute code through queue service
+      const result = await ExecutionQueueService.executeCode({
+        roomId,
+        userId: execUserId,
+        username: execUsername,
+        code,
+        language,
+        stdin: stdin || '',
+        correlationId,
+        priority: 0
+      });
+
+      // Record execution
+      await ExecutionHistory.recordExecution({
+        executionId: result.executionId,
+        correlationId,
+        roomId,
+        userId: execUserId,
+        username: execUsername,
+        language,
+        code,
+        stdin: stdin || '',
+        output: result.output || '',
+        error: result.error,
+        success: result.success,
+        executionTime: result.executionTime,
+        completedAt: new Date(result.timestamp),
+        status: result.success ? 'completed' : 'failed'
+      });
+
+      // Emit result to all users in room with correlation ID
+      io.to(roomId).emit("execution-result", {
+        ...result,
+        correlationId
+      });
+
+      logger.info('WebSocket execution completed', {
+        roomId,
+        userId: execUserId,
+        success: result.success,
+        correlationId
+      });
+    } catch (error) {
+      logger.error('WebSocket execution error', {
+        error: error.message,
+        roomId,
+        userId
+      });
+
+      socket.emit("execution-result", {
+        success: false,
+        error: error.message,
+        userId,
+        username,
+        roomId,
+        timestamp: new Date().toISOString()
+      });
     }
-    console.log("User disconnected", socket.id);
   });
 });
 
-// Language map for code execution - ALL LANGUAGES
+// Make io accessible to routes if needed
+app.set('io', io);
+
+// ============================================
+// Language Configuration for Code Execution
+// ============================================
 const languageMap = {
   javascript: { ext: 'js', version: '18.15.0' },
-  python:     { ext: 'py', version: '3.10.0' },
-  java:       { ext: 'java', version: '15.0.2' },
-  cpp:        { ext: 'cpp', version: '10.2.0' },
-  c:          { ext: 'c', version: '10.2.0' },
-  go:         { ext: 'go', version: '1.16.2' },
-  ruby:       { ext: 'rb', version: '3.0.1' },
-  php:        { ext: 'php', version: '8.2.3' },
-  swift:      { ext: 'swift', version: '5.3.3' },
-  rust:       { ext: 'rs', version: '1.68.2' },
+  python: { ext: 'py', version: '3.10.0' },
+  java: { ext: 'java', version: '15.0.2' },
+  cpp: { ext: 'cpp', version: '10.2.0' },
+  c: { ext: 'c', version: '10.2.0' },
+  go: { ext: 'go', version: '1.16.2' },
+  ruby: { ext: 'rb', version: '3.0.1' },
+  php: { ext: 'php', version: '8.2.3' },
+  swift: { ext: 'swift', version: '5.3.3' },
+  rust: { ext: 'rs', version: '1.68.2' },
 };
 
-// AI routes with security
-app.use("/api/gpt", aiLimiter, gptRoute);
-app.use("/api/code-quality", codeQualityRoute);
-app.use("/api/progress", progressRoute);
-app.use("/api/challenges", challengesRoute);
+// ============================================
+// API Routes
+// ============================================
 
-// Multi-Language Visualizer Endpoint - supports JS, Python, Java, C++, Go
-app.post('/api/visualizer/visualize', codeLimiter, (req, res) => {
+// Auth routes
+app.use("/api/auth", authRoute);
+
+// AI routes with security and rate limiting
+app.use("/api/gpt", aiLimiter, gptRoute);
+
+// Code quality route
+app.use("/api/code-quality", codeQualityRoute);
+app.use("/api/analysis", analysisRoute); // New pluggable code quality analysis system
+app.use("/api/progress", progressRoute);
+
+// Challenges routes
+app.use("/api/challenges", challengesRoute);
+app.use("/api/community", communityRoute);
+
+// Tutorials routes
+app.use("/api/tutorials", tutorialsRoute);
+
+// Room routes
+app.use("/api/room", roomRoute);
+
+// User data sync routes (profile + snippets)
+app.use("/api/user", userRoute);
+
+// Execution history and queue management routes
+app.use("/api/execution", executionRoute);
+
+// ============================================
+// Visualizer Endpoints
+// ============================================
+
+/**
+ * POST /api/visualizer/visualize
+ * Visualize code execution step-by-step
+ */
+app.post('/api/visualizer/visualize', codeLimiter, validate('visualizer'), (req, res) => {
   const { code, language } = req.body;
-  
-  if (!code || !language) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Missing required fields: code and language' 
-    });
-  }
-  
-  try {
-    const result = visualizerService.visualize(code, language);
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
+
+  const result = visualizerService.visualize(code, language);
+  res.json({ success: true, ...result });
 });
 
-// Get supported languages for visualizer
+/**
+ * GET /api/visualizer/languages
+ * Get supported languages for visualizer
+ */
 app.get('/api/visualizer/languages', (req, res) => {
   res.json({
     success: true,
@@ -141,65 +330,140 @@ app.get('/api/visualizer/languages', (req, res) => {
   });
 });
 
-// Code execution endpoint with security
-app.post('/compile', codeLimiter, async (req, res) => {
-  const { language, code, stdin } = req.body;
-  
-  if (!language || !code) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: language and code' 
-    });
-  }
-  
-  if (code.length > 10000) {
-    return res.status(400).json({ 
-      error: 'Code too long. Maximum 10,000 characters allowed.' 
-    });
-  }
-  
-  if (stdin && stdin.length > 1000) {
-    return res.status(400).json({ 
-      error: 'Input too long. Maximum 1,000 characters allowed.' 
-    });
-  }
-  
+// Code execution endpoint with race condition prevention
+app.post('/compile', codeLimiter, asyncHandler(async (req, res) => {
+  const { language, code, stdin, roomId, userId, username, correlationId } = req.body;
+
   const langInfo = languageMap[language];
   if (!langInfo) {
-    return res.status(400).json({ 
+    return res.status(400).json({
+      success: false,
       error: 'Unsupported language',
       supportedLanguages: Object.keys(languageMap)
     });
   }
 
+  // Generate correlation ID if not provided
+  const execCorrelationId = correlationId || `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
   try {
-    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+    // Use ExecutionQueueService for proper locking and queuing
+    const result = await ExecutionQueueService.executeCode({
+      roomId: roomId || 'standalone',
+      userId: userId || 'anonymous',
+      username: username || 'Anonymous',
+      code,
       language,
-      version: langInfo.version,
       stdin: stdin || '',
-      files: [{ name: `main.${langInfo.ext}`, content: code }],
+      correlationId: execCorrelationId,
+      priority: 0
     });
 
-    const output = response.data.run.stdout || response.data.run.stderr || "No output";
-    const sanitizedOutput = output.substring(0, 5000);
-    
-    res.json({ output: sanitizedOutput });
-  } catch (error) {
-    console.error("Compile Error:", error.message);
-    res.status(500).json({ 
-      error: 'Code execution failed. Please try again.',
-      tip: 'Check your code for syntax errors.'
+    // Record execution in history
+    await ExecutionHistory.recordExecution({
+      executionId: result.executionId,
+      correlationId: execCorrelationId,
+      roomId: result.roomId,
+      userId: result.userId,
+      username: result.username,
+      language,
+      code,
+      stdin: stdin || '',
+      output: result.output || '',
+      error: result.error,
+      success: result.success,
+      executionTime: result.executionTime,
+      completedAt: new Date(result.timestamp),
+      status: result.success ? 'completed' : 'failed'
     });
+
+    res.json(result);
+  } catch (error) {
+    logger.error('Execution error', { error: error.message, correlationId: execCorrelationId });
+    throw new ExternalServiceError(error.message || 'Code execution failed');
   }
+}));
+
+app.get('/', (req, res) => {
+  res.json({ 
+    name: 'JustCoding API',
+    version: '1.0.0',
+    status: 'running',
+    features: ['Multi-Language Code Execution', 'Code Visualizer', 'AI Assistance', 'Real-time Collaboration']
+  });
 });
 
-app.get('/', (req, res) => res.send('JustCode backend with Multi-Language Visualizer'));
-
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.get('/test', (req, res) => {
-  res.json({ message: 'Server is working!', port: process.env.PORT || 4334 });
+  res.json({ 
+    message: 'Server is working!', 
+    port: process.env.PORT || 4334 
+  });
 });
 
-server.listen(process.env.PORT || 4334, () => console.log(`JustCode Server running on port ${process.env.PORT || 4334}`));
+// ============================================
+// Error Handling Middleware
+// ============================================
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Cannot ${req.method} ${req.path}`
+  });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  
+  // Don't leak error details in production
+  const isDev = process.env.NODE_ENV === 'development';
+  
+  res.status(err.statusCode || 500).json({
+    error: err.message || 'Internal Server Error',
+    ...(isDev && { stack: err.stack })
+  });
+});
+
+// ============================================
+// Graceful Shutdown
+// ============================================
+
+function gracefulShutdown(signal) {
+  console.log(`\n${signal} received. Shutting down gracefully...`);
+  
+  server.close(() => {
+    console.log('HTTP server closed.');
+    socketCleanup();
+    process.exit(0);
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error('Could not close connections in time, forcefully shutting down');
+    process.exit(1);
+  }, 10000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// ============================================
+// Start Server
+// ============================================
+
+const PORT = process.env.PORT || 4334;
+server.listen(PORT, () => {
+  console.log(`🚀 JustCoding Server running on port ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+export { app, server, io };

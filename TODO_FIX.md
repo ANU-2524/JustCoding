@@ -1,0 +1,4 @@
+- [x] Add slug validation to router.post('/:slug/submit')
+- [x] Add slug validation to router.get('/contests/:slug')
+- [x] Update TODO.md to reflect changes
+- [x] Run server to verify no syntax errors

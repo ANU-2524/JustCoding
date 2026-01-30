@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const testCaseSchema = new mongoose.Schema({
   input: { type: String, required: true },
@@ -10,7 +10,7 @@ const testCaseSchema = new mongoose.Schema({
 
 const challengeSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
+  slug: { type: String, required: true, unique: true, sparse: true },
   description: { type: String, required: true },
   difficulty: { 
     type: String, 
@@ -54,4 +54,4 @@ challengeSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Challenge', challengeSchema);
+export default mongoose.model('Challenge', challengeSchema);
