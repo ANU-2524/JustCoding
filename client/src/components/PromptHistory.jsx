@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./PromptHistory.css";
 import PrismHighlight from "./PrismHighlight";
-
 import SolutionComments from "./SolutionComments";
-
 
 // Demo: Use the same prompts as DailyPrompt
 const getAllPrompts = () => [

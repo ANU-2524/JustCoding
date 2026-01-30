@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DailyPrompt.css";
 import PrismHighlight from "./PrismHighlight";
-
 import SolutionComments from "./SolutionComments";
-
 
 // Demo backend using localStorage for guest persistence
 const getTodayKey = () => {

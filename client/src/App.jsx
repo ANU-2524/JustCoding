@@ -36,7 +36,7 @@ const ChallengeEditorial = lazy(() => import("./components/ChallengeEditorial"))
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
-const BadgesPage = lazy(() => import("./components/BadgesPage"));
+const UserBadgesPage = lazy(() => import("./components/UserBadgesPage"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
 const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
@@ -51,7 +51,6 @@ const Analytics = lazy(() => import("./components/Analytics"));
 
 const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
 
-const AdvancedLeaderboard = lazy(() => import("./components/AdvancedLeaderboard"));
 const CollaborativePromptEditor = lazy(() => import("./components/CollaborativePromptEditor"));
 const PromptHistory = lazy(() => import("./components/PromptHistory"));
 const DailyPrompt = lazy(() => import("./components/DailyPrompt"));
@@ -156,7 +155,7 @@ function App() {
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
-                  <Route path="/badges" element={<BadgesPage />} />
+                  <Route path="/badges" element={<UserBadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
                   <Route path="/debug-helper" element={<DebugHelper />} />
 
@@ -174,8 +173,6 @@ function App() {
                   <Route path="/prompt-history" element={<PromptHistory />} />
                   {/* Real-Time Collaborative Prompt Editor */}
                   <Route path="/collaborative-prompt" element={<CollaborativePromptEditor />} />
-                  {/* Advanced Leaderboard with Analytics */}
-                  <Route path="/advanced-leaderboard" element={<AdvancedLeaderboard />} />
                   {/* Public Code Review Wall */}
                   <Route path="/code-review-wall" element={<CodeReviewWall />} />
                   
