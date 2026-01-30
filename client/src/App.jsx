@@ -36,7 +36,7 @@ const ChallengeEditorial = lazy(() => import("./components/ChallengeEditorial"))
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
-const BadgesPage = lazy(() => import("./components/BadgesPage"));
+const UserBadgesPage = lazy(() => import("./components/UserBadgesPage"));
 const DebugHelper = lazy(() => import("./components/DebugHelper"));
 const TutorialsPage = lazy(() => import("./components/TutorialsPage"));
 const TutorialView = lazy(() => import("./components/TutorialView"));
@@ -155,7 +155,7 @@ function App() {
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
-                  <Route path="/badges" element={<BadgesPage />} />
+                  <Route path="/badges" element={<UserBadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
                   <Route path="/debug-helper" element={<DebugHelper />} />
 
