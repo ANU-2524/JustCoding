@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "gsap": "^3.14.2",
-    "react-markdown": "^10.1.0"
+    "prismjs": "^1.30.0"
   }
 }

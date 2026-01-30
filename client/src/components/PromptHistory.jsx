@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./PromptHistory.css";
+import PrismHighlight from "./PrismHighlight";
 
 // Demo: Use the same prompts as DailyPrompt
 const getAllPrompts = () => [
@@ -68,7 +69,7 @@ export default function PromptHistory() {
               <span className="history-sub-name">{sub.name}</span>
               <span className="history-sub-votes">▲ {sub.votes || 0}</span>
             </div>
-            <pre className="history-sub-solution">{sub.solution}</pre>
+            <PrismHighlight code={sub.solution} language="javascript" />
           </div>
         ))}
       </div>
