@@ -148,6 +148,7 @@ export default function DailyPrompt() {
             </div>
           );
         })}
+
       </div>
     </div>
   );
