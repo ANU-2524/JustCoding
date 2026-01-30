@@ -1,19 +1,40 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight } from 'react-icons/fa';
+import Breadcrumb from './Breadcrumb';
 import '../Style/Profile.css';
+import { useTheme } from './ThemeContext';
 import {
-  addSnippet,
-  deleteSnippet,
   getProfileLocal,
   getStats,
   listSessions,
-  listSnippets,
   updateProfileLocal,
-  updateSnippet,
 } from '../services/localStore';
+import {
+  fetchSnippetsFromBackend,
+  createSnippetOnBackend,
+  updateSnippetOnBackend,
+  deleteSnippetOnBackend,
+} from '../services/syncService';
 
+// Utility to get or create a temp user ID for guests
+function getUserId(currentUser) {
+  if (currentUser?.uid) return currentUser.uid;
+  let tempId = localStorage.getItem('tempUserId');
+  if (!tempId) {
+    tempId = 'guest-' + ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+    localStorage.setItem('tempUserId', tempId);
+  }
+  return tempId;
+
+/**
+ * Profile Component - User Profile Card with Basic Snippet Management
+ * For comprehensive analytics and dashboard features, use UserDashboard component
+ */
 const Profile = () => {
+  const { isDark, theme } = useTheme();
   const { currentUser } = useAuth();
   const [profile, setProfile] = useState({
     displayName: '',
@@ -53,14 +74,16 @@ const Profile = () => {
   }, [currentUser]);
 
   const refreshData = () => {
-    setSnippets(listSnippets());
+    const userId = getUserId(currentUser);
+    fetchSnippetsFromBackend(userId).then(setSnippets);
     setSessions(listSessions());
     setStats(getStats());
   };
 
   useEffect(() => {
     refreshData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -121,28 +144,42 @@ const Profile = () => {
 
   const normalizeUrl = (value) => {
     const v = String(value || '').trim();
-    if (!v) return '';
-    if (v.startsWith('http://') || v.startsWith('https://')) return v;
+    if (!v) {
+return '';
+}
+    if (v.startsWith('http://') || v.startsWith('https://')) {
+return v;
+}
     return `https://${v}`;
   };
 
   const identityLabel = useMemo(() => {
-    if (currentUser?.email) return currentUser.email;
+    if (currentUser?.email) {
+return currentUser.email;
+}
     return 'Guest (saved in this browser)';
   }, [currentUser]);
 
   const formatDate = (iso) => {
-    if (!iso) return '';
+    if (!iso) {
+return '';
+}
     const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
+    if (Number.isNaN(d.getTime())) {
+return iso;
+}
     return d.toLocaleString();
   };
 
   const formatDuration = (startedAt, endedAt) => {
-    if (!startedAt) return '';
+    if (!startedAt) {
+return '';
+}
     const start = new Date(startedAt).getTime();
     const end = endedAt ? new Date(endedAt).getTime() : Date.now();
-    if (Number.isNaN(start) || Number.isNaN(end)) return '';
+    if (Number.isNaN(start) || Number.isNaN(end)) {
+return '';
+}
     const sec = Math.max(0, Math.floor((end - start) / 1000));
     const min = Math.floor(sec / 60);
     const rem = sec % 60;
@@ -154,18 +191,26 @@ const Profile = () => {
       alert('Please enter a snippet title.');
       return;
     }
-    addSnippet({ title: newTitle.trim(), language: newLanguage, code: newCode });
-    setNewTitle('');
-    setNewCode('');
-    refreshData();
-    setActiveTab('snippets');
+    const userId = getUserId(currentUser);
+    createSnippetOnBackend(userId, {
+      title: newTitle.trim(),
+      language: newLanguage,
+      code: newCode,
+    }).then(() => {
+      setNewTitle('');
+      setNewCode('');
+      refreshData();
+      setActiveTab('snippets');
+    });
   };
 
   const handleDeleteSnippet = (id) => {
     const ok = window.confirm('Delete this snippet?');
     if (!ok) return;
-    deleteSnippet(id);
-    refreshData();
+    const userId = getUserId(currentUser);
+    deleteSnippetOnBackend(id, userId).then(() => {
+      refreshData();
+    });
   };
 
   const handleLoadSnippetToEditor = (snippet) => {
@@ -180,6 +225,12 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
+      <Breadcrumb 
+        items={[
+          { label: 'Profile', path: null }
+        ]}
+      />
+
       <div className="profile-card">
         <div className="profile-header">
           <div className="back-button-container">
@@ -189,6 +240,16 @@ const Profile = () => {
               title="Go back"
             >
               ← Back
+            </button>
+          </div>
+          
+          <div className="edit-button-container">
+            <button 
+              className="edit-profile-btn"
+              onClick={() => setIsEditing(true)}
+              title="Edit profile"
+            >
+              <FaPencilAlt /> Edit
             </button>
           </div>
           
@@ -300,7 +361,9 @@ const Profile = () => {
                   target={profile.githubUrl ? "_blank" : undefined}
                   rel={profile.githubUrl ? "noreferrer" : undefined}
                   onClick={(e) => {
-                    if (!profile.githubUrl) e.preventDefault();
+                    if (!profile.githubUrl) {
+e.preventDefault();
+}
                   }}
                 >
                   <FaGithub /> <span>{profile.githubUrl ? 'GitHub' : 'GitHub (not set)'}</span>
@@ -311,13 +374,29 @@ const Profile = () => {
                   target={profile.linkedinUrl ? "_blank" : undefined}
                   rel={profile.linkedinUrl ? "noreferrer" : undefined}
                   onClick={(e) => {
-                    if (!profile.linkedinUrl) e.preventDefault();
+                    if (!profile.linkedinUrl) {
+e.preventDefault();
+}
                   }}
                 >
                   <FaLinkedin /> <span>{profile.linkedinUrl ? 'LinkedIn' : 'LinkedIn (not set)'}</span>
                 </a>
               </div>
             )}
+          </div>
+
+          {/* Dashboard Redirect Notice */}
+          <div className="dashboard-notice">
+            <div className="notice-content">
+              <h3>Want More Analytics?</h3>
+              <p>Visit the <strong>Dashboard</strong> to see detailed statistics, achievements, portfolio view, and collaboration history.</p>
+              <button 
+                className="notice-btn"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                <FaArrowRight /> Go to Dashboard
+              </button>
+            </div>
           </div>
 
           <div className="dashboard">
@@ -399,10 +478,12 @@ const Profile = () => {
                           <button
                             className="dash-btn"
                             onClick={() => {
+                              const userId = getUserId(currentUser);
                               const title = window.prompt('Rename snippet', s.title);
                               if (!title) return;
-                              updateSnippet(s.id, { title: title.trim() });
-                              refreshData();
+                              updateSnippetOnBackend(s.id, userId, { title: title.trim() }).then(() => {
+                                refreshData();
+                              });
                             }}
                           >
                             Rename
@@ -468,7 +549,7 @@ const Profile = () => {
         </div>
 
         <div className="profile-footer">
-          {isEditing ? (
+          {isEditing && (
             <div className="edit-actions">
               <button className="btn-save" onClick={handleSave}>
                 <FaSave /> Save Changes
@@ -477,13 +558,6 @@ const Profile = () => {
                 <FaTimes /> Cancel
               </button>
             </div>
-          ) : (
-            <button 
-              className="btn-edit" 
-              onClick={() => setIsEditing(true)}
-            >
-              <FaUser /> Edit Profile
-            </button>
           )}
         </div>
       </div>

@@ -139,36 +139,70 @@ JustCode/
 
 ### 1️⃣ Clone the Repository
 
-git clone https://github.com/your-username/JustCoding.git
-
+```bash
+git clone https://github.com/ANU-2524/JustCoding.git
 cd JustCoding
+```
 
-2️⃣ Run the Frontend (Client)
+### 2️⃣ Set Up Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file and add your OpenAI API key. Adjust other settings if needed (e.g., MongoDB URI for Atlas).
+
+**Note:** Ensure MongoDB is running locally (default: `mongodb://localhost:27017/justcoding`) or update `MONGODB_URI` for MongoDB Atlas.
+
+### 3️⃣ Run the Frontend (Client)
 ```bash
 cd client
 npm install
 npm run dev
-
 ```
 
-Frontend will run at:
+Frontend will run at:  
 http://localhost:5173
 
-3️⃣ Run the Backend (Server)
+### 4️⃣ Run the Backend (Server)
 Open a new terminal and run:
 ```bash
 cd server
 npm install
 npm run dev
-
 ```
 
-Backend will run at:
+Backend will run at:  
 http://localhost:4334
 
+**Important:** Keep both terminals running simultaneously — one for the client and one for the server.
 
-Important:
-You must keep two terminals running at the same time — one for the client and one for the server.
+(OR)
+
+### 🐳 Quick Start with Docker
+
+The easiest way to get started! Docker handles all dependencies and setup automatically.
+
+**Steps:**
+```bash
+# Clone the repository
+git clone https://github.com/ANU-2524/JustCoding.git
+cd JustCoding
+
+# Copy environment variables
+cp .env.example .env
+# Edit .env and add your OpenAI API key
+
+# Start all services (MongoDB, Backend, Frontend)
+docker-compose up
+```
+
+That's it! 🎉
+- **Frontend**: http://localhost:5173
+- **Backend**: http://localhost:4334
+- **MongoDB**: localhost:27017
+
+For detailed Docker documentation, see **[DOCKER.md](./DOCKER.md)**
 
 ---
 

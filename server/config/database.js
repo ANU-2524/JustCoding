@@ -1,14 +1,16 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { logger } from '../services/logger.js';
 
 const connectDB = async () => {
+  const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/justcoding";
+  
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/justcoding';
-    await mongoose.connect(mongoURI);
-    console.log('✅ MongoDB connected successfully');
+    await mongoose.connect(MONGODB_URI);
+    logger.info("MongoDB connected ✅");
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
-    // Don't exit process, allow app to run without DB
+    logger.warn("MongoDB connection warning", { error: error.message });
+    logger.warn("⚠️  Running in fallback mode without database persistence");
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

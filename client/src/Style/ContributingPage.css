@@ -1,0 +1,99 @@
+/* Contributing Page Styles */
+
+.contributing-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 2px solid rgba(59, 130, 246, 0.2);
+}
+
+.cta-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+  text-decoration: none;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+.cta-button:active {
+  transform: translateY(-1px);
+}
+
+/* Code Block Styling */
+.policy-card pre.code-block {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border-left: 4px solid #3b82f6;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.policy-card code {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9em;
+}
+
+.policy-card pre.code-block code {
+  background-color: transparent;
+  color: #e5e7eb;
+  padding: 0;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .policy-card pre.code-block {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    border-left-color: #60a5fa;
+  }
+
+  .policy-card code {
+    background-color: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contributing-cta {
+    padding-top: 2rem;
+    margin-top: 2rem;
+  }
+
+  .cta-button {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+  }
+
+  .policy-card pre.code-block {
+    padding: 1rem;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

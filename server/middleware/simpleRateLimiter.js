@@ -1,5 +1,5 @@
 
-const rateLimit = require('express-rate-limit');
+import rateLimit from 'express-rate-limit';
 
 // Simple rate limiters without external dependencies
 const generalLimiter = rateLimit({
@@ -42,7 +42,7 @@ const rateLimitLogger = (req, res, next) => {
   next();
 };
 
-module.exports = {
+export {
   generalLimiter,
   aiLimiter,
   codeLimiter,

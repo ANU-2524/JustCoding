@@ -1,7 +1,7 @@
 /**
  * C++ Parser for Code Visualization
  */
-const BaseParser = require('./baseParser');
+import BaseParser from './baseParser.js';
 
 class CppParser extends BaseParser {
   constructor() {
@@ -293,4 +293,4 @@ class CppParser extends BaseParser {
   }
 }
 
-module.exports = CppParser;
+export default CppParser;

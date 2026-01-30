@@ -1,3 +1,7 @@
+node_modules/
+.env
+.DS_Store
+
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
@@ -5,4 +9,19 @@
 # Ignore .secret-stack folder
 .secret-stack
 
+# Global ignores
 .env
+node_modules/
+
+# Client ignores
+client/node_modules/
+client/.env
+
+# Server ignores
+server/node_modules/
+server/.env
+
+# OS/IDE
+.DS_Store
+*.log
+.vscode/

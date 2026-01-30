@@ -501,6 +501,48 @@
   cursor: not-allowed;
 }
 
+.validation-error-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(244, 67, 54, 0.1);
+  border-bottom: 2px solid #f44336;
+  color: #ff7043;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+}
+
+.validation-error-banner span {
+  flex: 1;
+}
+
+.error-close-btn {
+  background: none;
+  border: none;
+  color: #ff7043;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+  transition: color 0.2s;
+}
+
+.error-close-btn:hover {
+  color: #f44336;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .code-editor-wrapper {
   flex: 1;
   overflow: hidden;

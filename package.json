@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "gsap": "^3.14.2"
+    "gsap": "^3.14.2",
+    "prismjs": "^1.30.0"
   }
 }

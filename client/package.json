@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css,md}\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,6 +37,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.6.2",
     "react-syntax-highlighter": "^16.1.0",
+    "recharts": "^3.7.0",
     "remark-gfm": "^4.0.1",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.10",
