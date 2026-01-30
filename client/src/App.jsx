@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
 
+const UserHistoryPage = lazy(() => import("./components/UserHistoryPage"));
+
 const GuestLeaderboard = lazy(() => import("./components/GuestLeaderboard"));
 const GuestNotes = lazy(() => import("./components/GuestNotes"));
 const CodeGallery = lazy(() => import("./components/CodeGallery"));
@@ -152,6 +154,9 @@ function App() {
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/progress" element={<Analytics />} />
                   <Route path="/export" element={<ProgressExport />} />
+
+                  {/* User History Page */}
+                  <Route path="/history" element={<UserHistoryPage />} />
                   <Route path="/badges" element={<UserBadgesPage />} />
                   <Route path="/debug" element={<CodeDebugger />} />
                   <Route path="/debug-helper" element={<DebugHelper />} />
