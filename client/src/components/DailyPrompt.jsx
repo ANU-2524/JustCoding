@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./DailyPrompt.css";
 import PrismHighlight from "./PrismHighlight";
 
+import SolutionComments from "./SolutionComments";
+
+
 // Demo backend using localStorage for guest persistence
 const getTodayKey = () => {
   const today = new Date();
@@ -56,17 +59,36 @@ export default function DailyPrompt() {
   const [submissions, setSubmissions] = useState(getSubmissions());
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const [plagiarismWarning, setPlagiarismWarning] = useState("");
 
   useEffect(() => {
     setPrompt(getPromptOfTheDay());
     setSubmissions(getSubmissions());
   }, []);
 
+
+  // Simple plagiarism check: Jaccard similarity on token sets
+  function jaccardSimilarity(a, b) {
+    const setA = new Set(a.split(/\W+/).map(s => s.toLowerCase()).filter(Boolean));
+    const setB = new Set(b.split(/\W+/).map(s => s.toLowerCase()).filter(Boolean));
+    const intersection = new Set([...setA].filter(x => setB.has(x)));
+    const union = new Set([...setA, ...setB]);
+    return intersection.size / union.size;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setPlagiarismWarning("");
     if (!solution.trim() || !name.trim()) {
       setError("Name and solution required.");
       return;
+    }
+    // Check for plagiarism
+    const existing = getSubmissions();
+    const threshold = 0.8; // 80% similarity
+    const similar = existing.find(sub => jaccardSimilarity(sub.solution, solution) >= threshold);
+    if (similar) {
+      setPlagiarismWarning("Possible Duplicate: Your solution is highly similar to an existing submission. Please ensure your work is original.");
     }
     saveSubmission({ name, solution, votes: 0 });
     setSubmissions(getSubmissions());
@@ -108,21 +130,32 @@ export default function DailyPrompt() {
         />
         {error && <div className="prompt-error">{error}</div>}
         <button className="prompt-btn" type="submit">Submit Solution</button>
+        {plagiarismWarning && <div className="prompt-warning">{plagiarismWarning}</div>}
       </form>
       <div className="prompt-submissions">
         <h4>Public Submissions</h4>
         {sorted.length === 0 && <div className="prompt-empty">No submissions yet. Be the first!</div>}
-        {sorted.map((sub, idx) => (
-          <div className="prompt-submission-card" key={idx}>
-            <div className="prompt-sub-header">
-              <span className="prompt-sub-name">{sub.name}</span>
-              <button className="prompt-upvote" onClick={() => handleUpvote(submissions.indexOf(sub))}>
-                ▲ {sub.votes || 0}
-              </button>
+        {sorted.map((sub, idx) => {
+          const origIdx = submissions.indexOf(sub);
+          return (
+            <div className="prompt-submission-card" key={idx}>
+              <div className="prompt-sub-header">
+                <span className="prompt-sub-name">{sub.name}</span>
+                <button className="prompt-upvote" onClick={() => handleUpvote(origIdx)}>
+                  ▲ {sub.votes || 0}
+                </button>
+              </div>
+              <PrismHighlight code={sub.solution} language="javascript" />
+              <SolutionComments promptKey={getTodayKey()} solutionIndex={origIdx} />
             </div>
+
+          );
+        })}
+
             <PrismHighlight code={sub.solution} language="javascript" />
           </div>
         ))}
+
       </div>
     </div>
   );
