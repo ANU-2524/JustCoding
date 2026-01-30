@@ -34,12 +34,13 @@ body {
 }
 
 .hero-section h1 {
-  font-size: clamp(3.5rem, 8vw, 6.5rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 900;
   margin-bottom: 1.2rem;
   font-family: 'Playfair Display', serif;
   color: #ffffff;
   letter-spacing: -1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-section p {
@@ -51,7 +52,7 @@ body {
 }
 
 .hero-section .highlight {
-  background: linear-gradient(135deg, #ff7043, #ffab91); /* Orange gradient */
+  background: linear-gradient(135deg, #ff6b35, #f7931e); /* Vibrant orange to yellow gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -72,9 +73,9 @@ body {
   background-color: white;
   color: #4f46e5; /* Blue text */
   border: 2px solid #4f46e5;
-  padding: 1rem 2.5rem;
+  padding: 1.5rem 3rem;
   border-radius: 50px;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
@@ -91,9 +92,9 @@ body {
   background-color: white;
   color: #4f46e5; /* Blue text */
   border: 2px solid #4f46e5;
-  padding: 1rem 2.5rem;
+  padding: 1.5rem 3rem;
   border-radius: 50px;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
   text-decoration: none;
   transition: transform 0.3s ease, background-color 0.3s ease;
@@ -892,7 +893,6 @@ body {
   .footer-bottom p {
     font-size: 0.8rem;
   }
-}
   
   /* Additional mobile fixes */
   .hero-section h1 {
@@ -921,12 +921,10 @@ body {
   .cta-section {
     padding: 4rem 1rem;
   }
-}
-
 
 
 /* Code Editor Button */
-.btn-editor,.btn-primary {
+.btn-editor, .btn-primary {
   background: linear-gradient(90deg, #4f46e5, #6366f1);
   color: #fff;
   padding: 0.75rem 1.75rem;
@@ -981,6 +979,7 @@ body {
   margin: 1rem 0;
   background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
 }
