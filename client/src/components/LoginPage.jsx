@@ -28,6 +28,7 @@ const LoginPage = () => {
   useEffect(() => {
     const handleRedirect = async () => {
       try {
+        if (!auth) return; // firebase not initialized in this environment
         const result = await getRedirectResult(auth);
         if (result) navigate(from);
       } catch (err) {
@@ -57,8 +58,12 @@ const LoginPage = () => {
 
   /* ---------- SOCIAL LOGIN ---------- */
   const handleSocialSignIn = async (type) => {
-    const socialProvider =
-      type === "google" ? provider : new GithubAuthProvider();
+    if (!auth || !provider) {
+      alert('Authentication is not available in this environment.');
+      return;
+    }
+
+    const socialProvider = type === "google" ? provider : new GithubAuthProvider();
 
     try {
       if (isMobile()) {
@@ -77,6 +82,11 @@ const LoginPage = () => {
   const handleSubmit = async (e, type) => {
     e.preventDefault();
     try {
+      if (!auth) {
+        alert('Authentication is not available in this environment.');
+        return;
+      }
+
       if (type === "login") {
         await signInWithEmailAndPassword(auth, email, password);
       } else {

@@ -4,17 +4,26 @@ import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import "./CollaborativePromptEditor.css";
 
-// Firebase config (replace with your own or use the existing one in firebase.js)
-import firebaseConfig from "../firebase";
+// Prefer using the app initialized in src/firebase.js; fall back to local init only if config present.
+import { app as firebaseApp, firebaseConfig } from "../firebase";
 
-// Initialize Firebase if not already initialized
-if (!window._firebaseInitialized) {
-  initializeApp(firebaseConfig);
-  window._firebaseInitialized = true;
+let db = null;
+let auth = null;
+
+if (firebaseApp) {
+  db = getDatabase(firebaseApp);
+  auth = getAuth(firebaseApp);
+} else if (firebaseConfig && firebaseConfig.apiKey) {
+  try {
+    const localApp = initializeApp(firebaseConfig);
+    db = getDatabase(localApp);
+    auth = getAuth(localApp);
+    window._firebaseInitialized = true;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('Collaborative editor: failed to initialize Firebase, realtime disabled.', err);
+  }
 }
-
-const db = getDatabase();
-const auth = getAuth();
 
 function getRoomId() {
   // Use today's date as room id for daily prompt

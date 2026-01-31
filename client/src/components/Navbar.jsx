@@ -79,8 +79,8 @@ const Navbar = () => {
   ];
 
   const learningItems = [
-    { path: '/tutorials', label: 'Tutorials', icon: <FaBook /> },
-    { path: '/learning-paths', label: 'Learning Paths', icon: <FaRoad /> },
+    // { path: '/tutorials', label: 'Tutorials', icon: <FaBook /> },
+    // { path: '/learning-paths', label: 'Learning Paths', icon: <FaRoad /> },
     { path: '/blog', label: 'Blog', icon: <FaNewspaper /> },
   ];
 
