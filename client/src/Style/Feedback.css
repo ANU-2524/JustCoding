@@ -1,0 +1,85 @@
+/* Feedback Page Layout */
+.feedback-page {
+  min-height: 100vh;
+  padding-top: 100px; /* space for fixed navbar */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #0d1117;
+}
+
+/* Feedback Card */
+.feedback-card {
+  width: 100%;
+  max-width: 520px;
+  background: #161b22;
+  padding: 32px;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(124, 58, 237, 0.25);
+}
+
+/* Headings */
+.feedback-title {
+  text-align: center;
+  color: #7c3aed;
+  margin-bottom: 6px;
+}
+
+.feedback-subtitle {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Form */
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedback-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedback-field label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #cbd5f5;
+}
+
+.feedback-field input,
+.feedback-field textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #30363d;
+  background: #0d1117;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.feedback-field input:focus,
+.feedback-field textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+}
+
+/* Button */
+.feedback-submit-btn {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5);
+}

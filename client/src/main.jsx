@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './Style/theme.css'
 import { setupGlobalErrorHandler } from './services/errorLogger'
@@ -9,7 +10,11 @@ const preloader = document.getElementById('app-preloader')
 // Set up global error handler
 setupGlobalErrorHandler()
 
-createRoot(rootEl).render(<App />)
+createRoot(rootEl).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+)
 
 // Remove preloader after first paint
 requestAnimationFrame(() => {

@@ -1,6 +1,5 @@
-
 import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -9,6 +8,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
+const Feedback = lazy(() => import("./pages/Feedback"));
 
 const CollabEditor = lazy(() => import("./components/CollabEditor"));
 
@@ -55,7 +55,6 @@ const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
 
-
 const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
 
 const AdvancedLeaderboard = lazy(() => import("./components/AdvancedLeaderboard"));
@@ -68,13 +67,11 @@ const NotFound = lazy(() => import("./components/NotFound"));
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
 const CommunityPostDetail = lazy(() => import("./components/CommunityPostDetail"));
 
-
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <Router>
             <div className="app-container">
               <Cursor />
               <Navbar />
@@ -89,6 +86,7 @@ function App() {
                   {/* Portfolio Builder (guest-friendly) */}
                   <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/feedback" element={<Feedback />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -164,7 +162,6 @@ function App() {
                   <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
 
-
                   {/* Discussion Forum */}
                   <Route path="/forum" element={<Forum />} />
                   {/* User History Page */}
@@ -203,7 +200,6 @@ function App() {
               </Suspense>
               <ScrollToTop />
             </div>
-          </Router>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
