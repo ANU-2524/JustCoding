@@ -58,10 +58,10 @@ const LoginPage = () => {
 
   /* ---------- SOCIAL LOGIN ---------- */
   const handleSocialSignIn = async (type) => {
-    if (!auth || !provider) {
-      alert('Authentication is not available in this environment.');
-      return;
-    }
+    if (!auth) {
+  alert("Firebase failed to initialize. Check environment variables.");
+  return;
+}
 
     const socialProvider = type === "google" ? provider : new GithubAuthProvider();
 
