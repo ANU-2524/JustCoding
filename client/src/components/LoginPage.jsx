@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { auth, provider } from "../firebase";
+import { auth, googleProvider, githubProvider } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -57,26 +57,28 @@ const LoginPage = () => {
   }, [password]);
 
   /* ---------- SOCIAL LOGIN ---------- */
-  const handleSocialSignIn = async (type) => {
-    if (!auth) {
-  alert("Firebase failed to initialize. Check environment variables.");
-  return;
-}
+const handleSocialSignIn = async (type) => {
+  if (!auth) {
+    alert("Firebase failed to initialize. Check env variables.");
+    return;
+  }
 
-    const socialProvider = type === "google" ? provider : new GithubAuthProvider();
+  const socialProvider =
+    type === "google" ? googleProvider : githubProvider;
 
-    try {
-      if (isMobile()) {
-        await signInWithRedirect(auth, socialProvider);
-      } else {
-        await signInWithPopup(auth, socialProvider);
-        navigate(from);
-      }
-    } catch (err) {
-      console.error("Social auth error:", err);
-      alert(err.message);
+  try {
+    if (isMobile()) {
+      await signInWithRedirect(auth, socialProvider);
+    } else {
+      await signInWithPopup(auth, socialProvider);
+      navigate(from);
     }
-  };
+  } catch (err) {
+    console.error("Social auth error:", err);
+    alert(err.message);
+  }
+};
+
 
   /* ---------- EMAIL LOGIN / SIGNUP ---------- */
   const handleSubmit = async (e, type) => {
