@@ -8,9 +8,7 @@ import {
 
 /**
  * Firebase configuration
- * NOTE:
- * - All variables MUST exist in Vercel with VITE_ prefix
- * - No fallbacks, no silent disabling
+ * NOTE: Set VITE_FIREBASE_* in client/.env for auth to work
  */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -22,26 +20,35 @@ const firebaseConfig = {
 };
 
 /**
- * Initialize Firebase safely (prevents double init in Vite / HMR)
+ * Check if Firebase config is valid (all required values present)
  */
-const app = getApps().length === 0
-  ? initializeApp(firebaseConfig)
-  : getApps()[0];
+const isFirebaseConfigured = () => {
+  return firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId;
+};
 
 /**
- * Firebase Auth
+ * Initialize Firebase safely - app loads even without Firebase config
  */
-const auth = getAuth(app);
+let app = null;
+let auth = null;
+let googleProvider = null;
+let githubProvider = null;
 
-/**
- * OAuth Providers
- */
-const googleProvider = new GoogleAuthProvider();
-const githubProvider = new GithubAuthProvider();
-
-// Optional: request additional scopes (safe)
-googleProvider.setCustomParameters({ prompt: "select_account" });
-githubProvider.addScope("user:email");
+try {
+  if (isFirebaseConfigured()) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    githubProvider = new GithubAuthProvider();
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+    githubProvider.addScope("user:email");
+  }
+} catch (err) {
+  console.warn("Firebase initialization failed:", err.message);
+}
 
 export {
   app,
