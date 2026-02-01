@@ -50,3 +50,23 @@
   font-size: 0.85rem;
   color: #666;
 }
+
+/* Contact Us section */
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.contact-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #a0a0a0;
+  font-size: 0.95rem;
+}
+
+.contact-list li svg {
+  color: #3b82f6;
+  font-size: 0.95rem;
+}
