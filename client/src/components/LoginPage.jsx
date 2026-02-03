@@ -139,9 +139,12 @@ const handleSocialSignIn = async (type) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <span onClick={() => setShowPassword(!showPassword)}>
+              <div 
+                className="eye-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+              </div>
             </div>
 
             {password && (
@@ -156,6 +159,10 @@ const handleSocialSignIn = async (type) => {
             )}
 
             <button className="auth-action-btn">Sign Up</button>
+            
+            <div className="switch-mode">
+              <p>Already have an account? <span onClick={() => setIsRightPanelActive(false)}>Sign In</span></p>
+            </div>
           </form>
         </div>
 
@@ -191,12 +198,19 @@ const handleSocialSignIn = async (type) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <span onClick={() => setShowPassword(!showPassword)}>
+              <div 
+                className="eye-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+              </div>
             </div>
 
             <button className="auth-action-btn">Sign In</button>
+            
+            <div className="switch-mode">
+              <p>Don't have an account? <span onClick={() => setIsRightPanelActive(true)}>Sign Up</span></p>
+            </div>
           </form>
         </div>
 
@@ -212,7 +226,8 @@ const handleSocialSignIn = async (type) => {
             <div className="overlay-panel overlay-left">
               <FaCode />
               <h1>Welcome Back!</h1>
-              <button onClick={() => setIsRightPanelActive(false)}>
+              <p>Sign in to continue your coding journey</p>
+              <button className="ghost" onClick={() => setIsRightPanelActive(false)}>
                 Sign In
               </button>
             </div>
@@ -220,7 +235,8 @@ const handleSocialSignIn = async (type) => {
             <div className="overlay-panel overlay-right">
               <FaRocket />
               <h1>Hello, Friend!</h1>
-              <button onClick={() => setIsRightPanelActive(true)}>
+              <p>Start your coding adventure today</p>
+              <button className="ghost" onClick={() => setIsRightPanelActive(true)}>
                 Sign Up
               </button>
             </div>

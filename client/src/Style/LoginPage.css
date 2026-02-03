@@ -18,12 +18,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* CHANGE: Use theme background */
-  background: var(--bg-primary); 
+  background: var(--bg-primary);
   font-family: 'Manrope', sans-serif;
-  padding: 20px;
+  padding: 30px;
   margin-top: 80px;
   transition: background var(--transition-slow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 15px;
+    margin-top: 60px;
+  }
 }
 
 .login-page {
@@ -304,17 +311,35 @@
 }
 
 .switch-mode {
-  text-align: left;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  text-align: center;
+  margin: 15px 0 0 0;
+  padding-top: 15px;
   color: var(--text-secondary);
-  border-top: 1px solid #e1e5e9;
+  border-top: 1px solid var(--border-primary);
+  width: 100%;
+  max-width: 250px;
 }
 
 .switch-mode p {
   margin: 0;
   color: var(--text-secondary);
   font-size: 0.95rem;
+}
+
+.switch-mode span {
+  color: var(--accent-primary);
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: 5px;
+  transition: all var(--transition-fast);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.switch-mode span:hover {
+  color: var(--accent-secondary);
+  background: var(--bg-tertiary);
+  text-decoration: underline;
 }
 /* Add these to your existing LoginPage.css */
 
@@ -509,49 +534,94 @@
 /* Side-by-Side Button Row */
 .social-auth-row {
   display: flex;
-  gap: 12px;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  margin: 1.5rem 0;
+  width: 100%;
+  justify-content: center;
 }
 
-.social-btn {
+.social-auth-row button {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px;
-  background: var(--bg-secondary);
-  border: 1.5px solid var(--border-primary);
+  padding: 14px;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-primary);
   color: var(--text-primary);
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+  min-width: 120px;
+  max-width: 150px;
 }
 
-.social-btn:hover {
-  border-color: var(--elegant-orange);
-  transform: translateY(-1px);
+.social-auth-row button:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md);
+  background: var(--bg-elevated);
 }
 
-.social-btn.github {
-  background-color: #24292e !important;
-  color: white !important;
-  border: none;
+.social-auth-row button:nth-child(2) {
+  background-color: #24292e;
+  color: white;
+  border: 2px solid #24292e;
+}
+
+.social-auth-row button:nth-child(2):hover {
+  background-color: #2f363d;
+  border-color: #2f363d;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(36, 41, 46, 0.3);
+}
+
+@media (max-width: 768px) {
+  .social-auth-row {
+    gap: 12px;
+  }
+  
+  .social-auth-row button {
+    padding: 12px;
+    font-size: 0.9rem;
+    min-width: 100px;
+    max-width: 130px;
+  }
 }
 /* --- SLIDING UI ENGINE --- */
 
 .sliding-wrapper {
   background-color: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--shadow-xl);
   position: relative;
   overflow: hidden;
-  width: 850px;
-  max-width: 100%;
-  min-height: 550px;
-  border: 1px solid var(--border-primary);
+  width: 950px;
+  max-width: 95vw;
+  min-height: 650px;
+  border: 2px solid var(--border-primary);
+  transition: all var(--transition-normal);
+}
+
+/* Responsive wrapper adjustments */
+@media (max-width: 768px) {
+  .sliding-wrapper {
+    width: 95vw;
+    min-height: 600px;
+    border-radius: 12px;
+  }
+  
+  .form-container {
+    padding: 15px;
+  }
+  
+  .form-container form {
+    padding: 0 20px;
+    max-width: 100%;
+  }
 }
 
 .form-container {
@@ -559,6 +629,11 @@
   top: 0;
   height: 100%;
   transition: all 0.6s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 .sign-in-container {
@@ -618,6 +693,7 @@
   width: 200%;
   transform: translateX(0);
   transition: transform 0.6s ease-in-out;
+  display: flex;
 }
 
 .sliding-wrapper.right-panel-active .overlay {
@@ -639,10 +715,62 @@
   transition: transform 0.6s ease-in-out;
 }
 
-.overlay-left { transform: translateX(-20%); }
-.sliding-wrapper.right-panel-active .overlay-left { transform: translateX(0); }
-.overlay-right { right: 0; transform: translateX(0); }
-.sliding-wrapper.right-panel-active .overlay-right { transform: translateX(20%); }
+.overlay-left { 
+  transform: translateX(-20%); 
+  left: 0;
+}
+
+.sliding-wrapper.right-panel-active .overlay-left { 
+  transform: translateX(0); 
+}
+
+.overlay-right { 
+  right: 0; 
+  transform: translateX(0); 
+}
+
+.sliding-wrapper.right-panel-active .overlay-right { 
+  transform: translateX(20%); 
+}
+
+/* Overlay content styling */
+.overlay-panel h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-panel p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  max-width: 80%;
+  opacity: 0.9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-panel svg {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@media (max-width: 768px) {
+  .overlay-panel h1 {
+    font-size: 1.8rem;
+    margin: 15px 0;
+  }
+  
+  .overlay-panel p {
+    font-size: 1rem;
+    max-width: 90%;
+  }
+  
+  .overlay-panel svg {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+}
 
 /* SHARED UI ELEMENTS */
 .form-container form {
@@ -651,40 +779,153 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0 50px;
+  padding: 0 30px;
   height: 100%;
   text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Mobile form adjustments */
+@media (max-width: 768px) {
+  .form-container form {
+    padding: 0 20px;
+  }
 }
 
 .form-container input {
   background-color: var(--bg-tertiary);
-  border: none;
-  padding: 12px 15px;
-  margin: 8px 0;
+  border: 2px solid var(--border-primary);
+  padding: 14px 16px;
+  margin: 12px 0;
   width: 100%;
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+  box-sizing: border-box;
+}
+
+.form-container input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background-color: var(--bg-elevated);
+}
+
+.form-container input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.form-container h1 {
+  color: var(--text-primary);
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.form-container span {
+  color: var(--text-secondary);
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .form-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-container span {
+    font-size: 0.85rem;
+  }
 }
 
 .auth-action-btn, .ghost {
-  border-radius: 20px;
-  border: 1px solid var(--accent-orange);
-  background-color: var(--elegant-orange);
-  color: #FFFFFF;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 12px 45px;
-  letter-spacing: 1px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent-gradient);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 16px 32px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  transition: transform 80ms ease-in;
+  transition: all var(--transition-normal);
   cursor: pointer;
-  margin-top: 15px;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 250px;
+  box-shadow: var(--shadow-md);
 }
 
-.ghost { background-color: transparent; border-color: #FFFFFF; }
+.auth-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
+}
 
-.password-wrapper { position: relative; width: 100%; }
-.eye-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-tertiary); }
+.auth-action-btn:active {
+  transform: translateY(-1px);
+}
+
+.ghost { 
+  background: transparent; 
+  border: 2px solid white;
+  color: white;
+  margin-top: 20px;
+}
+
+.ghost:hover {
+  background: white;
+  color: var(--elegant-orange);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.password-wrapper { 
+  position: relative; 
+  width: 100%; 
+  margin: 12px 0;
+}
+
+.eye-toggle { 
+  position: absolute; 
+  right: 16px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  cursor: pointer; 
+  color: var(--text-tertiary); 
+  font-size: 1.25rem;
+  transition: all var(--transition-fast);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.eye-toggle:hover {
+  color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.1);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Ensure password input has proper padding for eye icon */
+.password-wrapper input {
+  padding-right: 55px !important;
+  padding-left: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
 .forgot-pass-link {
   text-align: right;
   color: var(--accent-orange);
@@ -730,4 +971,57 @@
 
 .logout-btn:hover {
   background-color: #d32f2f;
+}
+
+/* Final spacing and alignment improvements */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.sliding-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px 30px;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 15px;
+  }
+  
+  .form-container {
+    padding: 20px 25px;
+  }
+  
+  .sliding-wrapper {
+    min-height: 600px;
+  }
+  
+  /* Mobile eye icon adjustments */
+  .eye-toggle {
+    font-size: 1.15rem;
+    right: 14px;
+    width: 22px;
+    height: 22px;
+  }
+  
+  .password-wrapper input {
+    padding-right: 50px !important;
+    padding-left: 14px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
 }
