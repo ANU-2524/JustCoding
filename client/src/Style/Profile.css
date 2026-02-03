@@ -36,25 +36,28 @@
   border-bottom: 1px solid rgba(212, 88, 31, 0.2);
   background: linear-gradient(180deg, rgba(212, 88, 31, 0.1) 0%, transparent 100%);
   position: relative;
+  min-height: 200px;
 }
 
 .back-button-container {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 10;
 }
 
 .edit-button-container {
   position: absolute;
   top: 20px;
   right: 20px;
+  z-index: 10;
 }
 
-.edit-profile-btn {
+.back-button, .edit-profile-btn {
   background: rgba(212, 88, 31, 0.2);
   color: #ff9d71;
   border: 1px solid rgba(212, 88, 31, 0.3);
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
@@ -62,38 +65,19 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(212, 88, 31, 0.1);
+  position: relative;
 }
 
-.edit-profile-btn:hover {
+.back-button:hover, .edit-profile-btn:hover {
   background: rgba(212, 88, 31, 0.3);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(212, 88, 31, 0.2);
 }
 
-.edit-profile-btn svg {
-  font-size: 0.9rem;
-}
-
-.back-button {
-  background: rgba(212, 88, 31, 0.2);
-  color: #ff9d71;
-  border: 1px solid rgba(212, 88, 31, 0.3);
-  padding: 8px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.back-button:hover {
-  background: rgba(212, 88, 31, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(212, 88, 31, 0.2);
+.back-button svg, .edit-profile-btn svg {
+  font-size: 1rem;
 }
 
 .avatar-container {
@@ -346,8 +330,6 @@
 .notice-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-  transform: translateX(4px);
 }
 
 .link-item.disabled {
@@ -609,7 +591,7 @@
   font-style: italic;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for buttons */
 @media (max-width: 768px) {
   .profile-container {
     padding: 100px 15px 40px;
@@ -617,14 +599,29 @@
   
   .profile-header {
     padding: 30px 20px 20px;
+    min-height: 180px;
+  }
+  
+  .back-button-container,
+  .edit-button-container {
+    position: absolute;
+    top: 15px;
   }
   
   .back-button-container {
-    position: relative;
-    top: auto;
-    left: auto;
-    margin-bottom: 15px;
+    left: 15px;
   }
+  
+  .edit-button-container {
+    right: 15px;
+  }
+  
+  .back-button,
+  .edit-profile-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
   
   .profile-name {
     font-size: 1.5rem;
