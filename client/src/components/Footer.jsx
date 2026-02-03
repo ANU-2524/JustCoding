@@ -1,7 +1,7 @@
 // src/components/Footer.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope, FaPhoneAlt, FaClock } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
@@ -31,6 +31,25 @@ const Footer = () => {
               <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
               <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
               <li onClick={() => navigate("/contributing")}>Contributing</li>
+            </ul>
+          </div>
+
+          {/* Contact Us */}
+          <div className="footer-section">
+            <h4>Contact Us</h4>
+            <ul className="contact-list">
+              <li>
+                <FaEnvelope />
+                <span>justcoding.contact@gmail.com</span>
+              </li>
+              <li>
+                <FaPhoneAlt />
+                <span>+91 XXXXX XXXXX</span>
+              </li>
+              <li>
+                <FaClock />
+                <span>Mon–Fri, 10 AM – 6 PM</span>
+              </li>
             </ul>
           </div>
 
