@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight, FaUsers, FaChartLine } from 'react-icons/fa';
 import Breadcrumb from './Breadcrumb';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
@@ -225,7 +225,350 @@ return '';
   };
 
   return (
-    <div>Profile Component</div>
+    <div className="profile-container">
+      <div className="profile-card">
+        {/* Header Section */}
+        <div className="profile-header">
+          <div className="back-button-container">
+            <button 
+              className="back-button" 
+              onClick={() => window.history.back()}
+            >
+              <FaArrowRight style={{ transform: 'rotate(180deg)' }} /> Back
+            </button>
+          </div>
+          
+          {!isEditing && (
+            <div className="edit-button-container">
+              <button 
+                className="edit-profile-btn"
+                onClick={() => setIsEditing(true)}
+              >
+                <FaPencilAlt /> Edit Profile
+              </button>
+            </div>
+          )}
+          
+          <div className="avatar-container">
+            {tempPhoto || profile.photoURL ? (
+              <img 
+                src={tempPhoto || profile.photoURL} 
+                alt="Profile" 
+                className="profile-avatar"
+              />
+            ) : (
+              <div className="default-avatar">
+                <FaUser />
+              </div>
+            )}
+            
+            {isEditing && (
+              <div className="upload-overlay">
+                <label htmlFor="photo-upload" className="upload-label">
+                  <FaCamera className="camera-icon" />
+                </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
+              </div>
+            )}
+          </div>
+          
+          <div className="profile-info">
+            {isEditing ? (
+              <input
+                type="text"
+                value={profile.displayName}
+                onChange={handleInputChange}
+                name="displayName"
+                className="name-input"
+                placeholder="Enter your name"
+              />
+            ) : (
+              <h1 className="profile-name">{profile.displayName}</h1>
+            )}
+            
+            <div className="profile-email">
+              <span>{profile.email || identityLabel}</span>
+              {currentUser?.isAnonymous && (
+                <span className="email-note">Guest account (local storage)</span>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Body Content */}
+        <div className="profile-body">
+          {/* Bio Section */}
+          <div className="bio-section">
+            <h3>Bio</h3>
+            {isEditing ? (
+              <textarea
+                value={profile.bio}
+                onChange={handleInputChange}
+                name="bio"
+                className="bio-input"
+                placeholder="Tell us about yourself..."
+              />
+            ) : (
+              <p className="bio-text">
+                {profile.bio || 'No bio yet. Tell us about yourself!'}
+              </p>
+            )}
+          </div>
+          
+          {/* Links Section */}
+          <div className="links-section">
+            <h3>Social Links</h3>
+            {isEditing ? (
+              <div className="links-form">
+                <div className="link-row">
+                  <div className="link-label">
+                    <FaGithub /> GitHub
+                  </div>
+                  <input
+                    type="text"
+                    value={profile.githubUrl}
+                    onChange={handleInputChange}
+                    name="githubUrl"
+                    className="dash-input"
+                    placeholder="github.com/username"
+                  />
+                </div>
+                
+                <div className="link-row">
+                  <div className="link-label">
+                    <FaLinkedin /> LinkedIn
+                  </div>
+                  <input
+                    type="text"
+                    value={profile.linkedinUrl}
+                    onChange={handleInputChange}
+                    name="linkedinUrl"
+                    className="dash-input"
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="links-list">
+                {profile.githubUrl && (
+                  <a 
+                    href={normalizeUrl(profile.githubUrl)} 
+                    className="link-item"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <FaGithub /> {profile.githubUrl.replace(/^https?:\/\//, '')}
+                  </a>
+                )}
+                
+                {profile.linkedinUrl && (
+                  <a 
+                    href={normalizeUrl(profile.linkedinUrl)} 
+                    className="link-item"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <FaLinkedin /> {profile.linkedinUrl.replace(/^https?:\/\//, '')}
+                  </a>
+                )}
+                
+                {!profile.githubUrl && !profile.linkedinUrl && (
+                  <div className="link-item disabled">
+                    No social links added yet
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          
+          {/* Dashboard Notice - Only show when not editing */}
+          {!isEditing && (
+            <div className="dashboard-notice">
+              <div className="notice-content">
+                <h3>📊 Full Analytics Dashboard Available</h3>
+                <p>Want to see detailed coding statistics, achievements, and progress tracking?</p>
+                <button 
+                  className="notice-btn"
+                  onClick={() => window.location.href = '/dashboard'}
+                >
+                  <FaArrowRight /> Go to Full Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Dashboard Tabs - Only show when not editing */}
+          {!isEditing && (
+            <div className="dashboard-tabs">
+              <button
+                className={`dash-tab ${activeTab === 'snippets' ? 'active' : ''}`}
+                onClick={() => setActiveTab('snippets')}
+              >
+                <FaCode /> Snippets
+              </button>
+              <button
+                className={`dash-tab ${activeTab === 'sessions' ? 'active' : ''}`}
+                onClick={() => setActiveTab('sessions')}
+              >
+                <FaUsers /> Sessions
+              </button>
+              <button
+                className={`dash-tab ${activeTab === 'stats' ? 'active' : ''}`}
+                onClick={() => setActiveTab('stats')}
+              >
+                <FaChartLine /> Stats
+              </button>
+            </div>
+          )}
+          
+          {/* Tab Content - Only show when not editing */}
+          {!isEditing && (
+            <>
+              {/* Tab Content */}
+              {activeTab === 'snippets' && (
+                <div className="tab-content">
+                  <div className="snippet-create">
+                    <h3>Create New Snippet</h3>
+                    <input
+                      type="text"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="Snippet title"
+                      className="dash-input"
+                    />
+                    <select
+                      value={newLanguage}
+                      onChange={(e) => setNewLanguage(e.target.value)}
+                      className="dash-input"
+                    >
+                      <option value="javascript">JavaScript</option>
+                      <option value="python">Python</option>
+                      <option value="java">Java</option>
+                      <option value="cpp">C++</option>
+                      <option value="html">HTML</option>
+                      <option value="css">CSS</option>
+                    </select>
+                    <textarea
+                      value={newCode}
+                      onChange={(e) => setNewCode(e.target.value)}
+                      placeholder="Your code here..."
+                      className="dash-textarea"
+                      rows="6"
+                    />
+                    <button 
+                      className="dash-btn primary"
+                      onClick={handleCreateSnippet}
+                    >
+                      Create Snippet
+                    </button>
+                  </div>
+                  
+                  <div className="snippet-list">
+                    <h3>Your Snippets</h3>
+                    {snippets.length === 0 ? (
+                      <div className="dash-empty">No snippets created yet</div>
+                    ) : (
+                      snippets.map(snippet => (
+                        <div key={snippet.id} className="snippet-item">
+                          <div className="snippet-meta">
+                            <div className="snippet-title">{snippet.title}</div>
+                            <div className="snippet-sub">{snippet.language} • {formatDate(snippet.createdAt)}</div>
+                          </div>
+                          <div className="snippet-actions">
+                            <button 
+                              className="dash-btn"
+                              onClick={() => handleLoadSnippetToEditor(snippet)}
+                            >
+                              Load to Editor
+                            </button>
+                            <button 
+                              className="dash-btn danger"
+                              onClick={() => handleDeleteSnippet(snippet.id)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'sessions' && (
+                <div className="tab-content">
+                  <h3>Recent Sessions</h3>
+                  {sessions.length === 0 ? (
+                    <div className="dash-empty">No sessions joined yet</div>
+                  ) : (
+                    sessions.slice(0, 5).map(session => (
+                      <div key={session.id} className="session-item">
+                        <div className="session-title">Session #{session.id.slice(0, 8)}</div>
+                        <div className="session-sub">
+                          Joined: {formatDate(session.joinedAt)} • Duration: {formatDuration(session.joinedAt, session.leftAt)}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+              
+              {activeTab === 'stats' && (
+                <div className="tab-content">
+                  <h3>Your Statistics</h3>
+                  {stats ? (
+                    <div className="stats-grid">
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.runs || 0}</div>
+                        <div className="stat-label">Code Runs</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.snippetsCreated || 0}</div>
+                        <div className="stat-label">Snippets</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.sessionsJoined || 0}</div>
+                        <div className="stat-label">Sessions</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.minutesCoded || 0}</div>
+                        <div className="stat-label">Minutes Coded</div>
+                      </div>
+                      <div className="stat-card wide">
+                        <div className="stat-value">{stats.favoriteLanguage || 'None'}</div>
+                        <div className="stat-label">Favorite Language</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="dash-empty">No statistics available yet</div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        
+        {/* Footer Actions */}
+        {isEditing && (
+          <div className="profile-footer">
+            <div className="edit-actions">
+              <button className="btn-save" onClick={handleSave}>
+                <FaSave /> Save Changes
+              </button>
+              <button className="btn-cancel" onClick={handleCancel}>
+                <FaTimes /> Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
