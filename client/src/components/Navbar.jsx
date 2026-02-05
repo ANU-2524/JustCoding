@@ -74,7 +74,6 @@ const Navbar = () => {
     { path: '/editor', label: 'Editor', icon: <FaCode /> },
     { path: '/guest-leaderboard', label: 'Leaderboard', icon: <FaTrophy /> },
     { path: '/notes', label: 'Notes', icon: <FaBook /> },
-    { path: '/portfolio-builder', label: 'Portfolio Builder', icon: <FaUser /> },
     { path: '/export', label: 'Export Progress', icon: <FaDownload /> },
   ];
 

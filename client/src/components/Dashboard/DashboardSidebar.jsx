@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChartLine, FaCode, FaFolder, FaStar, FaUser, FaUsers, FaCog, FaQuestionCircle, FaGithub } from 'react-icons/fa';
+import { FaChartLine, FaCode, FaFolder, FaStar, FaUser, FaUsers, FaCog, FaQuestionCircle, FaGithub, FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../../Style/UserDashboard.css';
 
@@ -29,6 +29,15 @@ const DashboardSidebar = ({
         )}
       </div>
       
+      {/* Hamburger Toggle Button */}
+      <button 
+        className="sidebar-hamburger-toggle"
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        title={sidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
+      >
+        {sidebarCollapsed ? <FaBars /> : <FaTimes />}
+      </button>
+
       <nav className="sidebar-nav">
         <button
           className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
@@ -107,14 +116,6 @@ const DashboardSidebar = ({
           {!sidebarCollapsed && <span>Contributing</span>}
         </button>
       </div>
-      
-      <button 
-        className="sidebar-toggle-btn"
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-      >
-        {sidebarCollapsed ? '»' : '«'}
-      </button>
     </div>
   );
 };
