@@ -18,6 +18,7 @@ import OverviewTab from './Dashboard/OverviewTab';
 import SnippetsTab from './Dashboard/SnippetsTab';
 import AchievementsTab from './Dashboard/AchievementsTab';
 import SettingsTab from './Dashboard/SettingsTab';
+import FeedbackTab from './Dashboard/FeedbackTab';
 
 /**
  * UserDashboard Component - Comprehensive User Dashboard
@@ -331,6 +332,9 @@ const UserDashboard = () => {
               handleCancel={handleCancel}
               identityLabel={identityLabel}
             />
+          )}
+          {activeTab === 'feedback' && (
+            <FeedbackTab />
           )}
 
           {/* Placeholder for other tabs */}
