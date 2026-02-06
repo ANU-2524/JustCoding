@@ -50,6 +50,7 @@ import userRoute from './routes/user.js';
 import executionRoute from './routes/execution.js';
 import collabRoutes from './routes/collab.js';
 import diagnosticsRoute from './routes/diagnostics.js';
+import imagesRoute from './routes/images.js';
 
 import { validate } from './middleware/validation.js';
 import gptRoute from './routes/gptRoute.js';
@@ -94,6 +95,9 @@ applySecurityMiddleware(app, cors, express);
 // Rate limiting middleware
 app.use(rateLimitLogger);
 app.use(generalLimiter);
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 
 const io = new Server(server, {
   cors: {
@@ -488,6 +492,9 @@ app.use('/api/collab', collabRoutes);
 
 // Diagnostics and monitoring routes
 app.use('/api/diagnostics', diagnosticsRoute);
+
+// Image gallery and upload routes
+app.use('/api/images', imagesRoute);
 
 // ============================================
 // Visualizer Endpoints

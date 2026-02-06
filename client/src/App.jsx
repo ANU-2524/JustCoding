@@ -51,7 +51,7 @@ const SnippetsManager = lazy(() => import("./components/SnippetsManager"));
 const CodeDebugger = lazy(() => import("./components/CodeDebugger"));
 const LearningPaths = lazy(() => import("./components/LearningPaths"));
 const Analytics = lazy(() => import("./components/Analytics"));
-
+const ImageGallery = lazy(() => import("./components/ImageGallery"));
 
 const GuestPortfolioBuilder = lazy(() => import("./components/GuestPortfolioBuilder"));
 
@@ -83,6 +83,8 @@ function App() {
                   <Route path="/notes" element={<GuestNotes />} />
                   {/* Public Code Gallery */}
                   <Route path="/code-gallery" element={<CodeGallery />} />
+                  {/* Image Gallery */}
+                  <Route path="/gallery" element={<ImageGallery />} />
                   {/* Portfolio Builder (guest-friendly) */}
                   <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />

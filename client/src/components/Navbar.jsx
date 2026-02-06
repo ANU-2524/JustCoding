@@ -88,6 +88,7 @@ const Navbar = () => {
     { path: '/collaborative-prompt', label: 'Real-Time Collaboration', icon: <FaUsers /> },
     { path: '/prompt-history', label: 'Prompt History', icon: <FaBook /> },
     { path: '/code-gallery', label: 'Code Gallery', icon: <FaBook /> },
+    { path: '/gallery', label: 'Image Gallery', icon: <FaBook /> },
     { path: '/code-review-wall', label: 'Code Review Wall', icon: <FaComments /> },
   ];
   
