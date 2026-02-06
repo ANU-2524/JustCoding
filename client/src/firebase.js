@@ -1,30 +1,15 @@
 // src/firebase.js
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+} from "firebase/auth";
 
-let app, auth, provider;
-
-try {
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-  };
-
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  provider = new GoogleAuthProvider();
-} catch (err) {
-  console.warn("Firebase not initialized. Landing page will still render.", err);
-  auth = null;       // fallback so AuthContext doesn’t crash
-  provider = null;
-}
-
-
+/**
+ * Firebase configuration
+ * NOTE: Set VITE_FIREBASE_* in client/.env for auth to work
+ */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -32,8 +17,42 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-export { app, auth, provider, firebaseConfig };
-export default firebaseConfig;
+/**
+ * Check if Firebase config is valid (all required values present)
+ */
+const isFirebaseConfigured = () => {
+  return firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId;
+};
+
+/**
+ * Initialize Firebase safely - app loads even without Firebase config
+ */
+let app = null;
+let auth = null;
+let googleProvider = null;
+let githubProvider = null;
+
+try {
+  if (isFirebaseConfigured()) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    githubProvider = new GithubAuthProvider();
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+    githubProvider.addScope("user:email");
+  }
+} catch (err) {
+  console.warn("Firebase initialization failed:", err.message);
+}
+
+export {
+  app,
+  auth,
+  googleProvider,
+  githubProvider,
+};

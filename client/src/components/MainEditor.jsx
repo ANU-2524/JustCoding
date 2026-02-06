@@ -1381,6 +1381,11 @@ return;
                       {isAutoSaving ? '💾 Saving...' : '✓ Auto-save'}
                     </span>
                   )}
+                  {!showVisualizer && activeFile.content.length > 1000000 && (
+                    <span className="large-file-badge" title="Large file: some features disabled for performance">
+                      ⚠️ Large File
+                    </span>
+                  )}
                 </span>
                 {!showVisualizer && (
                   <div className="file-tab">

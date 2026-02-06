@@ -25,6 +25,7 @@ function TutorialView() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
   const [tutorial, setTutorial] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [progress, setProgress] = useState(null);
@@ -63,7 +64,7 @@ function TutorialView() {
   const fetchTutorial = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/tutorials/${slug}`);
+      const response = await fetch(`${API_BASE}/api/tutorials/${slug}`);
       if (!response.ok) {
         throw new Error('Tutorial not found');
       }
@@ -84,7 +85,7 @@ function TutorialView() {
 
   const fetchProgress = async () => {
     try {
-      const response = await fetch(`/api/tutorials/${slug}/progress`, {
+      const response = await fetch(`${API_BASE}/api/tutorials/${slug}/progress`, {
         headers: {
           'Authorization': `Bearer ${await currentUser.getIdToken()}`
         }
@@ -107,7 +108,7 @@ return;
 }
 
     try {
-      const response = await fetch(`/api/tutorials/${slug}/progress`, {
+      const response = await fetch(`${API_BASE}/api/tutorials/${slug}/progress`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -8,6 +8,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import CardSwap, { Card } from './CardSwap';
 import HowItWorks from './HowItWorks';
 import FeaturedTutorials from './FeaturedTutorials';
+import Footer from "./Footer";
 
 const HomePage = () => {
   const navigate = useNavigate(); // initialize navigate
@@ -97,9 +98,9 @@ const HomePage = () => {
             </motion.button>
 
             <motion.button
-              className="btn-secondary"
-              onClick={() => navigate("/debug")}
-              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(239, 68, 68, 0.35)" }}
+              className="btn-debugger"
+              onClick={() => navigate("/debugger")}
+              whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(99, 102, 241, 0.5)" }}
               whileTap={{ scale: 0.95 }}
             >
               AI Debugger
@@ -393,47 +394,7 @@ const HomePage = () => {
           Get Started
         </motion.button>
       </motion.section>
-
-      {/* Footer */}
-<footer className="footer animate-on-scroll">
-  <div className="footer-container">
-    <div className="footer-content">
-      <div className="footer-section">
-        <h4>Quick Links</h4>
-        <ul>
-          <li onClick={() => navigate("/")}>Home</li>
-          <li onClick={() => navigate("/editor")}>Editor</li>
-          <li onClick={() => navigate("/challenges")}>Challenges</li>
-          <li onClick={() => navigate("/tutorials")}>Tutorials</li>
-          <li onClick={() => navigate("/faq")}>FAQ</li>
-        </ul>
-      </div>
-
-      <div className="footer-section">
-        <h4>Legal</h4>
-        <ul>
-          <li onClick={() => navigate("/privacy-policy")}>Privacy Policy</li>
-          <li onClick={() => navigate("/terms")}>Terms & Conditions</li>
-          <li onClick={() => navigate("/contributing")}>Contributing</li>
-        </ul>
-      </div>
-
-      <div className="footer-section">
-        <h4>Connect</h4>
-        <ul className="social-links">
-          <li><a href="https://x.com/_Anuuu_Soniii_" target="_blank" rel="noopener noreferrer"><FaXTwitter /> Twitter</a></li>
-          <li><a href="https://github.com/ANU-2524/" target="_blank" rel="noopener noreferrer"><FaGithub /> GitHub</a></li>
-          <li><a href="https://www.linkedin.com/in/anu--soni/" target="_blank" rel="noopener noreferrer"><FaLinkedin /> LinkedIn</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div className="footer-bottom">
-      <p>&copy; {new Date().getFullYear()} JustCoding. All rights reserved.</p>
-    </div>
-  </div>
-</footer>
-
+      <Footer />
     </div>
   );
 };

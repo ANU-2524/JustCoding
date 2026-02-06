@@ -1,23 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getDatabase, ref, onValue, set, push, serverTimestamp } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set
+} from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { initializeApp } from "firebase/app";
+import { app } from "../firebase"; // ✅ correct import
 import "./CollaborativePromptEditor.css";
 
-// Firebase config (replace with your own or use the existing one in firebase.js)
-import firebaseConfig from "../firebase";
-
-// Initialize Firebase if not already initialized
-if (!window._firebaseInitialized) {
-  initializeApp(firebaseConfig);
-  window._firebaseInitialized = true;
-}
-
-const db = getDatabase();
-const auth = getAuth();
+/**
+ * Initialize Firebase services ONCE using shared app
+ */
+const db = getDatabase(app);
+const auth = getAuth(app); // (not used now, but safe for future)
 
 function getRoomId() {
-  // Use today's date as room id for daily prompt
   const today = new Date();
   return `collab_${today.getFullYear()}_${today.getMonth() + 1}_${today.getDate()}`;
 }
@@ -27,41 +25,47 @@ export default function CollaborativePromptEditor() {
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const textareaRef = useRef();
+  const textareaRef = useRef(null);
   const roomId = getRoomId();
 
-  // Sync solution in real time
+  /* -------- REALTIME SYNC -------- */
   useEffect(() => {
     const solRef = ref(db, `collabRooms/${roomId}/solution`);
-    const unsub = onValue(solRef, (snapshot) => {
+
+    const unsubscribe = onValue(solRef, (snapshot) => {
       const val = snapshot.val();
-      if (val !== null && val !== solution) {
+      if (val !== null) {
         setSolution(val);
       }
     });
-    return () => unsub();
-    // eslint-disable-next-line
+
+    return () => unsubscribe();
   }, [roomId]);
 
-  // Update solution in Firebase on change
+  /* -------- UPDATE SOLUTION -------- */
   const handleSolutionChange = (e) => {
-    setSolution(e.target.value);
-    set(ref(db, `collabRooms/${roomId}/solution`), e.target.value);
+    const value = e.target.value;
+    setSolution(value);
+    set(ref(db, `collabRooms/${roomId}/solution`), value);
   };
 
-  // Submit solution (push to daily prompt submissions)
-  const handleSubmit = async (e) => {
+  /* -------- SUBMIT (LOCAL STORAGE DEMO) -------- */
+  const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!name.trim() || !solution.trim()) {
       setStatus("Name and solution required.");
       return;
     }
+
     setSubmitting(true);
-    // Save to localStorage for demo (could also push to Firebase)
+
     const todayKey = `prompt_${new Date().getFullYear()}_${new Date().getMonth() + 1}_${new Date().getDate()}`;
     const submissions = JSON.parse(localStorage.getItem(todayKey) || "[]");
+
     submissions.push({ name, solution, votes: 0 });
     localStorage.setItem(todayKey, JSON.stringify(submissions));
+
     setStatus("Submitted! View on Daily Prompt page.");
     setSubmitting(false);
     setName("");
@@ -70,14 +74,16 @@ export default function CollaborativePromptEditor() {
   return (
     <div className="collab-prompt-editor-container">
       <h2>Collaborative Daily Prompt Solution</h2>
+
       <form className="collab-prompt-form" onSubmit={handleSubmit}>
         <input
           className="collab-prompt-input"
           type="text"
           placeholder="Your Name (guest)"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
         />
+
         <textarea
           ref={textareaRef}
           className="collab-prompt-textarea"
@@ -86,11 +92,21 @@ export default function CollaborativePromptEditor() {
           onChange={handleSolutionChange}
           rows={8}
         />
+
         {status && <div className="collab-prompt-status">{status}</div>}
-        <button className="collab-prompt-btn" type="submit" disabled={submitting}>Submit Solution</button>
+
+        <button
+          className="collab-prompt-btn"
+          type="submit"
+          disabled={submitting}
+        >
+          Submit Solution
+        </button>
       </form>
+
       <div className="collab-prompt-note">
-        <b>Note:</b> All users on this page are editing the same solution in real time. Submit to save as a public solution for today.
+        <b>Note:</b> All users on this page are editing the same solution in real time.
+        Submit to save as a public solution for today.
       </div>
     </div>
   );

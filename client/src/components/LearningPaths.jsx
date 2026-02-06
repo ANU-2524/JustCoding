@@ -27,6 +27,7 @@ const LearningPaths = () => {
   const navigate = useNavigate();
   
   const [paths, setPaths] = useState([]);
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
   const [selectedPath, setSelectedPath] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('all');
@@ -67,7 +68,7 @@ const LearningPaths = () => {
       if (selectedLanguage !== 'all') queryParams.append('language', selectedLanguage);
       queryParams.append('difficulty', selectedDifficulty);
 
-      const response = await fetch(`http://localhost:4334/api/tutorials/learning-paths?${queryParams}`);
+      const response = await fetch(`${API_BASE}/api/tutorials/learning-paths?${queryParams}`);
       if (!response.ok) throw new Error('Failed to fetch learning paths');
       
       const data = await response.json();

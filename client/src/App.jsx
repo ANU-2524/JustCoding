@@ -1,6 +1,5 @@
-
 import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -9,6 +8,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Cursor from "./components/Cursor";
 import "./Style/Navbar.css";
+const Feedback = lazy(() => import("./pages/Feedback"));
 
 const CollabEditor = lazy(() => import("./components/CollabEditor"));
 
@@ -35,7 +35,10 @@ const TermsAndConditions = lazy(() => import("./components/TermsAndConditions"))
 const ContributingPage = lazy(() => import("./components/ContributingPage"));
 const FAQPage = lazy(() => import("./components/FAQPage"));
 const Leaderboard = lazy(() => import("./components/Leaderboard"));
+const ProgressDashboard = lazy(() => import("./components/ProgressDashboard"));
+const LeaderboardPage = lazy(() => import("./components/LeaderboardPage"));
 const ContestDetail = lazy(() => import("./components/ContestDetail"));
+const ChallengeEditorial = lazy(() => import("./components/ChallengeEditorial"));
 const ContestLeaderboard = lazy(() => import("./components/ContestLeaderboard"));
 const ContestManagement = lazy(() => import("./components/ContestManagement"));
 const ProgressExport = lazy(() => import("./components/ProgressExport"));
@@ -65,13 +68,11 @@ const NotFound = lazy(() => import("./components/NotFound"));
 const CommunityPage = lazy(() => import("./components/CommunityPage"));
 const CommunityPostDetail = lazy(() => import("./components/CommunityPostDetail"));
 
-
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <Router>
             <div className="app-container">
               <Cursor />
               <Navbar />
@@ -88,13 +89,14 @@ function App() {
                   {/* Portfolio Builder (guest-friendly) */}
                   <Route path="/portfolio-builder" element={<GuestPortfolioBuilder />} />
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/feedback" element={<Feedback />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/contributing" element={<ContributingPage />} />
                   <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
                   {/* Main personal editor */}
                   <Route
                     path="/editor"
@@ -142,6 +144,7 @@ function App() {
                   {/* Coding Challenges */}
                   <Route path="/challenges" element={<Challenges />} />
                   <Route path="/challenges/:slug" element={<ChallengeSolve />} />
+                  <Route path="/challenges/:slug/editorial" element={<ChallengeEditorial />} />
                   
                   {/* Tutorials */}
                   <Route path="/tutorials" element={<TutorialsPage />} />
@@ -159,9 +162,8 @@ function App() {
                   
                   {/* Analytics/Progress */}
                   <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/progress" element={<Analytics />} />
+                  <Route path="/progress" element={<ProgressDashboard />} />
                   <Route path="/export" element={<ProgressExport />} />
-
 
                   {/* Discussion Forum */}
                   <Route path="/forum" element={<Forum />} />
@@ -201,7 +203,6 @@ function App() {
               </Suspense>
               <ScrollToTop />
             </div>
-          </Router>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

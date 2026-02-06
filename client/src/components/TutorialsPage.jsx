@@ -71,6 +71,7 @@ function TutorialsPage() {
   
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
   useEffect(() => {
     fetchTutorials();
@@ -94,7 +95,7 @@ function TutorialsPage() {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`/api/tutorials?${params}`);
+      const response = await fetch(`${API_BASE}/api/tutorials?${params}`);
       const data = await response.json();
       
       setTutorials(data.tutorials);
@@ -109,7 +110,7 @@ function TutorialsPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/tutorials/categories');
+      const response = await fetch(`${API_BASE}/api/tutorials/categories`);
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -119,7 +120,7 @@ function TutorialsPage() {
 
   const fetchFeaturedTutorials = async () => {
     try {
-      const response = await fetch('/api/tutorials/featured');
+      const response = await fetch(`${API_BASE}/api/tutorials/featured`);
       const data = await response.json();
       setFeaturedTutorials(data);
     } catch (error) {
@@ -129,7 +130,7 @@ function TutorialsPage() {
 
   const fetchLearningPaths = async () => {
     try {
-      const response = await fetch('/api/tutorials/learning-paths?difficulty=beginner&limit=4');
+      const response = await fetch(`${API_BASE}/api/tutorials/learning-paths?difficulty=beginner&limit=4`);
       const data = await response.json();
       setLearningPaths(data);
     } catch (error) {
@@ -145,7 +146,7 @@ function TutorialsPage() {
     }
 
     try {
-      const response = await fetch('/api/tutorials/user/progress', {
+      const response = await fetch(`${API_BASE}/api/tutorials/user/progress`, {
         headers: {
           'Authorization': `Bearer ${await currentUser.getIdToken()}`
         }

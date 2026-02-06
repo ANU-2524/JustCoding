@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight } from 'react-icons/fa';
+import { FaUser, FaCamera, FaSave, FaTimes, FaTrash, FaCode, FaGithub, FaLinkedin, FaPencilAlt, FaArrowRight, FaUsers, FaChartLine } from 'react-icons/fa';
 import Breadcrumb from './Breadcrumb';
 import '../Style/Profile.css';
 import { useTheme } from './ThemeContext';
@@ -28,6 +28,7 @@ function getUserId(currentUser) {
     localStorage.setItem('tempUserId', tempId);
   }
   return tempId;
+}
 
 /**
  * Profile Component - User Profile Card with Basic Snippet Management
@@ -225,36 +226,31 @@ return '';
 
   return (
     <div className="profile-container">
-      <Breadcrumb 
-        items={[
-          { label: 'Profile', path: null }
-        ]}
-      />
-
       <div className="profile-card">
+        {/* Header Section */}
         <div className="profile-header">
           <div className="back-button-container">
             <button 
-              className="back-button"
+              className="back-button" 
               onClick={() => window.history.back()}
-              title="Go back"
             >
-              ← Back
+              <FaArrowRight style={{ transform: 'rotate(180deg)' }} /> Back
             </button>
           </div>
           
-          <div className="edit-button-container">
-            <button 
-              className="edit-profile-btn"
-              onClick={() => setIsEditing(true)}
-              title="Edit profile"
-            >
-              <FaPencilAlt /> Edit
-            </button>
-          </div>
+          {!isEditing && (
+            <div className="edit-button-container">
+              <button 
+                className="edit-profile-btn"
+                onClick={() => setIsEditing(true)}
+              >
+                <FaPencilAlt /> Edit Profile
+              </button>
+            </div>
+          )}
           
           <div className="avatar-container">
-            {(tempPhoto || profile.photoURL) ? (
+            {tempPhoto || profile.photoURL ? (
               <img 
                 src={tempPhoto || profile.photoURL} 
                 alt="Profile" 
@@ -268,138 +264,147 @@ return '';
             
             {isEditing && (
               <div className="upload-overlay">
-                <label htmlFor="avatar-upload" className="upload-label">
+                <label htmlFor="photo-upload" className="upload-label">
                   <FaCamera className="camera-icon" />
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                    style={{ display: 'none' }}
-                  />
                 </label>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
               </div>
             )}
           </div>
           
           <div className="profile-info">
-            <h1 className="profile-name">
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="displayName"
-                  value={profile.displayName}
-                  onChange={handleInputChange}
-                  className="name-input"
-                />
-              ) : (
-                profile.displayName
+            {isEditing ? (
+              <input
+                type="text"
+                value={profile.displayName}
+                onChange={handleInputChange}
+                name="displayName"
+                className="name-input"
+                placeholder="Enter your name"
+              />
+            ) : (
+              <h1 className="profile-name">{profile.displayName}</h1>
+            )}
+            
+            <div className="profile-email">
+              <span>{profile.email || identityLabel}</span>
+              {currentUser?.isAnonymous && (
+                <span className="email-note">Guest account (local storage)</span>
               )}
-            </h1>
-            <p className="profile-email">
-              {identityLabel}
-              {currentUser?.email ? (
-                <span className="email-note">(Auth is optional; data still saves locally)</span>
-              ) : (
-                <span className="email-note">(No login required)</span>
-              )}
-            </p>
+            </div>
           </div>
         </div>
-
+        
+        {/* Body Content */}
         <div className="profile-body">
+          {/* Bio Section */}
           <div className="bio-section">
-            <h3>About</h3>
+            <h3>Bio</h3>
             {isEditing ? (
               <textarea
-                name="bio"
                 value={profile.bio}
                 onChange={handleInputChange}
-                placeholder="Tell us about yourself..."
+                name="bio"
                 className="bio-input"
-                rows="4"
+                placeholder="Tell us about yourself..."
               />
             ) : (
               <p className="bio-text">
-                {profile.bio || 'No bio added yet.'}
+                {profile.bio || 'No bio yet. Tell us about yourself!'}
               </p>
             )}
           </div>
-
+          
+          {/* Links Section */}
           <div className="links-section">
-            <h3>Links</h3>
+            <h3>Social Links</h3>
             {isEditing ? (
               <div className="links-form">
                 <div className="link-row">
-                  <label className="link-label"><FaGithub /> GitHub</label>
+                  <div className="link-label">
+                    <FaGithub /> GitHub
+                  </div>
                   <input
                     type="text"
-                    name="githubUrl"
                     value={profile.githubUrl}
                     onChange={handleInputChange}
+                    name="githubUrl"
                     className="dash-input"
-                    placeholder="github.com/yourname"
+                    placeholder="github.com/username"
                   />
                 </div>
+                
                 <div className="link-row">
-                  <label className="link-label"><FaLinkedin /> LinkedIn</label>
+                  <div className="link-label">
+                    <FaLinkedin /> LinkedIn
+                  </div>
                   <input
                     type="text"
-                    name="linkedinUrl"
                     value={profile.linkedinUrl}
                     onChange={handleInputChange}
+                    name="linkedinUrl"
                     className="dash-input"
-                    placeholder="linkedin.com/in/yourname"
+                    placeholder="linkedin.com/in/username"
                   />
                 </div>
               </div>
             ) : (
               <div className="links-list">
-                <a
-                  className={`link-item ${profile.githubUrl ? '' : 'disabled'}`}
-                  href={profile.githubUrl ? normalizeUrl(profile.githubUrl) : undefined}
-                  target={profile.githubUrl ? "_blank" : undefined}
-                  rel={profile.githubUrl ? "noreferrer" : undefined}
-                  onClick={(e) => {
-                    if (!profile.githubUrl) {
-e.preventDefault();
-}
-                  }}
-                >
-                  <FaGithub /> <span>{profile.githubUrl ? 'GitHub' : 'GitHub (not set)'}</span>
-                </a>
-                <a
-                  className={`link-item ${profile.linkedinUrl ? '' : 'disabled'}`}
-                  href={profile.linkedinUrl ? normalizeUrl(profile.linkedinUrl) : undefined}
-                  target={profile.linkedinUrl ? "_blank" : undefined}
-                  rel={profile.linkedinUrl ? "noreferrer" : undefined}
-                  onClick={(e) => {
-                    if (!profile.linkedinUrl) {
-e.preventDefault();
-}
-                  }}
-                >
-                  <FaLinkedin /> <span>{profile.linkedinUrl ? 'LinkedIn' : 'LinkedIn (not set)'}</span>
-                </a>
+                {profile.githubUrl && (
+                  <a 
+                    href={normalizeUrl(profile.githubUrl)} 
+                    className="link-item"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <FaGithub /> {profile.githubUrl.replace(/^https?:\/\//, '')}
+                  </a>
+                )}
+                
+                {profile.linkedinUrl && (
+                  <a 
+                    href={normalizeUrl(profile.linkedinUrl)} 
+                    className="link-item"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <FaLinkedin /> {profile.linkedinUrl.replace(/^https?:\/\//, '')}
+                  </a>
+                )}
+                
+                {!profile.githubUrl && !profile.linkedinUrl && (
+                  <div className="link-item disabled">
+                    No social links added yet
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-          {/* Dashboard Redirect Notice */}
-          <div className="dashboard-notice">
-            <div className="notice-content">
-              <h3>Want More Analytics?</h3>
-              <p>Visit the <strong>Dashboard</strong> to see detailed statistics, achievements, portfolio view, and collaboration history.</p>
-              <button 
-                className="notice-btn"
-                onClick={() => window.location.href = '/dashboard'}
-              >
-                <FaArrowRight /> Go to Dashboard
-              </button>
+          
+          {/* Dashboard Notice - Only show when not editing */}
+          {!isEditing && (
+            <div className="dashboard-notice">
+              <div className="notice-content">
+                <h3>📊 Full Analytics Dashboard Available</h3>
+                <p>Want to see detailed coding statistics, achievements, and progress tracking?</p>
+                <button 
+                  className="notice-btn"
+                  onClick={() => window.location.href = '/dashboard'}
+                >
+                  <FaArrowRight /> Go to Full Dashboard
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="dashboard">
+          )}
+          
+          {/* Dashboard Tabs - Only show when not editing */}
+          {!isEditing && (
             <div className="dashboard-tabs">
               <button
                 className={`dash-tab ${activeTab === 'snippets' ? 'active' : ''}`}
@@ -411,145 +416,147 @@ e.preventDefault();
                 className={`dash-tab ${activeTab === 'sessions' ? 'active' : ''}`}
                 onClick={() => setActiveTab('sessions')}
               >
-                Sessions
+                <FaUsers /> Sessions
               </button>
               <button
                 className={`dash-tab ${activeTab === 'stats' ? 'active' : ''}`}
                 onClick={() => setActiveTab('stats')}
               >
-                Stats
+                <FaChartLine /> Stats
               </button>
             </div>
-
-            {activeTab === 'snippets' && (
-              <div className="dash-panel">
-                <div className="dash-panel-header">
-                  <h3>Your Snippets</h3>
-                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
-                </div>
-
-                <div className="snippet-create">
-                  <h4>Create Snippet</h4>
-                  <input
-                    className="dash-input"
-                    placeholder="Title"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                  />
-                  <select
-                    className="dash-input"
-                    value={newLanguage}
-                    onChange={(e) => setNewLanguage(e.target.value)}
-                  >
-                    <option value="javascript">JavaScript</option>
-                    <option value="typescript">TypeScript</option>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                    <option value="cpp">C++</option>
-                    <option value="c">C</option>
-                    <option value="go">Go</option>
-                    <option value="ruby">Ruby</option>
-                    <option value="php">PHP</option>
-                    <option value="swift">Swift</option>
-                    <option value="rust">Rust</option>
-                  </select>
-                  <textarea
-                    className="dash-textarea"
-                    placeholder="Paste code here..."
-                    rows={6}
-                    value={newCode}
-                    onChange={(e) => setNewCode(e.target.value)}
-                  />
-                  <button className="dash-btn primary" onClick={handleCreateSnippet}>Save Snippet</button>
-                </div>
-
-                <div className="snippet-list">
-                  {snippets.length === 0 ? (
-                    <p className="dash-empty">No snippets yet.</p>
-                  ) : (
-                    snippets.map((s) => (
-                      <div key={s.id} className="snippet-item">
-                        <div className="snippet-meta">
-                          <div className="snippet-title">{s.title}</div>
-                          <div className="snippet-sub">{s.language} • Updated {formatDate(s.updatedAt)}</div>
+          )}
+          
+          {/* Tab Content - Only show when not editing */}
+          {!isEditing && (
+            <>
+              {/* Tab Content */}
+              {activeTab === 'snippets' && (
+                <div className="tab-content">
+                  <div className="snippet-create">
+                    <h3>Create New Snippet</h3>
+                    <input
+                      type="text"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="Snippet title"
+                      className="dash-input"
+                    />
+                    <select
+                      value={newLanguage}
+                      onChange={(e) => setNewLanguage(e.target.value)}
+                      className="dash-input"
+                    >
+                      <option value="javascript">JavaScript</option>
+                      <option value="python">Python</option>
+                      <option value="java">Java</option>
+                      <option value="cpp">C++</option>
+                      <option value="html">HTML</option>
+                      <option value="css">CSS</option>
+                    </select>
+                    <textarea
+                      value={newCode}
+                      onChange={(e) => setNewCode(e.target.value)}
+                      placeholder="Your code here..."
+                      className="dash-textarea"
+                      rows="6"
+                    />
+                    <button 
+                      className="dash-btn primary"
+                      onClick={handleCreateSnippet}
+                    >
+                      Create Snippet
+                    </button>
+                  </div>
+                  
+                  <div className="snippet-list">
+                    <h3>Your Snippets</h3>
+                    {snippets.length === 0 ? (
+                      <div className="dash-empty">No snippets created yet</div>
+                    ) : (
+                      snippets.map(snippet => (
+                        <div key={snippet.id} className="snippet-item">
+                          <div className="snippet-meta">
+                            <div className="snippet-title">{snippet.title}</div>
+                            <div className="snippet-sub">{snippet.language} • {formatDate(snippet.createdAt)}</div>
+                          </div>
+                          <div className="snippet-actions">
+                            <button 
+                              className="dash-btn"
+                              onClick={() => handleLoadSnippetToEditor(snippet)}
+                            >
+                              Load to Editor
+                            </button>
+                            <button 
+                              className="dash-btn danger"
+                              onClick={() => handleDeleteSnippet(snippet.id)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
                         </div>
-                        <div className="snippet-actions">
-                          <button className="dash-btn" onClick={() => handleLoadSnippetToEditor(s)}>Load to Editor</button>
-                          <button
-                            className="dash-btn"
-                            onClick={() => {
-                              const userId = getUserId(currentUser);
-                              const title = window.prompt('Rename snippet', s.title);
-                              if (!title) return;
-                              updateSnippetOnBackend(s.id, userId, { title: title.trim() }).then(() => {
-                                refreshData();
-                              });
-                            }}
-                          >
-                            Rename
-                          </button>
-                          <button className="dash-btn danger" onClick={() => handleDeleteSnippet(s.id)}>
-                            <FaTrash /> Delete
-                          </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'sessions' && (
+                <div className="tab-content">
+                  <h3>Recent Sessions</h3>
+                  {sessions.length === 0 ? (
+                    <div className="dash-empty">No sessions joined yet</div>
+                  ) : (
+                    sessions.slice(0, 5).map(session => (
+                      <div key={session.id} className="session-item">
+                        <div className="session-title">Session #{session.id.slice(0, 8)}</div>
+                        <div className="session-sub">
+                          Joined: {formatDate(session.joinedAt)} • Duration: {formatDuration(session.joinedAt, session.leftAt)}
                         </div>
                       </div>
                     ))
                   )}
                 </div>
-              </div>
-            )}
-
-            {activeTab === 'sessions' && (
-              <div className="dash-panel">
-                <div className="dash-panel-header">
-                  <h3>Past Collaboration Sessions</h3>
-                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
-                </div>
-
-                {sessions.length === 0 ? (
-                  <p className="dash-empty">No sessions tracked yet. Join a room in Collaborate.</p>
-                ) : (
-                  <div className="session-list">
-                    {sessions.map((sess) => (
-                      <div key={sess.id} className="session-item">
-                        <div className="session-title">Room: {sess.roomId || '(unknown)'}</div>
-                        <div className="session-sub">
-                          As: {sess.username || '(unknown)'} • Started {formatDate(sess.startedAt)}
-                          {sess.endedAt ? ` • Duration ${formatDuration(sess.startedAt, sess.endedAt)}` : ' • (active)'}
-                        </div>
+              )}
+              
+              {activeTab === 'stats' && (
+                <div className="tab-content">
+                  <h3>Your Statistics</h3>
+                  {stats ? (
+                    <div className="stats-grid">
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.runs || 0}</div>
+                        <div className="stat-label">Code Runs</div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'stats' && (
-              <div className="dash-panel">
-                <div className="dash-panel-header">
-                  <h3>Usage Stats</h3>
-                  <button className="dash-btn" onClick={refreshData}>Refresh</button>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.snippetsCreated || 0}</div>
+                        <div className="stat-label">Snippets</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.sessionsJoined || 0}</div>
+                        <div className="stat-label">Sessions</div>
+                      </div>
+                      <div className="stat-card">
+                        <div className="stat-value">{stats.minutesCoded || 0}</div>
+                        <div className="stat-label">Minutes Coded</div>
+                      </div>
+                      <div className="stat-card wide">
+                        <div className="stat-value">{stats.favoriteLanguage || 'None'}</div>
+                        <div className="stat-label">Favorite Language</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="dash-empty">No statistics available yet</div>
+                  )}
                 </div>
-                {!stats ? (
-                  <p className="dash-empty">Loading...</p>
-                ) : (
-                  <div className="stats-grid">
-                    <div className="stat-card"><div className="stat-value">{stats.runs || 0}</div><div className="stat-label">Runs</div></div>
-                    <div className="stat-card"><div className="stat-value">{stats.visualizes || 0}</div><div className="stat-label">Visualizes</div></div>
-                    <div className="stat-card"><div className="stat-value">{stats.aiExplains || 0}</div><div className="stat-label">AI Explains</div></div>
-                    <div className="stat-card"><div className="stat-value">{stats.aiDebugs || 0}</div><div className="stat-label">AI Debugs</div></div>
-                    <div className="stat-card"><div className="stat-value">{stats.snippetsCreated || 0}</div><div className="stat-label">Snippets Created</div></div>
-                    <div className="stat-card"><div className="stat-value">{stats.sessionsJoined || 0}</div><div className="stat-label">Sessions Joined</div></div>
-                    <div className="stat-card wide"><div className="stat-value">{stats.lastActiveAt ? formatDate(stats.lastActiveAt) : '—'}</div><div className="stat-label">Last Active</div></div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+              )}
+            </>
+          )}
         </div>
-
-        <div className="profile-footer">
-          {isEditing && (
+        
+        {/* Footer Actions */}
+        {isEditing && (
+          <div className="profile-footer">
             <div className="edit-actions">
               <button className="btn-save" onClick={handleSave}>
                 <FaSave /> Save Changes
@@ -558,8 +565,8 @@ e.preventDefault();
                 <FaTimes /> Cancel
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

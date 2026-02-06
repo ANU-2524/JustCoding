@@ -21,6 +21,7 @@ function FeaturedTutorials() {
   const [tutorials, setTutorials] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
   useEffect(() => {
     fetchFeaturedTutorials();
@@ -28,7 +29,7 @@ function FeaturedTutorials() {
 
   const fetchFeaturedTutorials = async () => {
     try {
-      const response = await fetch('/api/tutorials/featured');
+      const response = await fetch(`${API_BASE}/api/tutorials/featured`);
       if (response.ok) {
         const data = await response.json();
         setTutorials(data.slice(0, 3)); // Show only 3 featured tutorials
