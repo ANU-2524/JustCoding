@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import CodeEditor from './CodeEditor';
 import { FaSun, FaMoon, FaPlay, FaPause, FaStepForward, FaStepBackward, FaRedo, FaEye, FaUndo, FaBug, FaFilePdf, FaSignOutAlt, FaLightbulb, FaCode, FaChevronDown, FaChevronUp, FaSave, FaCopy, FaFileArchive, FaFolder, FaFile, FaHistory, FaClock } from 'react-icons/fa';
 import { useTheme } from './ThemeContext';
@@ -15,18 +15,21 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 const languages = {
-  python:     { name: 'Python',     starter: `print("Hello World")` },
-  cpp:        { name: 'C++',        starter: `#include <iostream>
+  python: { name: 'Python', starter: `print("Hello World")` },
+  cpp: {
+    name: 'C++', starter: `#include <iostream>
 using namespace std;
 int main() {
   return 0;
 }` },
-  java:       { name: 'Java',       starter: `public class Main {
+  java: {
+    name: 'Java', starter: `public class Main {
   public static void main(String[] args) {
     
   }
 }` },
-  javascript: { name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
+  javascript: {
+    name: 'JavaScript', starter: `// 🔍 Try the Visualizer with this code!
 let age = 25;
 let name = "Alice";
 let isAdult = age >= 18;
@@ -34,16 +37,28 @@ console.log(name + " is " + age + " years old");
 if (isAdult) {
   console.log("Can vote!");
 }` },
-  c:          { name: 'C',          starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
-  go:         { name: 'Go',         starter: `package main
+  c: { name: 'C', starter: `#include <stdio.h>\nint main() {\n  return 0;\n}` },
+  go: {
+    name: 'Go', starter: `package main
 import "fmt"
 func main() {
   fmt.Println("Hello Go")
 }` },
-  ruby:       { name: 'Ruby',       starter: `puts "Hello Ruby"` },
-  php:        { name: 'PHP',        starter: `<?php\necho "Hello PHP";` },
-  swift:      { name: 'Swift',      starter: `print("Hello Swift")` },
-  rust:       { name: 'Rust',       starter: `fn main() {\n  println!("Hello Rust");\n}` }
+  ruby: { name: 'Ruby', starter: `puts "Hello Ruby"` },
+  php: { name: 'PHP', starter: `<?php\necho "Hello PHP";` },
+  swift: { name: 'Swift', starter: `print("Hello Swift")` },
+  rust: { name: 'Rust', starter: `fn main() {\n  println!("Hello Rust");\n}` }
+};
+
+// Extracted from component to avoid recreation
+const DEFAULT_EDITOR_SETTINGS = {
+  intellisense: true,
+  autoClosing: true,
+  formatOnType: true,
+  suggestOnTriggerCharacters: true,
+  wordBasedSuggestions: true,
+  autoSave: true, // New setting for auto-save
+  autoSaveInterval: AUTO_SAVE_INTERVAL
 };
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
@@ -68,8 +83,8 @@ const MainEditor = () => {
     const savedLang = localStorage.getItem("lang") || "javascript";
     const savedCode = localStorage.getItem(`code-${savedLang}`);
     if (savedCode) {
-return savedCode;
-}
+      return savedCode;
+    }
 
     return savedLang === "javascript"
       ? `// 🔍 Try the Visualizer with this code!
@@ -86,7 +101,7 @@ if (isAdult) {
   const [output, setOutput] = useState("");
   const [showAISection, setShowAISection] = useState(false);
   const [activeAITab, setActiveAITab] = useState("explain");
-  
+
   // Auto-save states
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(() => {
@@ -102,29 +117,21 @@ if (isAdult) {
     }
   });
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  
+
   // Editor settings states
   const [editorSettings, setEditorSettings] = useState(() => {
     const saved = localStorage.getItem("editorSettings");
-    return saved ? JSON.parse(saved) : {
-      intellisense: true,
-      autoClosing: true,
-      formatOnType: true,
-      suggestOnTriggerCharacters: true,
-      wordBasedSuggestions: true,
-      autoSave: true, // New setting for auto-save
-      autoSaveInterval: AUTO_SAVE_INTERVAL
-    };
+    return saved ? JSON.parse(saved) : DEFAULT_EDITOR_SETTINGS;
   });
 
   // Multi-file project states
   const [projectFiles, setProjectFiles] = useState(() => {
     const saved = localStorage.getItem(`project-files-${language}`);
     return saved ? JSON.parse(saved) : [
-      { 
-        id: 'main', 
-        name: getDefaultFileName(language), 
-        content: code, 
+      {
+        id: 'main',
+        name: getDefaultFileName(language),
+        content: code,
         isMain: true,
         path: getDefaultFileName(language)
       }
@@ -148,6 +155,8 @@ if (isAdult) {
   const autoSaveTimeoutRef = useRef(null);
   const lastSavedContentRef = useRef({});
 
+  const projectFilesRef = useRef(projectFiles);
+
   // Initialize last saved content ref
   useEffect(() => {
     projectFiles.forEach(file => {
@@ -155,17 +164,22 @@ if (isAdult) {
     });
   }, []);
 
+  // Update ref when projectFiles changes
+  useEffect(() => {
+    projectFilesRef.current = projectFiles;
+  }, [projectFiles]);
+
   // Auto-save effect
   useEffect(() => {
     if (!editorSettings.autoSave) {
-return;
-}
+      return;
+    }
 
     const saveIfChanged = () => {
       const activeFile = projectFiles.find(f => f.id === activeFileId);
       if (!activeFile) {
-return;
-}
+        return;
+      }
 
       const currentContent = activeFile.content;
       const lastSavedContent = lastSavedContentRef.current[activeFileId];
@@ -173,21 +187,21 @@ return;
       // Only save if content has changed
       if (currentContent !== lastSavedContent) {
         setIsAutoSaving(true);
-        
+
         // Save current version to history
         saveToVersionHistory(activeFile.content);
-        
+
         // Update last saved content
         lastSavedContentRef.current[activeFileId] = currentContent;
-        
+
         // Update project files in localStorage
         localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-        
+
         // Update last saved timestamp
         const now = new Date();
         setLastSaved(now);
         localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
-        
+
         // Show auto-save indicator briefly
         setTimeout(() => setIsAutoSaving(false), 1000);
       }
@@ -226,7 +240,7 @@ return;
   }, [projectFiles, activeFileId, language, editorSettings.autoSave]);
 
   // Save to version history function
-  const saveToVersionHistory = (content) => {
+  const saveToVersionHistory = useCallback((content) => {
     const now = new Date();
     const version = {
       id: Date.now(),
@@ -242,10 +256,10 @@ return;
       localStorage.setItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`, JSON.stringify(newHistory));
       return newHistory;
     });
-  };
+  }, [activeFileId, projectFiles, language]);
 
   // Restore version from history
-  const restoreVersion = (version) => {
+  const restoreVersion = useCallback((version) => {
     if (version.fileId === activeFileId) {
       updateFileContent(activeFileId, version.content);
       alert(`Restored version from ${new Date(version.timestamp).toLocaleString()}`);
@@ -270,41 +284,41 @@ return;
         setActiveFileId(version.fileId);
       }
     }
-  };
+  }, [activeFileId, projectFiles, updateFileContent]);
 
   // Clear version history
-  const clearVersionHistory = () => {
+  const clearVersionHistory = useCallback(() => {
     if (window.confirm('Are you sure you want to clear all version history?')) {
       setVersionHistory([]);
       localStorage.removeItem(`${VERSION_HISTORY_KEY_PREFIX}${language}`);
     }
-  };
+  }, [language]);
 
   // Manual save function
-  const manualSave = () => {
+  const manualSave = useCallback(() => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (activeFile) {
       setIsAutoSaving(true);
       saveToVersionHistory(activeFile.content);
       localStorage.setItem(`project-files-${language}`, JSON.stringify(projectFiles));
-      
+
       const now = new Date();
       setLastSaved(now);
       localStorage.setItem(`${AUTO_SAVE_KEY_PREFIX}last_saved_${language}`, now.toISOString());
       lastSavedContentRef.current[activeFileId] = activeFile.content;
-      
+
       setTimeout(() => setIsAutoSaving(false), 1000);
       alert('Changes saved!');
     }
-  };
+  }, [projectFiles, activeFileId, language, saveToVersionHistory]);
 
   // Toggle auto-save setting
-  const toggleAutoSave = () => {
+  const toggleAutoSave = useCallback(() => {
     setEditorSettings(prev => ({
       ...prev,
       autoSave: !prev.autoSave
     }));
-  };
+  }, []);
 
   // Ref to track the warning timeout to prevent memory leaks
   const warningTimeoutRef = useRef(null);
@@ -398,7 +412,7 @@ return;
     }
   };
 
-  const explainQuestion = async () => {
+  const explainQuestion = useCallback(async () => {
     if (!questionText.trim()) {
       alert('Please paste a question first.');
       return;
@@ -414,8 +428,8 @@ return;
         body: JSON.stringify({ question: questionText }),
       }, 60000);
       if (!res.ok) {
-throw new Error(`Server error: ${res.status}`);
-}
+        throw new Error(`Server error: ${res.status}`);
+      }
       const data = await res.json();
       setExplanation(data.explanation);
       localStorage.setItem('question', questionText);
@@ -425,10 +439,11 @@ throw new Error(`Server error: ${res.status}`);
     } finally {
       setIsExplaining(false);
     }
-  };
+  }, [questionText]);
 
-  const debugCode = async () => {
-    const activeFile = projectFiles.find(f => f.id === activeFileId);
+  const debugCode = useCallback(async () => {
+    const currentProjectFiles = projectFilesRef.current;
+    const activeFile = currentProjectFiles.find(f => f.id === activeFileId);
     if (!activeFile || !activeFile.content.trim()) {
       alert("Please write some code first.");
       return;
@@ -443,8 +458,8 @@ throw new Error(`Server error: ${res.status}`);
         body: JSON.stringify({ code: activeFile.content, errorMessage: output }),
       }, 60000);
       if (!res.ok) {
-throw new Error(`Server error: ${res.status}`);
-}
+        throw new Error(`Server error: ${res.status}`);
+      }
       const data = await res.json();
       setDebugResult(data.debugHelp);
       localStorage.setItem("debugHelp", data.debugHelp);
@@ -453,14 +468,14 @@ throw new Error(`Server error: ${res.status}`);
     } finally {
       setDebugLoading(false);
     }
-  };
+  }, [activeFileId, output]);
 
   useEffect(() => {
     localStorage.setItem(`code-${language}`, code);
     localStorage.setItem("lang", language);
   }, [code, language]);
 
-  const runCode = async () => {
+  const runCode = useCallback(async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile || !activeFile.content.trim()) {
       setOutput("Please write some code first.");
@@ -486,8 +501,8 @@ throw new Error(`Server error: ${res.status}`);
       clearTimeout(warningTimeoutRef.current);
       warningTimeoutRef.current = null;
       if (!res.ok) {
-throw new Error(`Server error: ${res.status}`);
-}
+        throw new Error(`Server error: ${res.status}`);
+      }
       setLoadingMessage("Processing code...");
       const result = await res.json();
       setOutput(result.output || "No output");
@@ -501,15 +516,12 @@ throw new Error(`Server error: ${res.status}`);
       } else {
         setOutput(`❌ Error: ${err.message}\\n\\nPlease try again.`);
       }
-    } finally {
-      clearTimeout(warningTimeoutRef.current);
-      warningTimeoutRef.current = null;
       setLoading(false);
       setLoadingMessage("");
     }
-  };
+  }, [activeFileId, activeFileId, language, projectFiles, userInput]);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     const newCode = language === "javascript" ?
       `// 🔍 Try the Visualizer with this code!\nlet age = 25;\nlet name = "Alice";\nlet isAdult = age >= 18;\nconsole.log(name + " is " + age + " years old");\nif (isAdult) {\n  console.log("Can vote!");\n}` :
       languages[language].starter;
@@ -535,7 +547,7 @@ throw new Error(`Server error: ${res.status}`);
     localStorage.removeItem("question");
     localStorage.removeItem("explanation");
     localStorage.removeItem("debugHelp");
-  };
+  }, [language]);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -552,8 +564,8 @@ throw new Error(`Server error: ${res.status}`);
       const qLines = doc.splitTextToSize(question, 180);
       qLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -563,16 +575,16 @@ throw new Error(`Server error: ${res.status}`);
     const explanationText = localStorage.getItem("explanation");
     if (explanationText) {
       if (y > 250) {
- doc.addPage(); y = 10; 
-}
+        doc.addPage(); y = 10;
+      }
       doc.setFontSize(12);
       doc.text("Explanation:", 10, y);
       y += 8;
       const eLines = doc.splitTextToSize(explanationText, 180);
       eLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -582,16 +594,16 @@ throw new Error(`Server error: ${res.status}`);
     // Export all files in the project
     projectFiles.forEach((file, index) => {
       if (y > 250) {
- doc.addPage(); y = 10; 
-}
+        doc.addPage(); y = 10;
+      }
       doc.setFontSize(12);
       doc.text(`File: ${file.name}`, 10, y);
       y += 8;
       const codeLines = doc.splitTextToSize(file.content, 180);
       codeLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -606,8 +618,8 @@ throw new Error(`Server error: ${res.status}`);
       const inputLines = doc.splitTextToSize(userInput, 180);
       inputLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -621,8 +633,8 @@ throw new Error(`Server error: ${res.status}`);
       const outputLines = doc.splitTextToSize(output, 180);
       outputLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -637,8 +649,8 @@ throw new Error(`Server error: ${res.status}`);
       const dLines = doc.splitTextToSize(debugHelp, 180);
       dLines.forEach(line => {
         if (y > 280) {
- doc.addPage(); y = 10; 
-}
+          doc.addPage(); y = 10;
+        }
         doc.text(line, 10, y);
         y += 7;
       });
@@ -647,21 +659,21 @@ throw new Error(`Server error: ${res.status}`);
     doc.save(`${languages[language].name}-JustCode-Project.pdf`);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await logout();
       window.location.href = "/";
     } catch (err) {
       alert("Logout failed!");
     }
-  };
+  }, [logout]);
 
   // Universal Visualizer - works with all languages
-  const visualizeCode = async () => {
+  const visualizeCode = useCallback(async () => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile) {
-return;
-}
+      return;
+    }
 
     setVisualizerLoading(true);
 
@@ -680,36 +692,36 @@ return;
         setCurrentStep(0);
         setShowVisualizer(true);
       } else {
-        alert(`Visualization: ${  data.error || 'Not supported for this language'}`);
+        alert(`Visualization: ${data.error || 'Not supported for this language'}`);
       }
     } catch (error) {
       console.error('Visualization failed:', error);
       alert('Failed to connect to server. Please check your connection.');
     }
     setVisualizerLoading(false);
-  };
+  }, [projectFiles, activeFileId, language]);
 
-  const saveCurrentAsSnippet = () => {
+  const saveCurrentAsSnippet = useCallback(() => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile) {
-return;
-}
+      return;
+    }
 
     const title = window.prompt('Snippet title');
     if (!title) {
-return;
-}
+      return;
+    }
     addSnippet({ title: title.trim(), language, code: activeFile.content });
     touchLastActive();
     alert('Saved to Profile → Snippets');
-  };
+  }, [projectFiles, activeFileId, language]);
 
   // Multi-file project functions
-  const addNewFile = () => {
+  const addNewFile = useCallback(() => {
     const fileName = window.prompt('Enter file name (with extension):', `file${projectFiles.length + 1}.${getFileExtension(getDefaultFileName(language))}`);
     if (!fileName) {
-return;
-}
+      return;
+    }
 
     const newFile = {
       id: `file-${Date.now()}`,
@@ -721,60 +733,68 @@ return;
 
     setProjectFiles(prev => [...prev, newFile]);
     setActiveFileId(newFile.id);
-  };
+  }, [projectFiles.length, language]);
 
-  const removeFile = (fileId) => {
-    setProjectFiles(prev => {
-      if (prev.length <= 1) {
-        alert("Cannot remove the last file!");
-        return prev;
-      }
+  const removeFile = useCallback((fileId) => {
+    if (projectFiles.length <= 1) {
+      alert("Cannot remove the last file!");
+      return;
+    }
 
-      const fileToRemove = prev.find(f => f.id === fileId);
-      if (fileToRemove.isMain) {
-        alert("Cannot remove the main file!");
-        return prev;
-      }
+    const fileToRemove = projectFiles.find(f => f.id === fileId);
+    if (!fileToRemove) return;
 
-      const newFiles = prev.filter(f => f.id !== fileId);
+    if (fileToRemove.isMain) {
+      alert("Cannot remove the main file!");
+      return;
+    }
 
-      if (activeFileId === fileId) {
-        setActiveFileId(newFiles[0].id);
-      }
+    const newFiles = projectFiles.filter(f => f.id !== fileId);
+    setProjectFiles(newFiles);
 
-      return newFiles;
-    });
-  };
+    if (activeFileId === fileId) {
+      setActiveFileId(newFiles[0].id);
+    }
+  }, [projectFiles, activeFileId]);
 
-  const renameFile = (fileId) => {
-    setProjectFiles(prev => {
-      const file = prev.find(f => f.id === fileId);
-      const newName = window.prompt('Enter new file name:', file.name);
-      if (!newName || newName === file.name) {
-return prev;
-}
+  const renameFile = useCallback((fileId) => {
+    const file = projectFiles.find(f => f.id === fileId);
+    if (!file) return;
 
-      return prev.map(f =>
-        f.id === fileId ? { ...f, name: newName, path: newName } : f
-      );
-    });
-  };
+    const newName = window.prompt('Enter new file name:', file.name);
+    if (!newName || newName === file.name) {
+      return;
+    }
 
-  const setAsMainFile = (fileId) => {
+    setProjectFiles(prev => prev.map(f =>
+      f.id === fileId ? { ...f, name: newName, path: newName } : f
+    ));
+  }, [projectFiles]);
+
+  const setAsMainFile = useCallback((fileId) => {
     setProjectFiles(prev => prev.map(f => ({
       ...f,
       isMain: f.id === fileId
     })));
-  };
+  }, []);
 
-  const updateFileContent = (fileId, content) => {
+  const updateFileContent = useCallback((fileId, content) => {
     setProjectFiles(prev => prev.map(f =>
       f.id === fileId ? { ...f, content } : f
     ));
-  };
+
+    // Also update current code state if it's the active file
+    if (fileId === activeFileId) {
+      setCode(content);
+    }
+  }, [activeFileId]);
+
+  const handleCodeChange = useCallback((newContent) => {
+    updateFileContent(activeFileId, newContent);
+  }, [activeFileId, updateFileContent]);
 
   // Export to ZIP function
-  const exportToZip = async () => {
+  const exportToZip = useCallback(async () => {
     if (projectFiles.length === 0) {
       alert("No files to export!");
       return;
@@ -826,39 +846,39 @@ Visit https://justcoding.onrender.com for more information.`;
         incrementStat('exports', 1);
       }
     }
-  };
+  }, [projectFiles, language]);
 
-  const exportSingleFile = () => {
+  const exportSingleFile = useCallback(() => {
     const activeFile = projectFiles.find(f => f.id === activeFileId);
     if (!activeFile) {
-return;
-}
-    
+      return;
+    }
+
     const blob = new Blob([activeFile.content], { type: 'text/plain' });
     saveAs(blob, activeFile.name);
     incrementStat('singleExports', 1);
-  };
+  }, [projectFiles, activeFileId]);
 
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     if (currentStep < execution.length - 1) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, execution.length]);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const resetVisualizer = () => {
+  const resetVisualizer = useCallback(() => {
     setCurrentStep(0);
     setIsPlaying(false);
-  };
+  }, []);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const togglePlay = useCallback(() => {
+    setIsPlaying(prev => !prev);
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -876,29 +896,226 @@ return;
     return () => clearInterval(interval);
   }, [isPlaying, currentStep, execution.length, speed]);
 
-  const toggleIntellisense = () => {
+  const toggleIntellisense = useCallback(() => {
     setEditorSettings(prev => ({
       ...prev,
       intellisense: !prev.intellisense
     }));
-  };
+  }, []);
 
-  const toggleAutoClosing = () => {
+  const toggleAutoClosing = useCallback(() => {
     setEditorSettings(prev => ({
       ...prev,
       autoClosing: !prev.autoClosing
     }));
-  };
+  }, []);
 
-  const toggleFormatOnType = () => {
+  const toggleFormatOnType = useCallback(() => {
     setEditorSettings(prev => ({
       ...prev,
       formatOnType: !prev.formatOnType
     }));
-  };
+  }, []);
 
   const currentState = execution[currentStep];
   const activeFile = projectFiles.find(f => f.id === activeFileId) || projectFiles[0];
+
+  const memoizedAISection = useMemo(() => (
+    <section className="ai-section glass-card">
+      <button
+        className="ai-section-toggle"
+        onClick={() => setShowAISection(!showAISection)}
+      >
+        <div className="toggle-left">
+          <FaLightbulb className="toggle-icon" />
+          <span>AI Assistant</span>
+          <span className="toggle-hint">Get help with your questions & debug your code</span>
+        </div>
+        {showAISection ? <FaChevronUp /> : <FaChevronDown />}
+      </button>
+
+      {showAISection && (
+        <div className="ai-section-content">
+          <div className="ai-tabs">
+            <div className="ai-tab-header">
+              <button
+                className={`ai-tab ${activeAITab === "explain" ? "active" : ""}`}
+                onClick={() => setActiveAITab("explain")}
+              >
+                <FaLightbulb />
+                Question Helper
+              </button>
+
+              <button
+                className={`ai-tab ${activeAITab === "debug" ? "active" : ""}`}
+                onClick={() => setActiveAITab("debug")}
+              >
+                <FaBug />
+                Debug Helper
+              </button>
+            </div>
+
+            <div className="ai-tab-content">
+              {activeAITab === "explain" && (
+                <div className="ai-card">
+                  <h3><FaLightbulb /> Question Helper</h3>
+                  <textarea
+                    className="input-field"
+                    rows={3}
+                    placeholder="Paste your coding question here..."
+                    value={questionText}
+                    onChange={(e) => setQuestionText(e.target.value)}
+                  />
+                  <button
+                    className="btn-primary"
+                    onClick={explainQuestion}
+                    disabled={isExplaining}
+                  >
+                    {isExplaining ? "Explaining..." : "Explain Question"}
+                  </button>
+
+                  {explanation && (
+                    <div className="ai-response markdown-body">
+                      <h4>Explanation:</h4>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {explanation}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeAITab === "debug" && (
+                <div className="ai-card">
+                  <h3><FaBug /> Debug Helper</h3>
+                  <p className="ai-card-desc">
+                    Having errors? Get AI-powered debugging suggestions.
+                  </p>
+
+                  <button
+                    className="btn-primary"
+                    onClick={debugCode}
+                    disabled={debugLoading}
+                  >
+                    {debugLoading ? "Debugging..." : "Debug My Code"}
+                  </button>
+
+                  {debugResult && (
+                    <div className="ai-response markdown-body">
+                      <h4>Debug Suggestion:</h4>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {debugResult}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  ), [showAISection, activeAITab, questionText, isExplaining, explanation, debugLoading, debugResult, explainQuestion, debugCode]);
+
+  const memoizedVersionHistory = useMemo(() => (
+    showVersionHistory && (
+      <div className="version-history-panel glass-card">
+        <div className="version-history-header">
+          <h3>
+            <FaHistory />
+            <span>Version History</span>
+            <span className="version-count">{versionHistory.length} versions</span>
+          </h3>
+          <div className="version-history-actions">
+            <button
+              onClick={manualSave}
+              className="btn-save-version"
+              disabled={isAutoSaving}
+            >
+              <FaSave /> Save Current
+            </button>
+            <button
+              onClick={clearVersionHistory}
+              className="btn-clear-history"
+              title="Clear all version history"
+            >
+              Clear All
+            </button>
+            <button
+              onClick={() => setShowVersionHistory(false)}
+              className="btn-close-history"
+              title="Close version history"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className="version-list">
+          {versionHistory.length === 0 ? (
+            <div className="no-versions">No version history yet. Start coding!</div>
+          ) : (
+            versionHistory.map((version) => (
+              <div
+                key={version.id}
+                className={`version-item ${version.fileId === activeFileId ? 'active-file' : ''}`}
+                onClick={() => restoreVersion(version)}
+              >
+                <div className="version-info">
+                  <div className="version-time">
+                    {new Date(version.timestamp).toLocaleString()}
+                  </div>
+                  <div className="version-file">
+                    <FaFile />
+                    <span>{version.fileName}</span>
+                    {version.fileId === activeFileId && (
+                      <span className="current-file-badge">Current</span>
+                    )}
+                  </div>
+                  <div className="version-language">
+                    {languages[version.language]?.name || version.language}
+                  </div>
+                </div>
+                <div className="version-preview">
+                  <pre>{version.content.substring(0, 100)}...</pre>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="version-history-footer">
+          <div className="version-stats">
+            <span>Auto-save: {editorSettings.autoSave ? 'Enabled' : 'Disabled'}</span>
+            <span>Interval: {editorSettings.autoSaveInterval / 1000}s</span>
+            <span>Max history: {MAX_VERSION_HISTORY} versions</span>
+          </div>
+        </div>
+      </div>
+    )
+  ), [showVersionHistory, versionHistory, activeFileId, isAutoSaving, editorSettings.autoSave, editorSettings.autoSaveInterval, manualSave, clearVersionHistory, language, restoreVersion]);
+
+  const memoizedIOPanel = useMemo(() => (
+    <div className="io-panel">
+      <div className="input-panel glass-card">
+        <div className="panel-header">
+          <span className="panel-title">Input</span>
+        </div>
+        <textarea
+          className="io-textarea"
+          rows={5}
+          placeholder="Enter input values here..."
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+      </div>
+
+      <div className="output-panel glass-card">
+        <div className="panel-header">
+          <span className="panel-title">Output</span>
+        </div>
+        <pre className="output-content">{output || "Your output will appear here..."}</pre>
+      </div>
+    </div>
+  ), [userInput, output]);
 
   return (
     <div className="workspace">
@@ -907,100 +1124,8 @@ return;
       {/* Main Content */}
       <main className="workspace-main">
         {/* AI Helper Section (Collapsible) */}
-        <section className="ai-section glass-card">
-          <button
-            className="ai-section-toggle"
-            onClick={() => setShowAISection(!showAISection)}
-          >
-            <div className="toggle-left">
-              <FaLightbulb className="toggle-icon" />
-              <span>AI Assistant</span>
-              <span className="toggle-hint">Get help with your questions & debug your code</span>
-            </div>
-            {showAISection ? <FaChevronUp /> : <FaChevronDown />}
-          </button>
-
-          {showAISection && (
-            <div className="ai-section-content">
-              <div className="ai-tabs">
-                <div className="ai-tab-header">
-                  <button
-                    className={`ai-tab ${activeAITab === "explain" ? "active" : ""}`}
-                    onClick={() => setActiveAITab("explain")}
-                  >
-                    <FaLightbulb />
-                    Question Helper
-                  </button>
-
-                  <button
-                    className={`ai-tab ${activeAITab === "debug" ? "active" : ""}`}
-                    onClick={() => setActiveAITab("debug")}
-                  >
-                    <FaBug />
-                    Debug Helper
-                  </button>
-                </div>
-
-                <div className="ai-tab-content">
-                  {activeAITab === "explain" && (
-                    <div className="ai-card">
-                      <h3><FaLightbulb /> Question Helper</h3>
-                      <textarea
-                        className="input-field"
-                        rows={3}
-                        placeholder="Paste your coding question here..."
-                        value={questionText}
-                        onChange={(e) => setQuestionText(e.target.value)}
-                      />
-                      <button
-                        className="btn-primary"
-                        onClick={explainQuestion}
-                        disabled={isExplaining}
-                      >
-                        {isExplaining ? "Explaining..." : "Explain Question"}
-                      </button>
-
-                      {explanation && (
-                        <div className="ai-response markdown-body">
-                          <h4>Explanation:</h4>
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {explanation}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeAITab === "debug" && (
-                    <div className="ai-card">
-                      <h3><FaBug /> Debug Helper</h3>
-                      <p className="ai-card-desc">
-                        Having errors? Get AI-powered debugging suggestions.
-                      </p>
-
-                      <button
-                        className="btn-primary"
-                        onClick={debugCode}
-                        disabled={debugLoading}
-                      >
-                        {debugLoading ? "Debugging..." : "Debug My Code"}
-                      </button>
-
-                      {debugResult && (
-                        <div className="ai-response markdown-body">
-                          <h4>Debug Suggestion:</h4>
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {debugResult}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
+        {/* AI Helper Section (Collapsible) */}
+        {memoizedAISection}
 
         {/* Toolbar */}
         <section className="toolbar">
@@ -1053,7 +1178,7 @@ return;
                   <option key={key} value={key}>{val.name}</option>
                 ))}
               </select>
-              
+
               {/* File Manager Toggle */}
               <button
                 onClick={() => setShowFileManager(!showFileManager)}
@@ -1063,7 +1188,7 @@ return;
                 <FaFolder />
                 <span>Files ({projectFiles.length})</span>
               </button>
-              
+
               {/* Editor Settings Dropdown */}
               <div className="editor-settings-dropdown">
                 <button className="btn-settings">
@@ -1083,7 +1208,7 @@ return;
                     </label>
                     <span className="settings-hint">Smart code suggestions</span>
                   </div>
-                  
+
                   <div className="settings-item">
                     <label className="settings-toggle">
                       <input
@@ -1096,7 +1221,7 @@ return;
                     </label>
                     <span className="settings-hint">Automatically close brackets and quotes</span>
                   </div>
-                  
+
                   <div className="settings-item">
                     <label className="settings-toggle">
                       <input
@@ -1109,7 +1234,7 @@ return;
                     </label>
                     <span className="settings-hint">Auto-format code as you type</span>
                   </div>
-                  
+
                   {/* Auto-save setting */}
                   <div className="settings-item">
                     <label className="settings-toggle">
@@ -1123,7 +1248,7 @@ return;
                     </label>
                     <span className="settings-hint">Automatically save changes every {editorSettings.autoSaveInterval / 1000} seconds</span>
                   </div>
-                  
+
                   <div className="settings-status">
                     <span className={`status-indicator ${editorSettings.autoSave ? 'active' : 'inactive'}`}>
                       ●
@@ -1133,7 +1258,7 @@ return;
                 </div>
               </div>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="toolbar-actions">
               <button
@@ -1190,7 +1315,7 @@ return;
               </button>
             </div>
           </div>
-          
+
           <div className="toolbar-right">
             <button onClick={saveCurrentAsSnippet} className="btn-secondary btn-icon-only" disabled={loading} title="Save as snippet">
               <FaSave />
@@ -1207,79 +1332,8 @@ return;
         </section>
 
         {/* Version History Panel */}
-        {showVersionHistory && (
-          <div className="version-history-panel glass-card">
-            <div className="version-history-header">
-              <h3>
-                <FaHistory />
-                <span>Version History</span>
-                <span className="version-count">{versionHistory.length} versions</span>
-              </h3>
-              <div className="version-history-actions">
-                <button
-                  onClick={manualSave}
-                  className="btn-save-version"
-                  disabled={isAutoSaving}
-                >
-                  <FaSave /> Save Current
-                </button>
-                <button
-                  onClick={clearVersionHistory}
-                  className="btn-clear-history"
-                  title="Clear all version history"
-                >
-                  Clear All
-                </button>
-                <button
-                  onClick={() => setShowVersionHistory(false)}
-                  className="btn-close-history"
-                  title="Close version history"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div className="version-list">
-              {versionHistory.length === 0 ? (
-                <div className="no-versions">No version history yet. Start coding!</div>
-              ) : (
-                versionHistory.map((version) => (
-                  <div
-                    key={version.id}
-                    className={`version-item ${version.fileId === activeFileId ? 'active-file' : ''}`}
-                    onClick={() => restoreVersion(version)}
-                  >
-                    <div className="version-info">
-                      <div className="version-time">
-                        {new Date(version.timestamp).toLocaleString()}
-                      </div>
-                      <div className="version-file">
-                        <FaFile />
-                        <span>{version.fileName}</span>
-                        {version.fileId === activeFileId && (
-                          <span className="current-file-badge">Current</span>
-                        )}
-                      </div>
-                      <div className="version-language">
-                        {languages[version.language]?.name || version.language}
-                      </div>
-                    </div>
-                    <div className="version-preview">
-                      <pre>{version.content.substring(0, 100)}...</pre>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <div className="version-history-footer">
-              <div className="version-stats">
-                <span>Auto-save: {editorSettings.autoSave ? 'Enabled' : 'Disabled'}</span>
-                <span>Interval: {editorSettings.autoSaveInterval / 1000}s</span>
-                <span>Max history: {MAX_VERSION_HISTORY} versions</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Version History Panel */}
+        {memoizedVersionHistory}
 
         {/* File Manager Sidebar */}
         {showFileManager && (
@@ -1300,8 +1354,8 @@ return;
             </div>
             <div className="file-list">
               {projectFiles.map(file => (
-                <div 
-                  key={file.id} 
+                <div
+                  key={file.id}
                   className={`file-item ${activeFileId === file.id ? 'active' : ''}`}
                   onClick={() => setActiveFileId(file.id)}
                 >
@@ -1330,39 +1384,39 @@ return;
                       }}
                       className="btn-rename"
                       title="Rename file"
+                    >
+                      ✏️
+                    </button>
+                    {!file.isMain && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(file.id);
+                        }}
+                        className="btn-remove"
+                        title="Remove file"
                       >
-                        ✏️
+                        ×
                       </button>
-                      {!file.isMain && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFile(file.id);
-                          }}
-                          className="btn-remove"
-                          title="Remove file"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </div>
-                ))}
-              </div>
-              <div className="file-manager-footer">
-                <button
-                  onClick={addNewFile}
-                  className="btn-add-file-full"
-                >
-                  <span>+ Add New File</span>
-                </button>
-                <div className="file-stats">
-                  <span>Total: {projectFiles.length} files</span>
-                  <span>Language: {languages[language].name}</span>
                 </div>
+              ))}
+            </div>
+            <div className="file-manager-footer">
+              <button
+                onClick={addNewFile}
+                className="btn-add-file-full"
+              >
+                <span>+ Add New File</span>
+              </button>
+              <div className="file-stats">
+                <span>Total: {projectFiles.length} files</span>
+                <span>Language: {languages[language].name}</span>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
         {/* Editor & Output */}
         <section className={`editor-section ${showFileManager ? 'with-file-manager' : ''} ${showVersionHistory ? 'with-version-history' : ''}`}>
@@ -1505,7 +1559,7 @@ return;
                 <CodeEditor
                   language={language}
                   code={activeFile.content}
-                  setCode={(content) => updateFileContent(activeFileId, content)}
+                  setCode={handleCodeChange}
                   theme={isDark ? "vs-dark" : "light"}
                   editorSettings={editorSettings}
                 />
@@ -1513,27 +1567,7 @@ return;
             </div>
           </div>
 
-          <div className="io-panel">
-            <div className="input-panel glass-card">
-              <div className="panel-header">
-                <span className="panel-title">Input</span>
-              </div>
-              <textarea
-                className="io-textarea"
-                rows={5}
-                placeholder="Enter input values here..."
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-              />
-            </div>
-
-            <div className="output-panel glass-card">
-              <div className="panel-header">
-                <span className="panel-title">Output</span>
-              </div>
-              <pre className="output-content">{output || "Your output will appear here..."}</pre>
-            </div>
-          </div>
+          {memoizedIOPanel}
         </section>
       </main>
     </div>
