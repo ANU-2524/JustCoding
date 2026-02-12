@@ -50,6 +50,12 @@ func main() {
   rust: { name: 'Rust', starter: `fn main() {\n  println!("Hello Rust");\n}` }
 };
 
+// Auto-save constants
+const AUTO_SAVE_INTERVAL = 3000; // 3 seconds
+const MAX_VERSION_HISTORY = 50; // Maximum number of versions to keep
+const AUTO_SAVE_KEY_PREFIX = 'autosave_';
+const VERSION_HISTORY_KEY_PREFIX = 'version_history_';
+
 // Extracted from component to avoid recreation
 const DEFAULT_EDITOR_SETTINGS = {
   intellisense: true,
@@ -63,12 +69,6 @@ const DEFAULT_EDITOR_SETTINGS = {
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "https://justcoding.onrender.com";
 const REQUEST_TIMEOUT = 45000;
-
-// Auto-save constants
-const AUTO_SAVE_INTERVAL = 3000; // 3 seconds
-const MAX_VERSION_HISTORY = 50; // Maximum number of versions to keep
-const AUTO_SAVE_KEY_PREFIX = 'autosave_';
-const VERSION_HISTORY_KEY_PREFIX = 'version_history_';
 
 const MainEditor = () => {
   const [debugResult, setDebugResult] = useState("");
@@ -257,6 +257,17 @@ if (isAdult) {
       return newHistory;
     });
   }, [activeFileId, projectFiles, language]);
+
+  const updateFileContent = useCallback((fileId, content) => {
+    setProjectFiles(prev => prev.map(f =>
+      f.id === fileId ? { ...f, content } : f
+    ));
+
+    // Also update current code state if it's the active file
+    if (fileId === activeFileId) {
+      setCode(content);
+    }
+  }, [activeFileId]);
 
   // Restore version from history
   const restoreVersion = useCallback((version) => {
@@ -777,17 +788,6 @@ if (isAdult) {
       isMain: f.id === fileId
     })));
   }, []);
-
-  const updateFileContent = useCallback((fileId, content) => {
-    setProjectFiles(prev => prev.map(f =>
-      f.id === fileId ? { ...f, content } : f
-    ));
-
-    // Also update current code state if it's the active file
-    if (fileId === activeFileId) {
-      setCode(content);
-    }
-  }, [activeFileId]);
 
   const handleCodeChange = useCallback((newContent) => {
     updateFileContent(activeFileId, newContent);

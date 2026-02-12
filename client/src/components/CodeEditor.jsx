@@ -85,25 +85,6 @@ const CodeEditor = memo(({ language, code, setCode, theme, editorSettings }) => 
     }
   }, [options]);
 
-  const handleEditorDidMount = useCallback((editor, monacoInstance) => {
-    editorRef.current = editor;
-
-    // Add custom suggestions based on language
-    if (editorSettings.intellisense) {
-      setupLanguageSpecificSuggestions(monacoInstance, language);
-    }
-
-    // Add keyboard shortcut for triggering suggestions (Ctrl+Space)
-    editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Space, function () {
-      editor.trigger('', 'editor.action.triggerSuggest', {});
-    });
-
-    // Add keyboard shortcut for format document (Shift+Alt+F)
-    editor.addCommand(monacoInstance.KeyMod.Shift | monacoInstance.KeyMod.Alt | monacoInstance.KeyCode.KeyF, function () {
-      editor.getAction('editor.action.formatDocument').run();
-    });
-  }, [language, editorSettings.intellisense, setupLanguageSpecificSuggestions]);
-
   const setupLanguageSpecificSuggestions = useCallback((monaco, lang) => {
     // Common suggestions for all languages
     const commonSuggestions = [
@@ -706,6 +687,25 @@ const CodeEditor = memo(({ language, code, setCode, theme, editorSettings }) => 
       }
     });
   }, []);
+
+  const handleEditorDidMount = useCallback((editor, monacoInstance) => {
+    editorRef.current = editor;
+
+    // Add custom suggestions based on language
+    if (editorSettings.intellisense) {
+      setupLanguageSpecificSuggestions(monacoInstance, language);
+    }
+
+    // Add keyboard shortcut for triggering suggestions (Ctrl+Space)
+    editor.addCommand(monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.Space, function () {
+      editor.trigger('', 'editor.action.triggerSuggest', {});
+    });
+
+    // Add keyboard shortcut for format document (Shift+Alt+F)
+    editor.addCommand(monacoInstance.KeyMod.Shift | monacoInstance.KeyMod.Alt | monacoInstance.KeyCode.KeyF, function () {
+      editor.getAction('editor.action.formatDocument').run();
+    });
+  }, [language, editorSettings.intellisense, setupLanguageSpecificSuggestions]);
 
   return (
     <Editor
