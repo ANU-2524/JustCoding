@@ -11,6 +11,18 @@ const Footer = () => {
     <footer className="footer animate-on-scroll">
       <div className="footer-container">
         <div className="footer-content">
+          {/* Brand Section */}
+          {/* Brand Section */}
+          <div className="footer-section">
+            <h4>JustCoding</h4>
+            <ul>
+              <li className="brand-tagline">
+                Learn. Build. Innovate. Empowering developers through hands-on coding
+                challenges and real-world practice.
+              </li>
+            </ul>
+          </div>
+
           {/* Quick Links */}
           <div className="footer-section">
             <h4>Quick Links</h4>
