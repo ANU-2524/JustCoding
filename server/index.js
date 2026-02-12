@@ -15,6 +15,8 @@ import BadgeService from './services/BadgeService.js';
 import Room from './models/Room.js';
 import ExecutionQueueService from './services/ExecutionQueueService.js';
 import ExecutionHistory from './models/ExecutionHistory.js';
+import MessageOrderingService from './services/MessageOrderingService.js';
+import MessageHistoryModel from './models/MessageHistory.js';
 
 
 import { logger, httpLogger } from './services/logger.js';
@@ -47,6 +49,7 @@ import roomRoute from './routes/room.js';
 import userRoute from './routes/user.js';
 import executionRoute from './routes/execution.js';
 import collabRoutes from './routes/collab.js';
+import diagnosticsRoute from './routes/diagnostics.js';
 
 import { validate } from './middleware/validation.js';
 import gptRoute from './routes/gptRoute.js';
@@ -119,6 +122,10 @@ io.on("connection", (socket) => {
       logger.info(`${username} joined room ${roomId}`, { username, roomId, userId });
       userMap[socket.id] = { username, roomId, userId: userId || socket.id };
 
+      // Initialize message ordering for this room
+      const nextSequence = room.messageSequence + 1;
+      MessageOrderingService.initializeRoom(roomId, room.messageSequence);
+
       // Send initial room state with sequence number
       const sequence = room.getNextSequence();
       await room.save();
@@ -127,7 +134,8 @@ io.on("connection", (socket) => {
         code: room.code,
         language: room.language,
         sequence,
-        executionState: room.executionState
+        executionState: room.executionState,
+        nextExpectedSequence: MessageOrderingService.getExpectedSequence(roomId)
       });
 
       socket.to(roomId).emit("user-joined", {
@@ -144,36 +152,108 @@ io.on("connection", (socket) => {
 
   socket.on("code-change", async ({ roomId, code, sequence }) => {
     try {
-      socket.to(roomId).emit("code-update", { code, sequence });
+      const user = userMap[socket.id] || {};
+      
+      // Process message through ordering service
+      const result = MessageOrderingService.processMessage(roomId, {
+        type: 'code-change',
+        code,
+        username: user.username,
+        userId: user.userId
+      }, sequence);
 
-      if (roomTimers[roomId]) {
-        clearTimeout(roomTimers[roomId]);
+      if (!result.isValid && !result.buffered) {
+        logger.warn('Invalid code-change message', {
+          roomId,
+          sequence,
+          error: result.error
+        });
+        return;
       }
 
-      roomTimers[roomId] = setTimeout(async () => {
-        try {
-          const room = await Room.findOne({ roomId });
-          if (room) {
-            room.code = code;
-            await room.save();
+      if (result.buffered) {
+        logger.debug('Code-change message buffered (out of order)', {
+          roomId,
+          sequence,
+          missingSince: result.missingSince
+        });
+
+        // Notify client about missing messages
+        socket.emit('sequence-gap-detected', {
+          expectedSequence: result.missingSince,
+          receivedSequence: sequence
+        });
+        return;
+      }
+
+      // Process all ordered messages
+      for (const orderedMsg of result.orderedMessages) {
+        if (orderedMsg.type === 'code-change') {
+          // Broadcast to other users immediately
+          socket.to(roomId).emit("code-update", {
+            code: orderedMsg.code,
+            sequence: orderedMsg.sequence,
+            username: orderedMsg.username
+          });
+
+          // Debounce database save
+          if (roomTimers[roomId]) {
+            clearTimeout(roomTimers[roomId]);
           }
-          delete roomTimers[roomId];
-        } catch (error) {
-          logger.error('Error updating room code', { error: error.message, roomId });
-          delete roomTimers[roomId];
+
+          roomTimers[roomId] = setTimeout(async () => {
+            try {
+              const room = await Room.findOne({ roomId });
+              if (room) {
+                // Record code change with causality tracking
+                await room.recordCodeChange(orderedMsg.code, orderedMsg.sequence);
+              }
+
+              // Record in message history
+              await MessageHistoryModel.recordMessage({
+                roomId,
+                sequence: orderedMsg.sequence,
+                messageType: 'code-change',
+                userId: orderedMsg.userId,
+                username: orderedMsg.username,
+                payload: { code: orderedMsg.code },
+                socketId: socket.id
+              });
+
+              delete roomTimers[roomId];
+            } catch (error) {
+              logger.error('Error saving code change', { error: error.message, roomId });
+              delete roomTimers[roomId];
+            }
+          }, 2000);
         }
-      }, 2000);
+      }
     } catch (error) {
-      logger.error('Error broadcasting code change', { error: error.message, roomId });
+      logger.error('Error processing code change', { error: error.message, roomId });
+      socket.emit('error', { message: 'Failed to process code change' });
     }
   });
 
   socket.on("disconnect", () => {
     logger.info("User disconnected", { socketId: socket.id });
+    
+    const user = userMap[socket.id];
+    if (user) {
+      const { roomId } = user;
+      // Check if room is now empty and clean up
+      const io_adapter = io.sockets.adapter;
+      const room_sockets = io_adapter.rooms.get(roomId);
+      
+      if (!room_sockets || room_sockets.size === 0) {
+        logger.info('Room is now empty, cleaning up message ordering', { roomId });
+        MessageOrderingService.cleanupRoom(roomId);
+      }
+    }
+    
     delete userMap[socket.id];
   });
 
-  socket.on("execute-code", async ({ roomId, code, language, stdin, userId, username }) => {
+  socket.on("execute-code", async ({ roomId, code, language, stdin, userId, username, sequence, codeChangeSequence }) => {
     try {
       const user = userMap[socket.id];
       const execUserId = userId || user?.userId || socket.id;
@@ -184,59 +264,155 @@ io.on("connection", (socket) => {
         roomId,
         userId: execUserId,
         language,
+        sequence,
+        codeChangeSequence,
         correlationId
       });
 
-      // Emit execution started event
-      io.to(roomId).emit("execution-started", {
-        userId: execUserId,
-        username: execUsername,
-        correlationId,
-        timestamp: new Date().toISOString()
-      });
-
-      // Execute code through queue service
-      const result = await ExecutionQueueService.executeCode({
-        roomId,
-        userId: execUserId,
-        username: execUsername,
+      // Process message through ordering service
+      const result = MessageOrderingService.processMessage(roomId, {
+        type: 'code-execute',
         code,
         language,
         stdin: stdin || '',
-        correlationId,
-        priority: 0
-      });
-
-      // Record execution
-      await ExecutionHistory.recordExecution({
-        executionId: result.executionId,
-        correlationId,
-        roomId,
-        userId: execUserId,
         username: execUsername,
-        language,
-        code,
-        stdin: stdin || '',
-        output: result.output || '',
-        error: result.error,
-        success: result.success,
-        executionTime: result.executionTime,
-        completedAt: new Date(result.timestamp),
-        status: result.success ? 'completed' : 'failed'
-      });
+        userId: execUserId
+      }, sequence);
 
-      // Emit result to all users in room with correlation ID
-      io.to(roomId).emit("execution-result", {
-        ...result,
-        correlationId
-      });
+      if (!result.isValid && !result.buffered) {
+        logger.warn('Invalid execute-code message', {
+          roomId,
+          sequence,
+          error: result.error
+        });
+        
+        socket.emit("execution-result", {
+          success: false,
+          error: result.error,
+          correlationId,
+          roomId
+        });
+        return;
+      }
 
-      logger.info('WebSocket execution completed', {
-        roomId,
-        userId: execUserId,
-        success: result.success,
-        correlationId
-      });
+      if (result.buffered) {
+        logger.debug('Execute-code message buffered (waiting for ordering)', {
+          roomId,
+          sequence,
+          missingSince: result.missingSince
+        });
+
+        socket.emit('sequence-gap-detected', {
+          expectedSequence: result.missingSince,
+          receivedSequence: sequence,
+          type: 'execution'
+        });
+        return;
+      }
+
+      // Process all ordered messages
+      for (const orderedMsg of result.orderedMessages) {
+        if (orderedMsg.type === 'code-execute') {
+          // Get room to verify code state
+          const room = await Room.findOne({ roomId });
+          if (!room) {
+            throw new Error('Room not found');
+          }
+
+          // Validate execution can proceed
+          const validation = room.validateMessageSequence('code-execute', orderedMsg.sequence, {
+            codeChangeSequence: codeChangeSequence || 0
+          });
+
+          if (!validation.executionAllowed) {
+            logger.warn('Execution blocked due to sequence validation', {
+              roomId,
+              sequence: orderedMsg.sequence,
+              issues: validation.issues
+            });
+
+            socket.emit("execution-result", {
+              success: false,
+              error: 'Cannot execute: code state not ready',
+              correlationId,
+              roomId
+            });
+            continue;
+          }
+
+          // Emit execution started event
+          io.to(roomId).emit("execution-started", {
+            userId: orderedMsg.userId,
+            username: orderedMsg.username,
+            correlationId,
+            sequence: orderedMsg.sequence,
+            timestamp: new Date().toISOString()
+          });
+
+          // Execute code through queue service
+          const execResult = await ExecutionQueueService.executeCode({
+            roomId,
+            userId: orderedMsg.userId,
+            username: orderedMsg.username,
+            code: orderedMsg.code,
+            language: orderedMsg.language,
+            stdin: orderedMsg.stdin,
+            correlationId,
+            priority: 0,
+            sequence: orderedMsg.sequence
+          });
+
+          // Record execution with causality
+          const codeHash = room._hashCode(orderedMsg.code);
+          await room.recordExecution(execResult.executionId, orderedMsg.sequence, codeHash);
+
+          // Record execution in history
+          await ExecutionHistory.recordExecution({
+            executionId: execResult.executionId,
+            correlationId,
+            roomId,
+            userId: orderedMsg.userId,
+            username: orderedMsg.username,
+            language: orderedMsg.language,
+            code: orderedMsg.code,
+            stdin: orderedMsg.stdin || '',
+            output: execResult.output || '',
+            error: execResult.error,
+            success: execResult.success,
+            executionTime: execResult.executionTime,
+            completedAt: new Date(execResult.timestamp),
+            status: execResult.success ? 'completed' : 'failed',
+            sequence: orderedMsg.sequence
+          });
+
+          // Record in message history
+          await MessageHistoryModel.recordMessage({
+            roomId,
+            sequence: orderedMsg.sequence,
+            messageType: 'code-execute',
+            userId: orderedMsg.userId,
+            username: orderedMsg.username,
+            payload: { language: orderedMsg.language, codeLength: orderedMsg.code?.length || 0 },
+            correlationId,
+            socketId: socket.id
+          });
+
+          // Emit result to all users in room
+          io.to(roomId).emit("execution-result", {
+            ...execResult,
+            correlationId,
+            sequence: orderedMsg.sequence
+          });
+
+          logger.info('WebSocket execution completed', {
+            roomId,
+            userId: orderedMsg.userId,
+            success: execResult.success,
+            correlationId,
+            sequence: orderedMsg.sequence
+          });
+        }
+      }
     } catch (error) {
       logger.error('WebSocket execution error', {
         error: error.message,
@@ -309,6 +485,9 @@ app.use('/api/forum', forumRoutes);
 
 // After forumRoutes registration:
 app.use('/api/collab', collabRoutes);
+
+// Diagnostics and monitoring routes
+app.use('/api/diagnostics', diagnosticsRoute);
 
 // ============================================
 // Visualizer Endpoints
