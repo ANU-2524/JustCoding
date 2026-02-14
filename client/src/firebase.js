@@ -1,5 +1,6 @@
 // src/firebase.js
 import { initializeApp, getApps } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -34,6 +35,7 @@ const isFirebaseConfigured = () => {
  */
 let app = null;
 let auth = null;
+let db = null;
 let googleProvider = null;
 let githubProvider = null;
 
@@ -41,6 +43,7 @@ try {
   if (isFirebaseConfigured()) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     auth = getAuth(app);
+    db = getFirestore(app);
     googleProvider = new GoogleAuthProvider();
     githubProvider = new GithubAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
@@ -53,6 +56,7 @@ try {
 export {
   app,
   auth,
+  db,
   googleProvider,
   githubProvider,
 };
