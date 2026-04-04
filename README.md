@@ -1,4 +1,4 @@
-# 🧠 JustCode — Where Code Meets Clarity
+# JustCode — Where Code Meets Clarity
 
 Ever been stuck in a coding bug spiral or felt too shy to ask for help?
 
@@ -6,12 +6,12 @@ Ever been stuck in a coding bug spiral or felt too shy to ask for help?
 
 ---
 
-## 🔗 Live Demo  
+##  Live Demo  
 🌐 [JustCode HERE !](https://just-coding-theta.vercel.app)...
 
 ---
 
-## 🚀 What is JustCode?
+## What is JustCode?
 
 JustCode is a powerful, all-in-one online code editor made for developers, students, and curious minds. It’s more than just a code runner — it’s your debugging buddy, your AI-powered teacher, and your live collaboration hub.
 
@@ -25,7 +25,7 @@ Built with ❤️ using React, Node.js, MongoDB, and integrated with GPT, JustCo
 
 ---
 
-## ✨ Why I Made This
+## Why I Made This
 
 I’ve been through those moments — the ones where you know the syntax but not the **logic**, or where you feel stuck even after hours of searching Stack Overflow.
 
@@ -34,7 +34,7 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 
 ---
 
-## 🌟 Features That Matter
+## Features That Matter
 
 - 🧠 **AI-Powered Question Explainer**  
   Paste a question, and get a natural language explanation powered by GPT.
@@ -62,7 +62,7 @@ To make code feel less isolating and more collaborative, supportive, and fun.
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```bash
 JustCode/
