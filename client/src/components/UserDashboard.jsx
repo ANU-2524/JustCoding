@@ -18,6 +18,9 @@ import OverviewTab from './Dashboard/OverviewTab';
 import SnippetsTab from './Dashboard/SnippetsTab';
 import AchievementsTab from './Dashboard/AchievementsTab';
 import SettingsTab from './Dashboard/SettingsTab';
+import CodingStatsTab from './Dashboard/CodingStatsTab';
+import PortfolioTab from './Dashboard/PortfolioTab';
+import CollaborationTab from './Dashboard/CollaborationTab';
 
 /**
  * UserDashboard Component - Comprehensive User Dashboard
@@ -195,6 +198,52 @@ const UserDashboard = () => {
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      // Clear local storage
+      localStorage.removeItem('profile');
+      localStorage.removeItem('snippets');
+      localStorage.removeItem('sessions');
+      localStorage.removeItem('stats');
+      
+      // Perform logout
+      if (typeof logout === 'function') {
+        await logout();
+      }
+      
+      // Redirect to home
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Error logging out. Please try again.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete your account? This action is permanent and cannot be undone. All your data will be lost.'
+    );
+    
+    if (confirmDelete) {
+      try {
+        // Clear all local data
+        localStorage.clear();
+        
+        // Perform logout
+        if (typeof logout === 'function') {
+          await logout();
+        }
+        
+        // Show success message and redirect
+        alert('Account deleted successfully. Redirecting to homepage...');
+        window.location.href = '/';
+      } catch (error) {
+        console.error('Delete account error:', error);
+        alert('Error deleting account. Please try again.');
+      }
+    }
+  };
+
   const identityLabel = useMemo(() => {
     if (currentUser?.email) {
       return currentUser.email;
@@ -323,36 +372,36 @@ const UserDashboard = () => {
             <SettingsTab
               profile={profile}
               tempPhoto={tempPhoto}
-              isEditing={isEditing}
-              setIsEditing={setIsEditing}
-              handleInputChange={handleInputChange}
-              handlePhotoChange={handlePhotoChange}
-              handleSave={handleSave}
-              handleCancel={handleCancel}
               identityLabel={identityLabel}
+              handleLogout={handleLogout}
+              handleDeleteAccount={handleDeleteAccount}
             />
           )}
 
           {/* Placeholder for other tabs */}
           {activeTab === 'coding-stats' && (
-            <div className="dashboard-section">
-              <h2>Coding Statistics</h2>
-              <p>Coming soon...</p>
-            </div>
+            <CodingStatsTab
+              stats={stats}
+              sessions={sessions}
+              snippets={snippets}
+            />
           )}
 
           {activeTab === 'portfolio' && (
-            <div className="dashboard-section">
-              <h2>Portfolio</h2>
-              <p>Coming soon...</p>
-            </div>
+            <PortfolioTab
+              profile={profile}
+              tempPhoto={tempPhoto}
+              handleInputChange={handleInputChange}
+              handlePhotoChange={handlePhotoChange}
+              handleSave={handleSave}
+              handleCancel={handleCancel}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+            />
           )}
 
           {activeTab === 'collaboration' && (
-            <div className="dashboard-section">
-              <h2>Collaboration History</h2>
-              <p>Coming soon...</p>
-            </div>
+            <CollaborationTab sessions={sessions} />
           )}
         </div>
       </div>
