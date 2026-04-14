@@ -1,4 +1,4 @@
-# JustCode — Where Code Meets Clarity
+# JustCode — Where Code Meets Clarity...
 
 Ever been stuck in a coding bug spiral or felt too shy to ask for help?
 
