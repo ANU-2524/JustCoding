@@ -86,6 +86,14 @@ const DashboardSidebar = ({
           <span className="nav-item-icon"><FaCog /></span>
           {!sidebarCollapsed && <span>Settings</span>}
         </button>
+        <button
+          className={`nav-item ${activeTab === 'feedback' ? 'active' : ''}`}
+          onClick={() => setActiveTab('feedback')}
+          data-tooltip="Feedback"
+        >
+          <span className="nav-item-icon"><FaQuestionCircle /></span>
+          {!sidebarCollapsed && <span>Feedback</span>}
+        </button>
       </nav>
 
       {/* Quick Links Section */}
